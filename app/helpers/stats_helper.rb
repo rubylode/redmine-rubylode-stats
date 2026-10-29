@@ -25,7 +25,7 @@ module StatsHelper
     else
       RubylodeStats::QueryParameters.from_filters(@query.filters)
     end
-    parameters.merge(tab: @tab.key, period: @period, slice_by: @slice_by)
+    parameters.merge(tab: @tab.key, period: @period, slice_by: @slice_by, shape: @shape)
   end
 
   def stats_page_path(parameters = {})

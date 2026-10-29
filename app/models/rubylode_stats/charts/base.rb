@@ -20,6 +20,8 @@ module RubylodeStats
     # A chart builds a Vega-Lite specification (a Hash) from the rows of one row model. Subclass it, say which rows and which
     # title, and write the specification; then add the class to its tab in RubylodeStats::Registry.
     #
+    # options carries the page choices a chart may use: :slice_by, :shape ("pie"), :period and :time_zone.
+    #
     # issue_list_link is a callable that takes an extra filter (for example "status_id" => 5) and returns the URL of the
     # issue list with the query's filters plus that one, so a bar can link to what it counts.
     class Base
@@ -30,9 +32,10 @@ module RubylodeStats
         name.demodulize.underscore
       end
 
-      def initialize(query:, issue_list_link:)
+      def initialize(query:, issue_list_link:, options: {})
         @query = query
         @issue_list_link = issue_list_link
+        @options = options
       end
 
       def chart_name
@@ -45,7 +48,7 @@ module RubylodeStats
 
       private
 
-      attr_reader :query, :issue_list_link
+      attr_reader :query, :issue_list_link, :options
 
       def title
         I18n.t("label_stats_#{chart_name}")
