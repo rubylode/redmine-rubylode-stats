@@ -23,11 +23,22 @@ module RubylodeStats
       @query = query
     end
 
-    # extra_filter: for example "status_id" => 5; it replaces any filter the query already has on that field.
+    # extra_filter: for example "category_id" => 5; it replaces any filter the query already has on that field. A nil value
+    # selects the tickets without a value; a Hash ({ operator: "o", values: [] }) is used as the filter itself.
     def parameters(extra_filter)
       filters = @query.filters.dup
-      extra_filter.each { |field, value| filters[field] = { operator: "=", values: [value.to_s] } }
+      extra_filter.each { |field, value| filters[field] = filter_for(value) }
       QueryParameters.from_filters(filters)
+    end
+
+    private
+
+    def filter_for(value)
+      case value
+      when nil then { operator: "!*", values: [] }
+      when Hash then value
+      else { operator: "=", values: [value.to_s] }
+      end
     end
   end
 end
