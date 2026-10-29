@@ -51,19 +51,8 @@ module RubylodeStats
 
     # { ticket id => [closed_on, assignee id] } for the closed tickets the query selects (and the user may see).
     def closed_tickets
-      scope = population_scope.where.not(closed_on: nil)
+      scope = QueryPopulation.scope(@query).where.not(closed_on: nil)
       scope.pluck("issues.id", "issues.closed_on", "issues.assigned_to_id").to_h { |id, closed_on, assignee_id| [id, [closed_on, assignee_id]] }
-    end
-
-    def population_scope
-      filters = @query.filters
-      filters = filters.except("status_id") if filters.dig("status_id", :operator) == "o"
-      population_query = @query.dup
-      # dup drops what was mixed into this one query, such as the cross-project permission restriction.
-      extensions = @query.singleton_class.included_modules - @query.class.included_modules
-      population_query.extend(*extensions) if extensions.any?
-      population_query.filters = filters
-      population_query.base_scope
     end
 
     # { ticket id => user id of the latest change from an open status to a closed one }.
