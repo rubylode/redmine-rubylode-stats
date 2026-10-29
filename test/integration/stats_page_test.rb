@@ -173,10 +173,10 @@ class StatsPageTest < Redmine::IntegrationTest
   end
 
   def test_other_tabs_show_an_empty_state_line_and_no_status_chart
-    get "/projects/#{@project.identifier}/stats?tab=people"
+    get "/projects/#{@project.identifier}/stats?tab=versions"
 
     assert_response :success
-    assert_select "a.stats-tab.selected[data-tab=people]"
+    assert_select "a.stats-tab.selected[data-tab=versions]"
     assert_select "p.nodata"
     assert_select "#stats-chart-tickets_by_status", false
   end
@@ -251,6 +251,22 @@ def test_the_period_select_changes_the_period_of_the_rows
 
   assert_equal ["2026-10-01"], chart_rows("opened_and_closed").map { |row| row["period"] }
 end
+
+  def test_the_people_tab_shows_closed_per_person_as_stacked_bars_that_link_to_the_period
+    get "/projects/#{@project.identifier}/stats?tab=people&set_filter=1&f[]=status_id&op[status_id]=*&period=month"
+
+    specification = chart_specification("closed_per_person")
+    rows = specification.dig("data", "values")
+    assert_equal 3, rows.sum { |row| row["closed"] }
+    assert_equal "bar", specification.dig("mark", "type")
+    assert_equal "legend", specification["params"].first["bind"]
+    assert specification.dig("mark", "tooltip")
+    row = rows.first
+    link = Rack::Utils.parse_nested_query(URI(row["url"]).query)
+    assert_equal "><", link["op"]["closed_on"]
+    assert_equal [row["period"], Date.parse(row["period"]).end_of_month.iso8601], link["v"]["closed_on"]
+    assert_equal "*", link["op"]["status_id"]
+  end
 
   private
 
