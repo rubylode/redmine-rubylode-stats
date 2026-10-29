@@ -232,6 +232,26 @@ def test_open_versus_closed_is_a_stacked_bar_and_a_donut_over_the_same_rows_with
   assert_equal "c", closed_link["op"]["status_id"]
 end
 
+def test_opened_and_closed_chart_carries_the_period_rows_and_three_series_with_a_legend_toggle
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&period=week"
+
+  specification = chart_specification("opened_and_closed")
+  rows = specification.dig("data", "values")
+  assert_equal 7, rows.sum { |row| row["opened"] }
+  assert_equal 3, rows.sum { |row| row["closed"] }
+  assert_equal 4, rows.last["backlog"]
+  assert_equal %w[opened closed backlog], specification["transform"].first["fold"]
+  assert_equal "line", specification.dig("mark", "type")
+  assert_equal "legend", specification["params"].first["bind"]
+  assert specification.dig("mark", "tooltip")
+end
+
+def test_the_period_select_changes_the_period_of_the_rows
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&period=month&f[]=created_on&op[created_on]=><&v[created_on][]=2026-10-01&v[created_on][]=2026-10-31"
+
+  assert_equal ["2026-10-01"], chart_rows("opened_and_closed").map { |row| row["period"] }
+end
+
   private
 
   def chart_specification(chart_name)

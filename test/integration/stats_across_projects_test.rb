@@ -105,6 +105,15 @@ class StatsAcrossProjectsTest < Redmine::IntegrationTest
     assert_select "#top-menu a.rubylode-stats", false
   end
 
+def test_the_opened_and_closed_chart_also_keeps_to_the_permitted_projects
+  log_user("jsmith", "jsmith")
+
+  get "/stats?#{ALL_STATUSES}"
+
+  rows = JSON.parse(css_select("#stats-chart-opened_and_closed").first["data-specification"]).dig("data", "values")
+  assert_equal 7, rows.sum { |row| row["opened"] }
+end
+
   private
 
   def status_rows
