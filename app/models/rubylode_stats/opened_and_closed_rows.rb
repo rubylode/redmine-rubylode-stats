@@ -68,20 +68,9 @@ module RubylodeStats
 
     # [period the ticket was opened in, period it was closed in or nil] for every ticket the other filters select.
     def ticket_periods
-      population_scope.pluck("issues.created_on", "issues.closed_on").map do |created_on, closed_on|
+      QueryPopulation.scope(@query, ignored_fields: FilterDateRange::FIELDS).pluck("issues.created_on", "issues.closed_on").map do |created_on, closed_on|
         [period_start(created_on), closed_on && period_start(closed_on)]
       end
-    end
-
-    def population_scope
-      filters = @query.filters.except(*FilterDateRange::FIELDS)
-      filters = filters.except("status_id") if filters.dig("status_id", :operator) == "o"
-      population_query = @query.dup
-      # dup drops what was mixed into this one query, such as the cross-project permission restriction.
-      extensions = @query.singleton_class.included_modules - @query.class.included_modules
-      population_query.extend(*extensions) if extensions.any?
-      population_query.filters = filters
-      population_query.base_scope
     end
 
     def period_start(time)
