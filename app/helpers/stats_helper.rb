@@ -28,6 +28,10 @@ module StatsHelper
     parameters.merge(tab: @tab.key, period: @period, slice_by: @slice_by)
   end
 
+  def stats_page_path(parameters = {})
+    @project ? project_stats_path(@project, parameters) : stats_path(parameters)
+  end
+
   def stats_preset_links
     today = User.current.today
     date_field = @tab.preset_date_field
@@ -37,14 +41,14 @@ module StatsHelper
       filters = filters.except("status_id") if date_field == "closed_on" && filters.dig("status_id", :operator) == "o"
       date_filter = RubylodeStats::Presets.filter_for(preset_key, today)
       filters = filters.merge(date_field => date_filter) if date_filter
-      link_to l("label_stats_preset_#{preset_key}"), project_stats_path(@project, stats_link_parameters(replacement_filters: filters)),
+      link_to l("label_stats_preset_#{preset_key}"), stats_page_path(stats_link_parameters(replacement_filters: filters)),
               class: "stats-preset", data: { preset: preset_key }
     end
   end
 
   def stats_tab_links
     RubylodeStats::Registry::TABS.map do |tab|
-      link_to l("label_stats_tab_#{tab.key}"), project_stats_path(@project, stats_link_parameters.merge(tab: tab.key)),
+      link_to l("label_stats_tab_#{tab.key}"), stats_page_path(stats_link_parameters.merge(tab: tab.key)),
               class: ["stats-tab", ("selected" if tab == @tab)].compact.join(" "), data: { tab: tab.key }
     end
   end
