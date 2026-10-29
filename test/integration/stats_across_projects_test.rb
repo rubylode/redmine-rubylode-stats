@@ -114,6 +114,17 @@ def test_the_opened_and_closed_chart_also_keeps_to_the_permitted_projects
   assert_equal 7, rows.sum { |row| row["opened"] }
 end
 
+  def test_bar_links_carry_a_project_filter_limited_to_the_permitted_projects
+    log_user("jsmith", "jsmith")
+
+    get "/stats?#{ALL_STATUSES}"
+
+    specification = css_select("#stats-chart-tickets_by_status").first["data-specification"]
+    urls = JSON.parse(specification).dig("data", "values").map { |row| row["url"] }
+    assert urls.all? { |url| url.include?("v%5Bproject_id%5D%5B%5D=1") }
+    assert urls.none? { |url| url.include?("v%5Bproject_id%5D%5B%5D=5") }
+  end
+
   private
 
   def status_rows
