@@ -23,6 +23,7 @@
 
 <%= form_tag(stats_page_path, method: :get, id: "query_form") do %>
   <%= hidden_field_tag "tab", @tab.key, id: nil %>
+  <%= hidden_field_tag "shape", @shape, id: nil %>
   <p class="stats-selects">
     <label for="period"><%= l(:label_stats_period) %></label>
     <%= select_tag "period", stats_period_options %>

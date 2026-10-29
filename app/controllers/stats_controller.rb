@@ -30,7 +30,8 @@ class StatsController < ApplicationController
     @tab = RubylodeStats::Registry.tab(params[:tab])
     @period = RubylodeStats::Registry.period(params[:period])
     @slice_by = RubylodeStats::Registry.slice(params[:slice_by])
-    @charts = @query.valid? ? @tab.chart_classes.map { |chart_class| chart_class.new(query: @query, issue_list_link: issue_list_link) } : []
+    @shape = params[:shape] == "pie" ? "pie" : "bar"
+    @charts = @query.valid? ? @tab.chart_classes.map { |chart_class| chart_class.new(query: @query, issue_list_link: issue_list_link, options: chart_options) } : []
   end
 
   private
@@ -45,6 +46,10 @@ class StatsController < ApplicationController
   def authorize_stats
     return authorize if @project
     deny_access unless RubylodeStats::PermittedProjects.any?(User.current)
+  end
+
+  def chart_options
+    { slice_by: @slice_by, shape: @shape, period: @period }
   end
 
   def issue_list_link
