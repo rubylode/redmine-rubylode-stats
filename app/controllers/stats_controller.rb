@@ -18,29 +18,26 @@
 class StatsController < ApplicationController
   before_action :find_project_by_project_id, :authorize
 
-  # The tracker for the whole page: the issues the project's own filters select. The first chart (tickets by status) is the
-  # pattern to copy: the controller builds a Vega-Lite spec as a Hash, the view hands it to vega-embed as JSON.
+  helper :queries
+  include QueriesHelper
+  helper :stats
+
+  # The page is one IssueQuery (Redmine's own filters, options and saved queries) drawn as the charts of one tab. To add a
+  # chart, see RubylodeStats::Registry.
   def index
-    @chart_specifications = { by_status: tickets_by_status_specification }
+    retrieve_query(IssueQuery, true)
+    @tab = RubylodeStats::Registry.tab(params[:tab])
+    @period = RubylodeStats::Registry.period(params[:period])
+    @slice_by = RubylodeStats::Registry.slice(params[:slice_by])
+    @charts = @query.valid? ? @tab.chart_classes.map { |chart_class| chart_class.new(query: @query, issue_list_link: issue_list_link) } : []
   end
 
   private
 
-  def tickets_by_status_specification
-    ticket_counts = @project.issues.visible(User.current).group(:status_id).count
-    status_names = IssueStatus.where(id: ticket_counts.keys).pluck(:id, :name).to_h
-    rows = ticket_counts.map do |status_id, ticket_count|
-      { "status" => status_names.fetch(status_id), "tickets" => ticket_count }
+  def issue_list_link
+    link_builder = RubylodeStats::IssueListLink.new(@query)
+    lambda do |extra_filter|
+      url_for(link_builder.parameters(extra_filter).merge(controller: "issues", action: "index", project_id: @project, only_path: true))
     end
-    {
-      "$schema" => "https://vega.github.io/schema/vega-lite/v5.json",
-      "title" => l(:label_stats_by_status),
-      "data" => { "values" => rows },
-      "mark" => "bar",
-      "encoding" => {
-        "x" => { "field" => "status", "type" => "nominal", "sort" => "-y" },
-        "y" => { "field" => "tickets", "type" => "quantitative" }
-      }
-    }
   end
 end

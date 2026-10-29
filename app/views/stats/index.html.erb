@@ -16,11 +16,32 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <% html_title l(:label_stats) %>
-<%= javascript_include_tag "vega.min", "vega-lite.min", "vega-embed.min", plugin: "redmine_rubylode_stats" %>
+<%= stylesheet_link_tag "rubylode_stats", plugin: "redmine_rubylode_stats" %>
+<%= javascript_include_tag "vega.min", "vega-lite.min", "vega-embed.min", "rubylode_stats", plugin: "redmine_rubylode_stats" %>
 
-<h2><%= l(:label_stats) %></h2>
+<h2><%= @query.new_record? ? l(:label_stats) : "#{l(:label_stats)}: #{@query.name}" %></h2>
 
-<% @chart_specifications.each do |chart_name, specification| %>
-  <div id="stats-chart-<%= chart_name %>" class="stats-chart"></div>
-  <%= javascript_tag "vegaEmbed('#stats-chart-#{chart_name}', #{specification.to_json}, { actions: false });" %>
+<%= form_tag(project_stats_path(@project), method: :get, id: "query_form") do %>
+  <%= hidden_field_tag "tab", @tab.key, id: nil %>
+  <p class="stats-selects">
+    <label for="period"><%= l(:label_stats_period) %></label>
+    <%= select_tag "period", stats_period_options %>
+    <label for="slice_by"><%= l(:label_stats_slice_by) %></label>
+    <%= select_tag "slice_by", stats_slice_options %>
+  </p>
+  <%= render partial: "queries/query_form" %>
+<% end %>
+
+<p class="stats-presets"><%= safe_join(stats_preset_links, " ") %></p>
+
+<div class="tabs stats-tabs"><%= safe_join(stats_tab_links, " ") %></div>
+
+<% if @query.valid? %>
+  <% if @charts.empty? %>
+    <p class="nodata"><%= l(:label_stats_tab_empty) %></p>
+  <% end %>
+  <% @charts.each do |chart| %>
+    <div id="stats-chart-<%= chart.chart_name %>" class="stats-chart"
+         data-specification="<%= chart.specification.to_json %>"></div>
+  <% end %>
 <% end %>
