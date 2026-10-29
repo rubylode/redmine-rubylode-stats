@@ -26,7 +26,7 @@ module RubylodeStats
     TABS = [
       Tab.new("overview", "created_on", [Charts::TicketsByStatus, Charts::TicketsBySlice, Charts::OpenVersusClosed, Charts::OpenedAndClosed].freeze),
       Tab.new("people", "closed_on", [Charts::ClosedPerPerson].freeze),
-      Tab.new("speed", "closed_on", [].freeze),
+      Tab.new("speed", "closed_on", [Charts::TimeToCloseHistogram, Charts::MedianTimeToClose].freeze),
       Tab.new("versions", "created_on", [].freeze)
     ].freeze
 
