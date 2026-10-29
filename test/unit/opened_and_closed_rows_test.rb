@@ -96,6 +96,46 @@ class OpenedAndClosedRowsTest < ActiveSupport::TestCase
     assert_equal [], rows_for("week", UTC)
   end
 
+  def test_a_huge_last_n_days_filter_stops_at_the_first_ticket_instead_of_looping_for_ever
+    create_ticket("2026-10-05 10:00", nil)
+
+    rows = rows_for("day", UTC, created_on: { operator: ">t-", values: ["999999999"] })
+
+    assert_equal "2026-10-05", rows.first["period"]
+    assert_equal 1, rows.first["opened"]
+    assert_operator rows.size, :<, 40_000
+  end
+
+  def test_a_far_past_and_far_future_range_is_cut_to_the_days_that_hold_tickets
+    create_ticket("2026-10-05 10:00", nil)
+    create_ticket("2026-10-07 10:00", "2026-10-07 12:00")
+
+    rows = rows_for("day", UTC, created_on: { operator: "><", values: %w[0001-01-01 9999-12-31] })
+
+    assert_equal %w[2026-10-05 2026-10-06 2026-10-07], rows.map { |row| row["period"] }
+  end
+
+  def test_an_unreadable_date_leaves_the_end_open
+    create_ticket("2026-10-05 10:00", nil)
+    create_ticket("2026-10-06 10:00", nil)
+
+    rows = rows_for("day", UTC, created_on: { operator: "><", values: ["2026-10-06", "garbage"] })
+
+    assert_equal ["2026-10-06"], rows.map { |row| row["period"] }
+  end
+
+  def test_more_than_five_thousand_periods_keep_only_the_most_recent_ones_and_the_backlog_still_counts_the_older_tickets
+    create_ticket("2000-01-01 10:00", nil)
+    create_ticket("2026-10-05 10:00", nil)
+
+    rows = rows_for("day", UTC)
+
+    assert_equal 5000, rows.size
+    assert_equal "2026-10-05", rows.last["period"]
+    assert_equal({ "period" => "2013-01-27", "opened" => 0, "closed" => 0, "backlog" => 1 }, rows.first)
+    assert_equal 2, rows.last["backlog"]
+  end
+
   private
 
   def create_ticket(created_at, closed_at, tracker_id: 1)

@@ -37,6 +37,8 @@ module RubylodeStats
       "month" => ->(date) { date.next_month }
     }.freeze
 
+    MAXIMUM_PERIODS = 5000
+
     def initialize(query, period:, time_zone:)
       raise ArgumentError, "unknown period #{period.inspect}" unless PERIOD_START.key?(period)
 
@@ -47,13 +49,14 @@ module RubylodeStats
 
     def rows
       tickets = ticket_periods
-      first_period, last_period = range_of_periods(tickets)
-      return [] unless first_period
+      periods = periods_of_range(tickets)
+      return [] if periods.empty?
 
+      first_period = periods.first
       backlog = tickets.count { |opened, closed| opened < first_period && (closed.nil? || closed >= first_period) }
       opened_counts = tickets.map(&:first).tally
       closed_counts = tickets.filter_map(&:last).tally
-      periods_between(first_period, last_period).map do |period_start|
+      periods.map do |period_start|
         opened = opened_counts.fetch(period_start, 0)
         closed = closed_counts.fetch(period_start, 0)
         backlog += opened - closed
@@ -85,14 +88,17 @@ module RubylodeStats
       PERIOD_START.fetch(@period).call(time.in_time_zone(@time_zone).to_date)
     end
 
-    def range_of_periods(tickets)
-      first_day, last_day = FilterDateRange.bounds(@query.filters, @time_zone.today)
+    # The filter range cut down to the periods that hold a ticket event, so a filter such as "last 999999999 days" or a
+    # year-1 to year-9999 range cannot ask for millions of rows; an unreadable date was already read as an open end. Beyond
+    # MAXIMUM_PERIODS only the most recent periods are returned (nothing is coarsened silently into a wider period).
+    def periods_of_range(tickets)
       event_periods = tickets.flatten.compact
-      first_day = first_day ? period_start_of_date(first_day) : event_periods.min
-      last_day = last_day ? period_start_of_date(last_day) : event_periods.max
-      first_day ||= last_day
-      last_day ||= first_day
-      [first_day, last_day]
+      return [] if event_periods.empty?
+
+      filter_first, filter_last = FilterDateRange.bounds(@query.filters, @time_zone.today)
+      first_period = [event_periods.min, filter_first && period_start_of_date(filter_first)].compact.max
+      last_period = [event_periods.max, filter_last && period_start_of_date(filter_last)].compact.min
+      periods_between(first_period, last_period).last(MAXIMUM_PERIODS)
     end
 
     def period_start_of_date(date)

@@ -50,4 +50,25 @@ class FilterDateRangeTest < ActiveSupport::TestCase
     assert_equal [Date.new(2026, 10, 1), Date.new(2026, 10, 31)], RubylodeStats::FilterDateRange.bounds({ "created_on" => { operator: "m", values: [] } }, TODAY)
     assert_equal [Date.new(2026, 10, 5), nil], RubylodeStats::FilterDateRange.bounds({ "created_on" => { operator: ">=", values: ["2026-10-05"] } }, TODAY)
   end
+
+  def test_a_huge_number_of_days_is_clamped_to_one_hundred_years
+    filters = { "closed_on" => { operator: ">t-", values: ["999999999"] } }
+
+    assert_equal [TODAY - 36_500, TODAY], RubylodeStats::FilterDateRange.bounds(filters, TODAY)
+    assert_equal [nil, TODAY - 36_500], RubylodeStats::FilterDateRange.bounds({ "closed_on" => { operator: "<t-", values: ["999999999"] } }, TODAY)
+    assert_equal [TODAY, TODAY + 36_500], RubylodeStats::FilterDateRange.bounds({ "closed_on" => { operator: "><t+", values: ["999999999"] } }, TODAY)
+    assert_equal [TODAY + 36_500, nil], RubylodeStats::FilterDateRange.bounds({ "closed_on" => { operator: ">t+", values: ["999999999"] } }, TODAY)
+  end
+
+  def test_a_negative_or_unreadable_number_of_days_counts_as_zero
+    assert_equal [TODAY, TODAY], RubylodeStats::FilterDateRange.bounds({ "closed_on" => { operator: ">t-", values: ["-5"] } }, TODAY)
+    assert_equal [TODAY, TODAY], RubylodeStats::FilterDateRange.bounds({ "closed_on" => { operator: ">t-", values: ["abc"] } }, TODAY)
+  end
+
+  def test_an_unreadable_date_leaves_its_end_open
+    filters = { "created_on" => { operator: "><", values: ["2026-10-01", "not a date"] } }
+
+    assert_equal [Date.new(2026, 10, 1), nil], RubylodeStats::FilterDateRange.bounds(filters, TODAY)
+    assert_equal [nil, nil], RubylodeStats::FilterDateRange.bounds({ "created_on" => { operator: ">=", values: ["2026-13-45"] } }, TODAY)
+  end
 end

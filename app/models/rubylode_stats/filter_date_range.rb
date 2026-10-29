@@ -26,15 +26,22 @@ module RubylodeStats
       [ranges.filter_map(&:first).min, ranges.filter_map(&:last).max]
     end
 
+    # A filter that asks for an absurd number of days ("last 999999999 days") is read as this many.
+    MAXIMUM_DAYS = 36_500
+
     def self.range_for(filter, today)
       values = filter[:values]
       case filter[:operator]
-      when "><" then [Date.parse(values[0]), Date.parse(values[1])]
-      when ">=" then [Date.parse(values[0]), nil]
-      when "<=" then [nil, Date.parse(values[0])]
-      when "=" then [Date.parse(values[0]), Date.parse(values[0])]
-      when ">t-" then [today - values[0].to_i, today]
-      when "<t-" then [nil, today - values[0].to_i]
+      when "><" then [parse_date(values[0]), parse_date(values[1])]
+      when ">=" then [parse_date(values[0]), nil]
+      when "<=" then [nil, parse_date(values[0])]
+      when "=" then [parse_date(values[0]), parse_date(values[0])]
+      when ">t-" then [today - days(values[0]), today]
+      when "<t-" then [nil, today - days(values[0])]
+      when "t-" then [today - days(values[0]), today - days(values[0])]
+      when "t+" then [today + days(values[0]), today + days(values[0])]
+      when ">t+" then [today + days(values[0]), nil]
+      when "><t+" then [today, today + days(values[0])]
       when "t" then [today, today]
       when "ld" then [today - 1, today - 1]
       when "w" then [today.beginning_of_week(:monday), today.end_of_week(:monday)]
@@ -44,5 +51,18 @@ module RubylodeStats
       end
     end
     private_class_method :range_for
+
+    # An unreadable date leaves its end of the range open.
+    def self.parse_date(text)
+      Date.parse(text.to_s)
+    rescue Date::Error
+      nil
+    end
+    private_class_method :parse_date
+
+    def self.days(text)
+      text.to_i.clamp(0, MAXIMUM_DAYS)
+    end
+    private_class_method :days
   end
 end
