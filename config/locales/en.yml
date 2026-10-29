@@ -1,0 +1,5 @@
+en:
+  label_stats: Stats
+  label_stats_by_status: Tickets by status
+  permission_view_rubylode_stats: View stats
+  project_module_rubylode_stats: Stats
