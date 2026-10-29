@@ -1,0 +1,6 @@
+.stats-selects label { margin-left: 1em; }
+.stats-selects label:first-child { margin-left: 0; }
+.stats-presets a.stats-preset { margin-right: 0.75em; }
+.stats-tabs a.stats-tab { margin-right: 0.5em; padding: 0.25em 0.75em; }
+.stats-tabs a.stats-tab.selected { font-weight: bold; border-bottom: 2px solid currentColor; }
+.stats-chart { width: 100%; min-height: 300px; margin-top: 1em; }

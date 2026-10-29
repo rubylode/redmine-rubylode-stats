@@ -1,5 +1,28 @@
 en:
   label_stats: Stats
-  label_stats_by_status: Tickets by status
+  label_stats_tickets_by_status: Tickets by status
+  label_stats_tickets: Tickets
+  label_stats_period: Period
+  label_stats_slice_by: Slice by
+  label_stats_period_day: Day
+  label_stats_period_week: Week
+  label_stats_period_month: Month
+  label_stats_slice_category: Category
+  label_stats_slice_version: Version
+  label_stats_slice_assignee: Assignee
+  label_stats_slice_tracker: Tracker
+  label_stats_slice_priority: Priority
+  label_stats_slice_author: Author
+  label_stats_preset_this_week: This week
+  label_stats_preset_this_month: This month
+  label_stats_preset_this_quarter: This quarter
+  label_stats_preset_last_30_days: Last 30 days
+  label_stats_preset_this_year: This year
+  label_stats_preset_all_time: All time
+  label_stats_tab_overview: Overview
+  label_stats_tab_people: People
+  label_stats_tab_speed: Speed
+  label_stats_tab_versions: Versions
+  label_stats_tab_empty: No charts on this tab yet.
   permission_view_rubylode_stats: View stats
   project_module_rubylode_stats: Stats
