@@ -5,6 +5,10 @@ en:
   label_stats_none: None
   label_stats_tickets_by: Tickets by
   label_stats_open_versus_closed: Open versus closed
+  label_stats_opened_and_closed: Opened and closed
+  label_stats_series_opened: Opened
+  label_stats_series_closed: Closed
+  label_stats_series_backlog: Backlog
   label_stats_state_open: Open
   label_stats_state_closed: Closed
   label_stats_period: Period
