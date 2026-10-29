@@ -27,8 +27,10 @@ class StatsController < ApplicationController
   private
 
   def tickets_by_status_specification
-    rows = @project.issues.group(:status_id).count.map do |status_id, ticket_count|
-      { "status" => IssueStatus.find(status_id).name, "tickets" => ticket_count }
+    ticket_counts = @project.issues.visible(User.current).group(:status_id).count
+    status_names = IssueStatus.where(id: ticket_counts.keys).pluck(:id, :name).to_h
+    rows = ticket_counts.map do |status_id, ticket_count|
+      { "status" => status_names.fetch(status_id), "tickets" => ticket_count }
     end
     {
       "$schema" => "https://vega.github.io/schema/vega-lite/v5.json",
