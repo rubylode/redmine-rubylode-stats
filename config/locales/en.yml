@@ -8,6 +8,10 @@ en:
   label_stats_opened_and_closed: Opened and closed
   label_stats_closed_per_person: Closed per person
   label_stats_person: Person
+  label_stats_time_to_close_histogram: Time to close
+  label_stats_median_time_to_close: Median time to close
+  label_stats_days_to_close: Days to close
+  label_stats_median_days: Median days to close
   label_stats_series_opened: Opened
   label_stats_series_closed: Closed
   label_stats_series_backlog: Backlog

@@ -268,6 +268,18 @@ end
     assert_equal "*", link["op"]["status_id"]
   end
 
+  def test_the_speed_tab_shows_the_time_to_close_histogram_and_the_median_line
+    get "/projects/#{@project.identifier}/stats?tab=speed&set_filter=1&f[]=status_id&op[status_id]=*&period=month"
+
+    histogram = chart_specification("time_to_close_histogram")
+    assert_equal 3, histogram.dig("data", "values").sum { |row| row["tickets"] }
+    assert_equal %w[0-1 2-3 4-7 8-14 15-30 31-90 91+], histogram.dig("data", "values").map { |row| row["bin"] }
+    median = chart_specification("median_time_to_close")
+    assert_equal 3, median.dig("data", "values").sum { |row| row["closed"] }
+    assert_equal "line", median.dig("mark", "type")
+    assert median.dig("mark", "tooltip")
+  end
+
   private
 
   def chart_specification(chart_name)
