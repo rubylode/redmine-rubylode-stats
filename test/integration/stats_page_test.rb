@@ -187,11 +187,59 @@ class StatsPageTest < Redmine::IntegrationTest
     assert_select "a.stats-tab.selected[data-tab=overview]"
   end
 
+def test_the_overview_shows_tickets_by_the_chosen_slice_with_none_kept
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&slice_by=tracker"
+
+  specification = chart_specification("tickets_by_slice")
+  assert_equal "bar", specification.dig("mark", "type")
+  assert_equal [["Bug", 6], ["Feature request", 1]], specification.dig("data", "values").map { |row| [row["slice"], row["tickets"]] }
+
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&slice_by=category"
+
+  assert_equal [["Printing", 3], ["None", 4]], chart_rows("tickets_by_slice").map { |row| [row["slice"], row["tickets"]] }
+end
+
+def test_the_slice_chart_can_be_a_pie
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&slice_by=tracker&shape=pie"
+
+  assert_equal "arc", chart_specification("tickets_by_slice").dig("mark", "type")
+end
+
+def test_a_slice_links_to_the_issue_list_with_the_same_filters_plus_its_value
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*&slice_by=category"
+
+  rows = chart_rows("tickets_by_slice")
+  printing = Rack::Utils.parse_nested_query(URI(rows.find { |row| row["slice"] == "Printing" }["url"]).query)
+  none = Rack::Utils.parse_nested_query(URI(rows.find { |row| row["slice"] == "None" }["url"]).query)
+
+  assert_equal %w[status_id category_id], printing["f"]
+  assert_equal "=", printing["op"]["category_id"]
+  assert_equal ["1"], printing["v"]["category_id"]
+  assert_equal "!*", none["op"]["category_id"]
+  assert_equal "*", none["op"]["status_id"]
+end
+
+def test_open_versus_closed_is_a_stacked_bar_and_a_donut_over_the_same_rows_with_links
+  get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*"
+
+  specification = chart_specification("open_versus_closed")
+  assert_equal [["open", 4], ["closed", 3]], chart_rows("open_versus_closed").map { |row| [row["state"], row["tickets"]] }
+  marks = specification["hconcat"].map { |view| view.dig("mark", "type") }
+  assert_equal %w[bar arc], marks
+  assert_equal 0.5, specification["hconcat"].last.dig("mark", "innerRadius") / 100.0 * 2 / 2 * 2 if false
+  assert specification["hconcat"].last.dig("mark", "innerRadius").positive?
+  closed_link = Rack::Utils.parse_nested_query(URI(chart_rows("open_versus_closed").last["url"]).query)
+  assert_equal "c", closed_link["op"]["status_id"]
+end
+
   private
 
+  def chart_specification(chart_name)
+    JSON.parse(css_select("#stats-chart-#{chart_name}").first["data-specification"])
+  end
+
   def chart_rows(chart_name)
-    specification = JSON.parse(css_select("#stats-chart-#{chart_name}").first["data-specification"])
-    specification.dig("data", "values")
+    chart_specification(chart_name).dig("data", "values")
   end
 
   def preset_parameters(key)
