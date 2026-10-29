@@ -52,8 +52,12 @@ class StatsController < ApplicationController
     { slice_by: @slice_by, shape: @shape, period: @period, time_zone: User.current.time_zone || Time.zone }
   end
 
+  def permitted_project_ids
+    Project.where(RubylodeStats::PermittedProjects.condition(User.current)).pluck(:id) unless @project
+  end
+
   def issue_list_link
-    link_builder = RubylodeStats::IssueListLink.new(@query)
+    link_builder = RubylodeStats::IssueListLink.new(@query, permitted_project_ids: permitted_project_ids)
     lambda do |extra_filter|
       url_for(link_builder.parameters(extra_filter).merge(controller: "issues", action: "index", project_id: @project, only_path: true))
     end

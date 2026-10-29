@@ -19,8 +19,11 @@ module RubylodeStats
   # The request parameters for the issue list that holds the query's own tickets narrowed by one more filter, so a bar or
   # slice of a chart can link to what it counts.
   class IssueListLink
-    def initialize(query)
+    # permitted_project_ids: on the cross-project page, the projects the chart counts. The link then carries a project filter
+    # with them, so the issue list does not widen to projects the page left out.
+    def initialize(query, permitted_project_ids: nil)
       @query = query
+      @permitted_project_ids = permitted_project_ids
     end
 
     # extra_filter: for example "category_id" => 5; it replaces any filter the query already has on that field. A nil value
@@ -28,6 +31,7 @@ module RubylodeStats
     def parameters(extra_filter)
       filters = @query.filters.dup
       extra_filter.each { |field, value| filters[field] = filter_for(value) }
+      filters["project_id"] = filter_for(@permitted_project_ids.map(&:to_s)) if @permitted_project_ids
       QueryParameters.from_filters(filters)
     end
 
@@ -37,6 +41,7 @@ module RubylodeStats
       case value
       when nil then { operator: "!*", values: [] }
       when Hash then value
+      when Array then { operator: "=", values: value.map(&:to_s) }
       else { operator: "=", values: [value.to_s] }
       end
     end

@@ -42,4 +42,17 @@ class IssueListLinkTest < ActiveSupport::TestCase
     assert_equal %w[status_id], parameters[:f]
     assert_equal "o", parameters[:op]["status_id"]
   end
+
+  def test_permitted_project_ids_become_a_project_filter
+    parameters = RubylodeStats::IssueListLink.new(query_with_status_filter, permitted_project_ids: [1, 3]).parameters("category_id" => 3)
+
+    assert_equal "=", parameters[:op]["project_id"]
+    assert_equal %w[1 3], parameters[:v]["project_id"]
+  end
+
+  def test_no_project_filter_is_added_without_permitted_project_ids
+    parameters = RubylodeStats::IssueListLink.new(query_with_status_filter).parameters("category_id" => 3)
+
+    assert_not_includes parameters[:f], "project_id"
+  end
 end
