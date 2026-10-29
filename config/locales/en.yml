@@ -2,6 +2,7 @@ en:
   label_stats: Stats
   label_stats_tickets_by_status: Tickets by status
   label_stats_tickets: Tickets
+  label_stats_none: None
   label_stats_period: Period
   label_stats_slice_by: Slice by
   label_stats_period_day: Day
