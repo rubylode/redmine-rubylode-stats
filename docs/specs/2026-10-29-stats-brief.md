@@ -13,7 +13,7 @@ Start the session in this folder. The skeleton loads in Redmine, adds a **Stats*
 ## The point
 
 The existing reporting plugin tried on the tracker is confusing and overwhelming. This one is for answering plain questions in
-a few seconds, in the manner of the best of ClickUp and Asana dashboards: simple to read, a few presets, and Redmine's own filters
+a few seconds, in the manner of the best project dashboards: simple to read, a few presets, and Redmine's own filters
 and options to narrow them.
 
 ## Questions the page must answer
