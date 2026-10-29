@@ -31,4 +31,8 @@ Redmine::Plugin.register :redmine_rubylode_stats do
 
   menu :project_menu, :rubylode_stats, { controller: "stats", action: "index" },
        caption: :label_stats, after: :issues, param: :project_id
+
+  menu :top_menu, :rubylode_stats, { controller: "stats", action: "index" }, caption: :label_stats,
+       if: proc { RubylodeStats::PermittedProjects.any?(User.current) }
 end
+

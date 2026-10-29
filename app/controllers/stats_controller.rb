@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class StatsController < ApplicationController
-  before_action :find_project_by_project_id, :authorize
+  before_action :find_optional_project_by_project_id, :authorize_stats
 
   helper :queries
   include QueriesHelper
@@ -26,6 +26,7 @@ class StatsController < ApplicationController
   # chart, see RubylodeStats::Registry.
   def index
     retrieve_query(IssueQuery, true)
+    @query.extend(RubylodeStats::PermittedProjects::QueryRestriction) unless @project
     @tab = RubylodeStats::Registry.tab(params[:tab])
     @period = RubylodeStats::Registry.period(params[:period])
     @slice_by = RubylodeStats::Registry.slice(params[:slice_by])
@@ -33,6 +34,18 @@ class StatsController < ApplicationController
   end
 
   private
+
+  def find_optional_project_by_project_id
+    @project = Project.find(params[:project_id]) if params[:project_id].present?
+  rescue ActiveRecord::RecordNotFound
+    User.current.logged? ? render_404 : require_login
+  end
+
+  # One project: Redmine's own check. All projects: at least one project must hold the permission and the module.
+  def authorize_stats
+    return authorize if @project
+    deny_access unless RubylodeStats::PermittedProjects.any?(User.current)
+  end
 
   def issue_list_link
     link_builder = RubylodeStats::IssueListLink.new(@query)

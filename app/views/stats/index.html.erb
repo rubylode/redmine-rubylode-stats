@@ -21,7 +21,7 @@
 
 <h2><%= @query.new_record? ? l(:label_stats) : "#{l(:label_stats)}: #{@query.name}" %></h2>
 
-<%= form_tag(project_stats_path(@project), method: :get, id: "query_form") do %>
+<%= form_tag(stats_page_path, method: :get, id: "query_form") do %>
   <%= hidden_field_tag "tab", @tab.key, id: nil %>
   <p class="stats-selects">
     <label for="period"><%= l(:label_stats_period) %></label>
