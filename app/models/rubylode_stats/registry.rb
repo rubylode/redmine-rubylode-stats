@@ -24,7 +24,7 @@ module RubylodeStats
     Tab = Struct.new(:key, :preset_date_field, :chart_classes)
 
     TABS = [
-      Tab.new("overview", "created_on", [Charts::TicketsByStatus, Charts::TicketsBySlice, Charts::OpenVersusClosed].freeze),
+      Tab.new("overview", "created_on", [Charts::TicketsByStatus, Charts::TicketsBySlice, Charts::OpenVersusClosed, Charts::OpenedAndClosed].freeze),
       Tab.new("people", "closed_on", [].freeze),
       Tab.new("speed", "closed_on", [].freeze),
       Tab.new("versions", "created_on", [].freeze)

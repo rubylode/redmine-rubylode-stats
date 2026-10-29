@@ -49,7 +49,7 @@ class StatsController < ApplicationController
   end
 
   def chart_options
-    { slice_by: @slice_by, shape: @shape, period: @period }
+    { slice_by: @slice_by, shape: @shape, period: @period, time_zone: User.current.time_zone || Time.zone }
   end
 
   def issue_list_link
