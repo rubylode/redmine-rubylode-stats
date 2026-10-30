@@ -25,7 +25,7 @@ module RubylodeStats
           "mark" => { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {
             "x" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
-            "y" => count_axis("tickets"),
+            "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
               { "field" => "status", "type" => "nominal", "title" => I18n.t(:field_status) },
@@ -38,7 +38,7 @@ module RubylodeStats
       private
 
       def rows_with_links
-        TicketsByStatusRows.new(query).rows.each_with_index.map do |row, position|
+        @rows_with_links ||= TicketsByStatusRows.new(query).rows.each_with_index.map do |row, position|
           row.merge("position" => position, "url" => issue_list_link.call("status_id" => row["status_id"]))
         end
       end

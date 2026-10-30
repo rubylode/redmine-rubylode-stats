@@ -56,7 +56,7 @@ module RubylodeStats
       def bar_encoding
         {
           "x" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
-          "y" => count_axis("tickets"),
+          "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
         }
@@ -73,7 +73,7 @@ module RubylodeStats
 
       def rows_with_links
         filter_field = SlicedTicketsRows.filter_field(slice_by)
-        SlicedTicketsRows.new(query, slice_by).rows.each_with_index.map do |row, position|
+        @rows_with_links ||= SlicedTicketsRows.new(query, slice_by).rows.each_with_index.map do |row, position|
           row.merge("position" => position, "url" => issue_list_link.call(filter_field => row["slice_id"]))
         end
       end

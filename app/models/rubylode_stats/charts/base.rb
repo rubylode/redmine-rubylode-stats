@@ -68,9 +68,20 @@ module RubylodeStats
 
       attr_reader :query, :issue_list_link, :options
 
-      # A count axis of whole tickets: the title says Tickets and no tick falls between two whole numbers.
-      def count_axis(field)
-        { "field" => field, "type" => "quantitative", "title" => I18n.t(:label_stats_tickets), "axis" => { "tickMinStep" => 1 } }
+      # Counts up to this many get a tick at every whole number; above it the chart picks its own whole-number steps.
+      EVERY_WHOLE_TICKET_LIMIT = 8
+
+      # A count axis of whole tickets: the title says Tickets and no tick falls between two whole numbers. The browser's
+      # chart library ignores a minimum tick step on a short axis (it drew 0.5, 1.5), so when the largest count is given and
+      # small, the ticks are named outright: 0 up to that count.
+      def count_axis(field, maximum_count = nil)
+        axis = { "tickMinStep" => 1, "format" => "d" }
+        axis = axis.merge("values" => (0..maximum_count).to_a) if maximum_count && maximum_count <= EVERY_WHOLE_TICKET_LIMIT
+        { "field" => field, "type" => "quantitative", "title" => I18n.t(:label_stats_tickets), "axis" => axis }
+      end
+
+      def largest_count(rows, field)
+        rows.map { |row| row[field] }.max || 0
       end
 
       # Clicking a legend entry hides the series; add the result to a mark's encoding as "opacity" and to the chart's
