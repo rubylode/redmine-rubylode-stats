@@ -15,12 +15,12 @@
 # along with this program; if not, write to the Free Software
 
 # Demo data for trying the charts: two projects, four people, about 150 tickets over the last 12 weeks.
-# Sample data only, every name is invented. It touches nothing but the two demo projects, the demo role and the four demo users.
+# Sample data only, the people are famous computer scientists, no longer living. It touches nothing but the two demo projects, the demo role and the four demo users (an earlier set of invented logins is renamed to these).
 #
 #   docker exec redmine-stats-dev bundle exec rails runner plugins/redmine_rubylode_stats/script/seed_demo.rb
 #
 # Safe to run twice: a demo project that already has tickets is left as it is.
-# The four demo users sign in with their login and the password below. The administrator stays admin / admin.
+# The four demo users sign in with their login and the password below. The administrator is set to admin / admin.
 # On a Redmine without the default data (no trackers, statuses or priorities) the script loads Redmine's English defaults.
 
 DEMO_PASSWORD = "demo-password-1".freeze
@@ -33,11 +33,14 @@ WITHOUT_CATEGORY_PER_PROJECT = 4
 WITHOUT_ASSIGNEE_PER_PROJECT = 4
 
 DEMO_USERS = [
-  { login: "ava.fern", firstname: "Ava", lastname: "Fern" },
-  { login: "ben.marsh", firstname: "Ben", lastname: "Marsh" },
-  { login: "cora.lane", firstname: "Cora", lastname: "Lane" },
-  { login: "dev.reed", firstname: "Dev", lastname: "Reed" }
+  { login: "alan.turing", firstname: "Alan", lastname: "Turing" },
+  { login: "ada.lovelace", firstname: "Ada", lastname: "Lovelace" },
+  { login: "grace.hopper", firstname: "Grace", lastname: "Hopper" },
+  { login: "edsger.dijkstra", firstname: "Edsger", lastname: "Dijkstra" }
 ].freeze
+
+# Logins an earlier version of this script created; each is renamed in place to the demo user at the same position.
+PREVIOUS_DEMO_LOGINS = %w[ava.fern ben.marsh cora.lane dev.reed].freeze
 
 DEMO_PROJECTS = [
   {
@@ -94,15 +97,28 @@ def ensure_role
 end
 
 def ensure_users
-  DEMO_USERS.map do |attributes|
-    User.find_by(login: attributes[:login]) || User.new(attributes).tap do |user|
-      user.mail = "#{attributes[:login]}@example.com"
+  DEMO_USERS.each_with_index.map do |attributes, index|
+    user = User.find_by(login: attributes[:login]) || User.find_by(login: PREVIOUS_DEMO_LOGINS[index]) || User.new
+    user.login = attributes[:login]
+    user.firstname = attributes[:firstname]
+    user.lastname = attributes[:lastname]
+    user.mail = "#{attributes[:login]}@example.com"
+    if user.new_record?
       user.password = user.password_confirmation = DEMO_PASSWORD
       user.must_change_passwd = false
       user.language = "en"
-      user.save!
     end
+    user.save!
+    user
   end
+end
+
+# Preview only: the throwaway Redmine asks for a new administrator password on first sign-in, which gets in the way of a demo.
+def ensure_preview_admin
+  admin = User.find_by!(login: "admin")
+  admin.password = admin.password_confirmation = "admin"
+  admin.must_change_passwd = false
+  admin.save!
 end
 
 def ensure_project(definition, users, role)
@@ -205,6 +221,7 @@ User.current = User.find_by!(login: "admin")
 now = Time.current
 Mailer.with_deliveries(false) do
   ensure_default_data
+  ensure_preview_admin
   role = ensure_role
   users = ensure_users
   DEMO_PROJECTS.each do |definition|
