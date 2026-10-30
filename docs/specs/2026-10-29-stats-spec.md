@@ -44,6 +44,14 @@ a legend that hides a series when clicked, and a bar or slice that links to the 
 11. When a bar or slice is clicked, then the matching issue list opens with the same filters plus that slice.
 12. When the system setting for subprojects is on, then subproject tickets are included.
 13. When the system follows a dark colour scheme, then the charts use the dark palette.
+14. When open versus closed is drawn, then both halves are always counted: the status filter is ignored and every other filter
+    applies; a note under the chart says so. The donut shows the percentage closed in its centre and the counts in its legend.
+15. When the page is opened for the first time with no filter chosen by the user, then the date range is This quarter, with that
+    preset marked active, on the date that suits the tab. A filter, a preset or a saved query overrides it; "All time" removes
+    it, and then the "All time" preset is marked active.
+16. When the Overview is opened, then four tiles show open tickets, tickets closed in the range with their share, the median
+    days to close, and the backlog change over the last four periods with an arrow and words. Where there is nothing to
+    divide the tile shows a dash. The time-to-close histogram lives on the Speed tab only.
 
 ## Decisions
 
@@ -58,6 +66,9 @@ a legend that hides a series when clicked, and a bar or slice that links to the 
   cross-project page lists only projects where the user holds the permission.
 - **Charts are drawn in the browser** by vendored Vega-Lite; the server only sends the specification. Colours come from the
   theme's CSS variables when present, with a light and a dark configuration.
+- **Date filters and the opened-and-closed chart:** the created-on and closed-on filters set the range of the opened-and-closed
+  chart instead of selecting tickets (a ticket created before the range and closed inside it still counts). This differs from
+  behaviour 3 for date filters only; every other filter selects the same tickets as the issue list.
 - **Export:** per-chart CSV later; images through the embed library's own menu. No server-side image rendering.
 
 ## Test seams
