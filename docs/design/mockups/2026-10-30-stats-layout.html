@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Rubylode Stats: page layout</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px 28px 60px; background: #f2f2f2; font-family: system-ui, sans-serif; color: #222; }
+/* sheet chrome: outside the palette */
+.sheet-title { color: #d6249f; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; margin: 0 0 4px; }
+.sheet-intro { color: #d6249f; font-size: 13px; margin: 0 0 26px; }
+.variant { margin-bottom: 52px; }
+.variant-tag { color: #d6249f; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; margin: 0 0 2px; border-top: 3px solid #d6249f; padding-top: 8px; }
+.variant-note { color: #d6249f; font-size: 13px; margin: 0 0 12px; max-width: 1100px; }
+.pair { display: flex; gap: 24px; align-items: flex-start; }
+.pair-label { color: #d6249f; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 4px; }
+
+/* the two real themes, using Redmine's own variable names */
+.theme-light {
+  --fonts-main: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  --oc-white: #ffffff; --oc-gray-0: #f8f9fa; --oc-gray-1: #f1f3f5; --oc-gray-2: #e9ecef; --oc-gray-3: #dee2e6;
+  --oc-gray-4: #ced4da; --oc-gray-5: #adb5bd; --oc-gray-6: #868e96; --oc-gray-7: #495057; --oc-gray-8: #343a40; --oc-gray-9: #212529;
+  --oc-blue-7: #1c7ed6; --oc-red-7: #f03e3e; --oc-indigo-5: #5c7cfa;
+  --color-current-marker: var(--oc-indigo-5);
+  --color-top-menu-background: #234761; --color-header-background: #3A78A3;
+  --active-fill: var(--oc-blue-7); --active-ink: #fff;
+}
+.theme-dark {
+  --fonts-main: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --oc-white: #0f1115; --oc-gray-0: #14161b; --oc-gray-1: #191c22; --oc-gray-2: #20232b; --oc-gray-3: #292d37;
+  --oc-gray-4: #363b47; --oc-gray-5: #8f95a7; --oc-gray-6: #a2a8b9; --oc-gray-7: #bcc1cf; --oc-gray-8: #d6dae4; --oc-gray-9: #eceef4;
+  --obsidian-blue-4: #6b8cff; --obsidian-blue-5: #3f76ff; --obsidian-blue-6: #2f5ee0;
+  --oc-blue-7: var(--obsidian-blue-4); --oc-indigo-5: var(--obsidian-blue-5);
+  --color-current-marker: var(--oc-indigo-5);
+  --color-top-menu-background: #0f1115; --color-header-background: #14161b; --obsidian-line: #23262e;
+  --active-fill: var(--obsidian-blue-6); --active-ink: #fff;
+  --delta-bad: #e06666;
+}
+.theme-light { --delta-bad: #cc0000; --delta-good: #6aa84f; }
+.theme-dark { --delta-good: #93c47d; }
+
+.frame { width: 800px; flex: none; background: var(--oc-white); color: var(--oc-gray-9); font: 14px/1.4 var(--fonts-main); border: 1px solid var(--oc-gray-4); }
+.frame.wide { width: 800px; }
+.rm-top { background: var(--color-top-menu-background); color: #fff; font-size: 12px; padding: 5px 12px; display: flex; justify-content: space-between; }
+.theme-dark .rm-top { color: var(--oc-gray-7); }
+.rm-head { background: var(--color-header-background); color: #fff; padding: 8px 12px 0; }
+.theme-dark .rm-head { color: var(--oc-gray-8); border-bottom: 1px solid var(--obsidian-line); }
+.rm-head strong { font-size: 18px; }
+.rm-menu { display: flex; gap: 14px; margin-top: 6px; font-size: 13px; }
+.rm-menu span { padding: 4px 2px 6px; opacity: .85; }
+.rm-menu span.current { opacity: 1; font-weight: 600; box-shadow: inset 0 -2px 0 var(--color-current-marker); }
+.rm-content { padding: 14px 16px 18px; }
+.rm-content h2 { margin: 0 0 10px; font-size: 18px; color: var(--oc-gray-7); font-weight: 600; }
+
+button { font: inherit; color: var(--oc-gray-9); background: var(--oc-white); border: 1px solid var(--oc-gray-4); border-radius: 3px; padding: 3px 10px; cursor: pointer; }
+select { font: inherit; color: var(--oc-gray-9); background: var(--oc-white); border: 1px solid var(--oc-gray-4); border-radius: 3px; padding: 3px 6px; }
+.fbar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 12px; }
+.filters-button { display: inline-flex; gap: 6px; align-items: center; }
+.count-badge { background: var(--active-fill); color: var(--active-ink); border-radius: 9px; padding: 0 7px; font-size: 12px; font-weight: 600; }
+.segmented { display: inline-flex; border: 1px solid var(--oc-gray-4); border-radius: 4px; overflow: hidden; }
+.segmented button { border: 0; border-left: 1px solid var(--oc-gray-4); border-radius: 0; background: var(--oc-white); color: var(--oc-gray-7); padding: 4px 9px; font-size: 13px; white-space: nowrap; }
+.segmented button:first-child { border-left: 0; }
+.segmented button[aria-pressed="true"], .segmented button[aria-selected="true"] { background: var(--active-fill); color: var(--active-ink); font-weight: 600; }
+.segmented button[aria-pressed="true"]::before { content: "\2713\00a0"; }
+.segmented.vertical { display: flex; flex-direction: column; }
+.segmented.vertical button { border-left: 0; border-top: 1px solid var(--oc-gray-4); text-align: left; }
+.segmented.vertical button:first-child { border-top: 0; }
+.select-group { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--oc-gray-7); }
+.spacer { flex: 1; }
+.tabs-line { display: flex; gap: 2px; border-bottom: 1px solid var(--oc-gray-4); margin-bottom: 12px; }
+.tabs-line span { padding: 5px 14px; color: var(--oc-gray-7); border: 1px solid transparent; border-bottom: 0; border-radius: 3px 3px 0 0; margin-bottom: -1px; }
+.tabs-line span.selected { background: var(--oc-white); border-color: var(--oc-gray-4); color: var(--oc-gray-8); font-weight: 600; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+.tile { border: 1px solid var(--oc-gray-3); background: var(--oc-gray-0); border-radius: 4px; padding: 8px 12px; }
+.tile-label { font-size: 12px; color: var(--oc-gray-7); }
+.tile-value { font-size: 26px; font-weight: 600; line-height: 1.15; }
+.tile-value small { font-size: 13px; font-weight: 400; color: var(--oc-gray-6); }
+.tile-sub { font-size: 12px; color: var(--oc-gray-6); }
+.delta-up { color: var(--delta-bad); }
+.delta-up .arrow { font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid .full { grid-column: 1 / -1; }
+.card { border: 1px solid var(--oc-gray-3); background: var(--oc-gray-0); border-radius: 4px; padding: 10px 12px 8px; min-width: 0; }
+.card h3 { margin: 0; font-size: 14px; color: var(--oc-gray-8); }
+.card-question { margin: 0 0 6px; font-size: 12px; color: var(--oc-gray-6); }
+.card-note { margin: 6px 0 0; font-size: 12px; color: var(--oc-gray-6); }
+.chart { width: 100%; min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 4px; }
+.legend button { border: 0; background: none; padding: 1px 2px; font-size: 12px; color: var(--oc-gray-7); display: inline-flex; gap: 5px; align-items: center; }
+.legend button .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend button[aria-pressed="false"] { text-decoration: line-through; opacity: .5; }
+.with-rail { display: flex; gap: 14px; }
+.rail { width: 176px; flex: none; border-right: 1px solid var(--oc-gray-3); padding-right: 12px; font-size: 13px; }
+.rail h4 { margin: 12px 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--oc-gray-6); }
+.rail h4:first-child { margin-top: 0; }
+.rail select { width: 100%; margin-bottom: 4px; }
+.rail .segmented { width: 100%; }
+.rail .segmented button { width: 100%; }
+.rail .apply { margin-top: 12px; width: 100%; background: var(--active-fill); color: var(--active-ink); border-color: var(--active-fill); }
+.rail-main { flex: 1; min-width: 0; }
+.rail-main .segmented { margin-bottom: 12px; }
+.donut-row { display: flex; align-items: center; gap: 18px; padding: 4px 0; }
+.donut-wrap { position: relative; width: 200px; height: 200px; flex: none; }
+.donut-wrap .chart { width: 200px; }
+.donut-centre { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.donut-centre b { font-size: 30px; line-height: 1; }
+.donut-centre span { font-size: 12px; color: var(--oc-gray-6); }
+.legend.stacked { flex-direction: column; gap: 6px; }
+.legend.stacked button { font-size: 14px; }
+.vega-embed { width: 100%; }
+.vega-embed.has-actions { padding-right: 0; }
+
+</style>
+<script src="../../../assets/javascripts/vega.min.js"></script>
+<script src="../../../assets/javascripts/vega-lite.min.js"></script>
+<script src="../../../assets/javascripts/vega-embed.min.js"></script>
+</head><body>
+<p class="sheet-title">Rubylode Stats: page layout</p><p class="sheet-intro">Three layouts for the Overview tab, each in the Redmine 7 default theme and in Obsidian dark. Sample rows, invented names, real vendored Vega-Lite.</p>
+<section class="variant"><p class="variant-tag">Variant A · Card grid</p><p class="variant-note">One compact filter bar, the active date range marked, then two-column cards that each name the question they answer.</p><div class="pair" data-variant="A"></div></section>
+<section class="variant"><p class="variant-tag">Variant B · Numbers first</p><p class="variant-note">Card grid plus four summary tiles on top; the backlog tile carries an arrow and words, so colour is not the only signal.</p><div class="pair" data-variant="B"></div></section>
+<section class="variant"><p class="variant-tag">Variant C · Filter rail</p><p class="variant-note">Filters, date range and selects live in a narrow left rail; tabs become a segmented control over tiles and the grid.</p><div class="pair" data-variant="C"></div></section>
+<script>
+/* sample rows: invented names, Demo Garden numbers */
+var WEEKS = ["Aug 10","Aug 17","Aug 24","Aug 31","Sep 7","Sep 14","Sep 21","Sep 28","Oct 5","Oct 12","Oct 19","Oct 26"];
+var OPENED = [4,5,6,4,7,8,5,10,6,7,6,7];
+var CLOSED = [0,2,3,4,5,6,2,8,5,12,3,3];
+var STATUSES = [["New",9],["In progress",8],["Feedback",5],["Closed",41],["Rejected",12]];
+var CATEGORIES = [["Irrigation",6],["Soil",6],["Seeds",5],["Tools",3],["None",2]];
+var BINS = [["0-5",9],["6-10",12],["11-15",14],["16-20",8],["21-30",6],["31+",4]];
+var VERSIONS = [
+  { name: "Spring planting", due: "Aug 31", done: 18, remaining: 2, overdue: true },
+  { name: "Summer harvest", due: "Oct 15", done: 20, remaining: 6, overdue: true },
+  { name: "Autumn cleanup", due: "Nov 30", done: 8, remaining: 8 },
+  { name: "Winter preparation", due: "Jan 31", done: 2, remaining: 6 },
+  { name: "No version", due: null, done: 5, remaining: 0 }
+];
+/* the eight chart colours from assets/javascripts/rubylode_stats.js */
+var PALETTES = {
+  light: ["#2f6fb0","#e69138","#6aa84f","#cc0000","#674ea7","#bf9000","#45818e","#a64d79"],
+  dark: ["#6fa8dc","#f6b26b","#93c47d","#e06666","#b4a7d6","#ffd966","#76a5af","#c27ba0"]
+};
+
+function themeOf(frame) {
+  var style = getComputedStyle(frame);
+  var read = function (name) { return style.getPropertyValue(name).trim(); };
+  var name = frame.classList.contains("theme-dark") ? "dark" : "light";
+  return { text: read("--oc-gray-9"), muted: read("--oc-gray-6"), grid: read("--oc-gray-3"), line: read("--oc-gray-4"),
+           neutral: read("--oc-gray-5"), font: read("--fonts-main"), palette: PALETTES[name] };
+}
+function vegaConfig(t) {
+  return { background: null, font: t.font, view: { stroke: null },
+    axis: { labelColor: t.text, titleColor: t.text, domainColor: t.line, gridColor: t.grid, tickColor: t.line, labelFont: t.font, labelFontSize: 11 },
+    legend: { labelColor: t.text, titleColor: t.text } };
+}
+var BASE = { width: "container", autosize: { type: "fit-x", contains: "padding" } };
+
+function horizontalBars(t, pairs, color, step) {
+  var rows = pairs.map(function (p) { return { name: p[0], count: p[1] }; });
+  return Object.assign({ data: { values: rows }, height: { step: step || 22 },
+    encoding: { y: { field: "name", type: "nominal", sort: null, title: null, axis: { labelLimit: 120 } },
+                x: { field: "count", type: "quantitative", title: null } },
+    layer: [{ mark: { type: "bar", color: color, cornerRadiusEnd: 2 } },
+            { mark: { type: "text", align: "left", dx: 4, color: t.text, fontSize: 11 }, encoding: { text: { field: "count" } } }] }, BASE);
+}
+function columns(t, pairs, color) {
+  var rows = pairs.map(function (p) { return { name: p[0], count: p[1] }; });
+  return Object.assign({ data: { values: rows }, height: 150,
+    encoding: { x: { field: "name", type: "ordinal", sort: null, title: "Days from created to closed", axis: { labelAngle: 0 } },
+                y: { field: "count", type: "quantitative", title: null } },
+    layer: [{ mark: { type: "bar", color: color, cornerRadiusEnd: 2 } },
+            { mark: { type: "text", dy: -6, color: t.text, fontSize: 11 }, encoding: { text: { field: "count" } } }] }, BASE);
+}
+var SERIES_COLOURS = function (t) { return { Opened: t.palette[0], Closed: t.palette[2], Backlog: t.palette[1] }; };
+function throughput(t, hidden) {
+  var rows = [], backlog = 0;
+  WEEKS.forEach(function (week, i) {
+    backlog += OPENED[i] - CLOSED[i];
+    rows.push({ week: week, series: "Opened", value: OPENED[i] }, { week: week, series: "Closed", value: CLOSED[i] }, { week: week, series: "Backlog", value: backlog });
+  });
+  rows = rows.filter(function (r) { return hidden.indexOf(r.series) < 0; });
+  var colours = SERIES_COLOURS(t);
+  var colour = { field: "series", type: "nominal", legend: null, scale: { domain: ["Opened","Closed","Backlog"], range: [colours.Opened, colours.Closed, colours.Backlog] } };
+  return Object.assign({ data: { values: rows }, height: 190,
+    encoding: { x: { field: "week", type: "ordinal", sort: null, title: null, axis: { labelAngle: 0 } }, color: colour },
+    layer: [
+      { transform: [{ filter: "datum.series != 'Backlog'" }], mark: { type: "bar", cornerRadiusEnd: 2 },
+        encoding: { xOffset: { field: "series" }, y: { field: "value", type: "quantitative", title: "Tickets" } } },
+      { transform: [{ filter: "datum.series == 'Backlog'" }], mark: { type: "line", point: { filled: true, size: 40 }, strokeWidth: 2.5 },
+        encoding: { y: { field: "value", type: "quantitative", title: "Tickets" } } }] }, BASE);
+}
+function donut(t, hidden) {
+  var rows = [{ s: "Closed", n: 53 }, { s: "Open", n: 22 }].filter(function (r) { return hidden.indexOf(r.s) < 0; });
+  return { data: { values: rows }, width: 190, height: 190, padding: 5,
+    mark: { type: "arc", innerRadius: 62, outerRadius: 92, stroke: t.line, strokeWidth: 0.5 },
+    encoding: { theta: { field: "n", type: "quantitative", stack: true },
+                color: { field: "s", type: "nominal", legend: null, scale: { domain: ["Closed","Open"], range: [t.palette[2], t.palette[0]] } },
+                order: { field: "s", sort: "ascending" }, tooltip: [{ field: "s" }, { field: "n" }] } };
+}
+function versionsChart(t, hidden) {
+  var order = VERSIONS.map(versionLabel);
+  var rows = [], ends = [];
+  VERSIONS.forEach(function (v) {
+    var total = v.done + v.remaining, label = versionLabel(v);
+    if (hidden.indexOf("Done") < 0) rows.push({ label: label, state: "Done", n: v.done });
+    if (hidden.indexOf("Remaining") < 0) rows.push({ label: label, state: "Remaining", n: v.remaining });
+    var shown = (hidden.indexOf("Done") < 0 ? v.done : 0) + (hidden.indexOf("Remaining") < 0 ? v.remaining : 0);
+    ends.push({ label: label, shown: shown, text: Math.round(100 * v.done / total) + "%  (" + v.done + " of " + total + ")" });
+  });
+  return Object.assign({ height: { step: 34 }, config: { view: { stroke: null } },
+    encoding: { y: { field: "label", type: "nominal", sort: order, title: null, axis: { labelLimit: 280, labelFontSize: 12 } } },
+    layer: [
+      { data: { values: rows }, mark: { type: "bar", height: { band: 0.7 }, stroke: t.line, strokeWidth: 0.5 },
+        encoding: { x: { field: "n", type: "quantitative", stack: "zero", title: "Tickets", axis: { tickMinStep: 5 } },
+                    color: { field: "state", type: "nominal", legend: null, scale: { domain: ["Done","Remaining"], range: [t.palette[2], t.neutral] } },
+                    order: { field: "state", sort: "ascending" }, tooltip: [{ field: "label" }, { field: "state" }, { field: "n" }] } },
+      { data: { values: ends }, mark: { type: "text", align: "left", dx: 6, color: t.text, fontSize: 12, fontWeight: 600 },
+        encoding: { x: { field: "shown", type: "quantitative" }, text: { field: "text" } } }] }, BASE);
+}
+function versionLabel(v) {
+  return v.due ? v.name + "  ·  due " + v.due + (v.overdue ? "  (overdue)" : "") : v.name;
+}
+
+var KINDS = {
+  status:     { legend: null, build: function (t) { return horizontalBars(t, STATUSES, t.palette[0]); } },
+  category:   { legend: null, build: function (t) { return horizontalBars(t, CATEGORIES, t.palette[0]); } },
+  histogram:  { legend: null, build: function (t) { return columns(t, BINS, t.palette[6]); } },
+  throughput: { legend: ["Opened","Closed","Backlog"], colours: function (t) { var c = SERIES_COLOURS(t); return [c.Opened, c.Closed, c.Backlog]; }, build: throughput },
+  donut:      { legend: ["Closed","Open"], counts: [53, 22], colours: function (t) { return [t.palette[2], t.palette[0]]; }, build: donut },
+  versions:   { legend: ["Done","Remaining"], colours: function (t) { return [t.palette[2], t.neutral]; }, build: versionsChart }
+};
+
+function legendHtml(kindName, t, stacked) {
+  var kind = KINDS[kindName];
+  if (!kind.legend) return "";
+  var colours = kind.colours(t);
+  return '<div class="legend' + (stacked ? " stacked" : "") + '" data-for="' + kindName + '">' + kind.legend.map(function (name, i) {
+    var extra = kind.counts ? " " + kind.counts[i] + " (" + Math.round(100 * kind.counts[i] / 75) + "%)" : "";
+    return '<button type="button" aria-pressed="true" data-series="' + name + '"><span class="swatch" style="background:' + colours[i] + '"></span>' + name + extra + "</button>";
+  }).join("") + "</div>";
+}
+
+function card(title, question, kindName, t, extraClass, note) {
+  return '<section class="card ' + (extraClass || "") + '"><h3>' + title + '</h3><p class="card-question">' + question + "</p>" +
+    legendHtml(kindName, t) + '<div class="chart" data-kind="' + kindName + '"></div>' + (note || "") + "</section>";
+}
+function openClosedCard(t, extraClass) {
+  return '<section class="card ' + (extraClass || "") + '"><h3>Open versus closed</h3><p class="card-question">How much of the work is finished, whatever the status filter says?</p>' +
+    '<div class="donut-row"><div class="donut-wrap"><div class="chart" data-kind="donut"></div><div class="donut-centre"><b>71%</b><span>closed</span></div></div>' +
+    legendHtml("donut", t, true) + "</div>" +
+    '<p class="card-note">ⓘ The status filter is ignored here: this card always counts open and closed tickets.</p></section>';
+}
+
+var PRESETS = ["This week","This month","This quarter","Last 30 days","This year","All time"];
+function presets(active, vertical) {
+  return '<div class="segmented' + (vertical ? " vertical" : "") + '" role="group" aria-label="Date range">' + PRESETS.map(function (p) {
+    return '<button type="button" aria-pressed="' + (p === active) + '">' + p + "</button>"; }).join("") + "</div>";
+}
+function selects(vertical) {
+  return '<span class="select-group">Period <select><option>Weekly</option></select></span><span class="select-group">Slice by <select><option>Category</option></select></span>';
+}
+function filtersButton() { return '<button type="button" class="filters-button">Filters and options <span class="count-badge" title="2 active filters">2</span> ▾</button>'; }
+function tabsLine(selected) {
+  return '<div class="tabs-line">' + ["Overview","People","Speed","Versions"].map(function (n) { return '<span class="' + (n === selected ? "selected" : "") + '">' + n + "</span>"; }).join("") + "</div>";
+}
+function tabsSegmented(selected) {
+  return '<div class="segmented" role="tablist">' + ["Overview","People","Speed","Versions"].map(function (n) { return '<button type="button" role="tab" aria-selected="' + (n === selected) + '">' + n + "</button>"; }).join("") + "</div>";
+}
+function tiles() {
+  return '<div class="tiles">' +
+    '<div class="tile"><div class="tile-label">Open</div><div class="tile-value">22</div><div class="tile-sub">of 75 tickets</div></div>' +
+    '<div class="tile"><div class="tile-label">Closed in range</div><div class="tile-value">53</div><div class="tile-sub">71% of all tickets</div></div>' +
+    '<div class="tile"><div class="tile-label">Median days to close</div><div class="tile-value">12 <small>days</small></div><div class="tile-sub">53 closed tickets</div></div>' +
+    '<div class="tile"><div class="tile-label">Backlog change</div><div class="tile-value delta-up"><span class="arrow" aria-hidden="true">▲</span> +3</div><div class="tile-sub delta-up">Growing: up 3 in 4 weeks</div></div></div>';
+}
+function chrome(inner, current) {
+  return '<div class="rm-top"><span>Logged in as gardener</span><span>My account · Sign out</span></div><div class="rm-head"><strong>Demo Garden</strong><div class="rm-menu">' +
+    ["Overview","Activity","Issues","Gantt","Stats","Settings"].map(function (m) { return '<span class="' + (m === "Stats" ? "current" : "") + '">' + m + "</span>"; }).join("") +
+    '</div></div><div class="rm-content"><h2>Stats</h2>' + inner + "</div>";
+}
+
+var VARIANTS = {
+  A: function (t) {
+    return chrome('<div class="fbar">' + filtersButton() + presets("This quarter") + '<span class="spacer"></span>' + selects() + "</div>" + tabsLine("Overview") +
+      '<div class="grid">' + card("Tickets by status", "Where does the work sit right now?", "status", t) + card("Tickets by category", "Which areas take the most tickets?", "category", t) +
+      openClosedCard(t) + card("Time to close", "How long do tickets take? Median 12 days.", "histogram", t) +
+      card("Opened, closed and backlog per week", "Is the backlog growing or shrinking?", "throughput", t, "full") + "</div>");
+  },
+  B: function (t) {
+    return chrome('<div class="fbar">' + filtersButton() + presets("This quarter") + '<span class="spacer"></span>' + selects() + "</div>" + tabsLine("Overview") + tiles() +
+      '<div class="grid">' + card("Tickets by status", "Where does the work sit right now?", "status", t) + card("Tickets by category", "Which areas take the most tickets?", "category", t) +
+      openClosedCard(t) + card("Time to close", "How long do tickets take? Median 12 days.", "histogram", t) +
+      card("Opened, closed and backlog per week", "Is the backlog growing or shrinking?", "throughput", t, "full") + "</div>");
+  },
+  C: function (t) {
+    var rail = '<aside class="rail"><h4>Date range</h4>' + presets("This quarter", true) +
+      '<h4>Period</h4><select><option>Weekly</option></select><h4>Slice by</h4><select><option>Category</option></select>' +
+      '<h4>Filters <span class="count-badge">2</span></h4><select aria-label="Status"><option>Status: open</option></select><select aria-label="Assignee"><option>Assignee: any</option></select><select aria-label="Category"><option>Category: any</option></select><select aria-label="Version"><option>Version: any</option></select>' +
+      '<button type="button" class="apply">Apply</button></aside>';
+    var main = '<div class="rail-main">' + tabsSegmented("Overview") + tiles() +
+      '<div class="grid">' + card("Tickets by status", "Where does the work sit now?", "status", t) + card("Tickets by category", "Which areas take the most?", "category", t) +
+      openClosedCard(t) + card("Time to close", "Median 12 days.", "histogram", t) +
+      card("Opened, closed and backlog per week", "Is the backlog growing or shrinking?", "throughput", t, "full") + "</div></div>";
+    return chrome('<div class="with-rail">' + rail + main + "</div>");
+  },
+  DONUT: function (t) {
+    return chrome('<div class="grid"><div class="full">' + openClosedCard(t) + "</div></div>");
+  },
+  VERSIONS: function (t) {
+    return chrome('<div class="fbar">' + filtersButton() + presets("All time") + "</div>" + tabsLine("Versions") +
+      card("Progress per version", "How much of each version is done, in order of due date?", "versions", t, "",
+        '<p class="card-note">Ordered by due date; versions without a date come last. Percentage is done tickets over all tickets in the version.</p>'));
+  }
+};
+
+function renderChart(element) {
+  var frame = element.closest(".frame"), t = themeOf(frame), kind = KINDS[element.dataset.kind];
+  var scope = element.closest(".card") || element.closest(".donut-row");
+  var hidden = element._hidden || [];
+  vegaEmbed(element, kind.build(t, hidden), { actions: false, renderer: "svg", config: vegaConfig(t) });
+}
+function mount() {
+  document.querySelectorAll("[data-variant]").forEach(function (slot) {
+    ["light", "dark"].forEach(function (name) {
+      var wrapper = document.createElement("div");
+      wrapper.innerHTML = '<p class="pair-label">' + (name === "light" ? "Light: Redmine 7 default" : "Dark: Obsidian") + '</p><div class="frame theme-' + name + '"></div>';
+      var frame = wrapper.querySelector(".frame");
+      slot.appendChild(wrapper);
+      frame.innerHTML = VARIANTS[slot.dataset.variant](themeOf(frame));
+    });
+  });
+  document.querySelectorAll(".chart").forEach(renderChart);
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest(".legend button");
+    if (!button) return;
+    var chart = button.closest(".card").querySelector(".chart");
+    var state = chart._hidden = chart._hidden || [];
+    var index = state.indexOf(button.dataset.series);
+    if (index >= 0) state.splice(index, 1); else state.push(button.dataset.series);
+    button.setAttribute("aria-pressed", index >= 0);
+    renderChart(chart);
+  });
+  window.__chartsReady = true;
+}
+document.addEventListener("DOMContentLoaded", mount);
+
+</script></body></html>
