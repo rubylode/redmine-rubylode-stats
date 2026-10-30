@@ -56,7 +56,7 @@ module RubylodeStats
       def bar_encoding
         {
           "x" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
-          "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+          "y" => count_axis("tickets"),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
         }

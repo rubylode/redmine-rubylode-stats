@@ -34,7 +34,7 @@ module RubylodeStats
           "encoding" => {
             "x" => { "field" => "period", "type" => "temporal", "timeUnit" => TIME_UNITS.fetch(period), "title" => period_label,
                      "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
-            "y" => { "field" => "closed", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+            "y" => count_axis("closed"),
             "color" => { "field" => "person", "type" => "nominal", "title" => I18n.t(:label_stats_person) },
             "opacity" => legend_toggle_opacity,
             "href" => { "field" => "url", "type" => "nominal" },

@@ -25,7 +25,7 @@ module RubylodeStats
           "mark" => { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {
             "x" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
-            "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+            "y" => count_axis("tickets"),
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
               { "field" => "status", "type" => "nominal", "title" => I18n.t(:field_status) },
