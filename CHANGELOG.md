@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0
+## 1.0.0
+
+First public release.
 
 - A card grid layout under a filter bar, with summary tiles on the Overview (open, closed in the range, median days to
   close, backlog change) and a donut of open against closed that ignores the status filter.
@@ -13,7 +15,3 @@
 - Bars and slices link to the ticket list with the same filters; on the page across projects the link keeps to the
   permitted projects.
 - A demo data script for the throwaway Redmine, with screenshots of each tab.
-
-## 0.1.0
-
-- The skeleton: a Stats tab in the project menu and one chart, tickets by status.
