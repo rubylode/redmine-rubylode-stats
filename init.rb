@@ -22,7 +22,7 @@ Redmine::Plugin.register :redmine_rubylode_stats do
   author "Rubylode"
   author_url "https://github.com/rubylode"
   description "Charts over a project's tickets: by category, open and closed, over time, who closed what"
-  version "0.1.0"
+  version "0.2.0"
   requires_redmine version_or_higher: "7.0.0"
 
   project_module :rubylode_stats do
