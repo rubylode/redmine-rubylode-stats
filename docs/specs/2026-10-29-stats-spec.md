@@ -52,6 +52,11 @@ a legend that hides a series when clicked, and a bar or slice that links to the 
 16. When the Overview is opened, then four tiles show open tickets, tickets closed in the range with their share, the median
     days to close, and the backlog change over the last four periods with an arrow and words. Where there is nothing to
     divide the tile shows a dash. The time-to-close histogram lives on the Speed tab only.
+17. When the Versions tab is opened, then progress per version is drawn as one horizontal stacked bar per version, done against
+    remaining, with the share done and the counts at the bar end ("90% (18 of 20)"). The row label carries the due date and
+    "(overdue)" when the date is past and the version is still open; rows run by due date, versions without a date next, and
+    tickets without a version last as "No version". Like open versus closed, the status filter is ignored and every other
+    filter applies; a bar opens the issue list of that version, and a legend click hides Done or Remaining.
 
 ## Decisions
 
