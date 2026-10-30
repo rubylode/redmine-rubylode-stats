@@ -234,6 +234,18 @@ class StatsPageTest < Redmine::IntegrationTest
     end
   end
 
+  def test_a_bar_chart_with_a_small_count_pins_a_tick_at_every_whole_ticket
+    get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*"
+
+    %w[tickets_by_status tickets_by_slice].each do |chart_name|
+      maximum = chart_rows(chart_name).map { |row| row["tickets"] }.max
+      axis = chart_specification(chart_name).dig("encoding", "y", "axis")
+      assert_operator maximum, :<=, 8, chart_name
+      assert_equal (0..maximum).to_a, axis["values"], "#{chart_name} ticks"
+      assert_equal "d", axis["format"], "#{chart_name} label format"
+    end
+  end
+
   def test_the_versions_chart_ignores_the_status_filter
     get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=c"
 
