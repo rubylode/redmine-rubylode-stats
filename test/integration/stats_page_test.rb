@@ -172,13 +172,43 @@ class StatsPageTest < Redmine::IntegrationTest
     assert_select "#stats-chart-tickets_by_status"
   end
 
-  def test_other_tabs_show_an_empty_state_line_and_no_status_chart
-    get "/projects/#{@project.identifier}/stats?tab=versions"
+  def test_the_versions_tab_shows_progress_per_version_and_no_empty_line
+    get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=*"
 
     assert_response :success
     assert_select "a.stats-tab.selected[data-tab=versions]"
-    assert_select "p.nodata"
+    assert_select "p.nodata", false
     assert_select "#stats-chart-tickets_by_status", false
+    assert_select "#stats-card-progress_per_version .stats-card-note",
+                  text: "Ordered by due date; versions without a date come last. Percentage is done tickets over all tickets in the version."
+    rows = chart_rows("progress_per_version")
+    assert_equal ["0.1", "1.0", "No version"], rows.map { |row| row["name"] }
+    assert_equal [[1, 0, 1], [1, 1, 2], [1, 3, 4]], rows.map { |row| [row["done"], row["remaining"], row["total"]] }
+    assert_equal ["100% (1 of 1)", "50% (1 of 2)", "25% (1 of 4)"], rows.map { |row| row["end_label"] }
+    assert_equal "0.1  ·  due 2006-07-01", rows.first["label"]
+    assert_equal "No version", rows.last["label"]
+  end
+
+  def test_the_versions_chart_stacks_done_against_remaining_with_a_legend_toggle_and_links_to_the_version
+    get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=*"
+
+    specification = chart_specification("progress_per_version")
+    bars = specification["layer"].first
+    assert_equal "bar", bars.dig("mark", "type")
+    assert_equal "legend", bars["params"].first["bind"]
+    assert_equal %w[Done Remaining], bars.dig("encoding", "color", "scale", "domain")
+    link = Rack::Utils.parse_nested_query(URI(specification.dig("data", "values")[1]["url"]).query)
+    assert_equal "=", link["op"]["fixed_version_id"]
+    assert_equal ["2"], link["v"]["fixed_version_id"]
+    assert_equal "*", link["op"]["status_id"]
+    no_version_link = Rack::Utils.parse_nested_query(URI(specification.dig("data", "values").last["url"]).query)
+    assert_equal "!*", no_version_link["op"]["fixed_version_id"]
+  end
+
+  def test_the_versions_chart_ignores_the_status_filter
+    get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=c"
+
+    assert_equal 7, chart_rows("progress_per_version").sum { |row| row["total"] }
   end
 
   def test_an_unknown_tab_falls_back_to_overview

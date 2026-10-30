@@ -39,6 +39,14 @@ en:
   label_stats_tab_people: People
   label_stats_tab_speed: Speed
   label_stats_tab_versions: Versions
+  label_stats_progress_per_version: Progress per version
+  label_stats_progress_per_version_subtitle: How much of each version is done, in order of due date?
+  label_stats_progress_per_version_note: "Ordered by due date; versions without a date come last. Percentage is done tickets over all tickets in the version."
+  label_stats_progress_done: Done
+  label_stats_progress_remaining: Remaining
+  label_stats_progress_end: "%{percent}% (%{done} of %{total})"
+  label_stats_progress_row_due: "%{name}  ·  due %{date}"
+  label_stats_progress_overdue: "(overdue)"
   label_stats_tab_empty: No charts on this tab yet.
   permission_view_rubylode_stats: View stats
   project_module_rubylode_stats: Stats
