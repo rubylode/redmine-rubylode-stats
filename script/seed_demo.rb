@@ -114,11 +114,12 @@ def ensure_users
 end
 
 # Preview only: the throwaway Redmine asks for a new administrator password on first sign-in, which gets in the way of a demo.
+# The short password skips Redmine's length rule on purpose (validation off); never run this against a real tracker.
 def ensure_preview_admin
   admin = User.find_by!(login: "admin")
   admin.password = admin.password_confirmation = "admin"
   admin.must_change_passwd = false
-  admin.save!
+  admin.save!(validate: false)
 end
 
 def ensure_project(definition, users, role)
