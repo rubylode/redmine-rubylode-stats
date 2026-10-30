@@ -28,13 +28,38 @@ class StatsController < ApplicationController
     retrieve_query(IssueQuery, true)
     @query.extend(RubylodeStats::PermittedProjects::QueryRestriction) unless @project
     @tab = RubylodeStats::Registry.tab(params[:tab])
+    apply_default_range
     @period = RubylodeStats::Registry.period(params[:period])
     @slice_by = RubylodeStats::Registry.slice(params[:slice_by])
     @shape = params[:shape] == "pie" ? "pie" : "bar"
+    @tiles = overview_tiles
     @charts = @query.valid? ? @tab.chart_classes.map { |chart_class| chart_class.new(query: @query, issue_list_link: issue_list_link, options: chart_options) } : []
   end
 
+
   private
+
+  # The first load, with no filter chosen by the user, shows this quarter on the date that suits the tab. A request that carries
+  # filters, a preset or a saved query is the user's own choice and is left alone; "All time" is such a request.
+  def apply_default_range
+    return unless @query.new_record? && default_filters_only? && params.values_at(:set_filter, :query_id, :f).all?(&:blank?)
+
+    date_field = @tab.preset_date_field
+    @query.filters = @query.filters.except("status_id") if date_field == "closed_on"
+    default_filter = RubylodeStats::Presets.filter_for(RubylodeStats::Presets::DEFAULT_KEY, User.current.today)
+    @query.add_filter(date_field, default_filter[:operator], default_filter[:values])
+  end
+
+  def default_filters_only?
+    @query.filters.keys == ["status_id"] && @query.filters.dig("status_id", :operator) == "o"
+  end
+
+  def overview_tiles
+    return unless @tab.key == "overview" && @query.valid?
+
+    time_zone = User.current.time_zone || Time.zone
+    RubylodeStats::SummaryTilesRows.new(@query, period: @period, time_zone: time_zone, today: User.current.today).tiles
+  end
 
   def find_optional_project_by_project_id
     @project = Project.find(params[:project_id]) if params[:project_id].present?

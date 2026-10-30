@@ -46,13 +46,27 @@ module RubylodeStats
         raise NotImplementedError
       end
 
+      # The card around the chart: a title, a one-line subtitle naming the question the chart answers, an optional note and
+      # whether the card spans the whole grid. The specification itself carries no title.
+      def card_title
+        I18n.t("label_stats_#{chart_name}")
+      end
+
+      def card_subtitle
+        I18n.t("label_stats_#{chart_name}_subtitle")
+      end
+
+      def card_note
+        nil
+      end
+
+      def wide?
+        false
+      end
+
       private
 
       attr_reader :query, :issue_list_link, :options
-
-      def title
-        I18n.t("label_stats_#{chart_name}")
-      end
 
       # Clicking a legend entry hides the series; add the result to a mark's encoding as "opacity" and to the chart's
       # "params". Only for charts with a legend.

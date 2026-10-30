@@ -26,25 +26,59 @@
 <%= form_tag(stats_page_path, method: :get, id: "query_form") do %>
   <%= hidden_field_tag "tab", @tab.key, id: nil %>
   <%= hidden_field_tag "shape", @shape, id: nil %>
-  <p class="stats-selects">
-    <label for="period"><%= l(:label_stats_period) %></label>
-    <%= select_tag "period", stats_period_options %>
-    <label for="slice_by"><%= l(:label_stats_slice_by) %></label>
-    <%= select_tag "slice_by", stats_slice_options %>
-  </p>
-  <%= render partial: "queries/query_form" %>
+  <div class="stats-bar">
+    <button type="button" class="stats-filters-toggle" aria-expanded="false" aria-controls="stats-filters-panel">
+      <%= l(:label_stats_filters_and_options) %>
+      <% if stats_active_filter_count.positive? %>
+        <span class="stats-filter-count" title="<%= l(:label_stats_filters_active, count: stats_active_filter_count) %>"><%= stats_active_filter_count %></span>
+      <% end %>
+    </button>
+    <span class="stats-presets" role="group"><%= safe_join(stats_preset_links, " ") %></span>
+    <span class="stats-selects">
+      <label for="period"><%= l(:label_stats_period) %></label>
+      <%= select_tag "period", stats_period_options %>
+      <label for="slice_by"><%= l(:label_stats_slice_by) %></label>
+      <%= select_tag "slice_by", stats_slice_options %>
+    </span>
+    <%= submit_tag l(:button_apply), name: nil, class: "stats-apply" %>
+    <%= link_to l(:button_clear), stats_page_path(set_filter: 1, tab: @tab.key), class: "stats-clear" %>
+  </div>
+  <div id="stats-filters-panel" class="stats-filters-panel" hidden>
+    <%= render partial: "queries/query_form" %>
+  </div>
 <% end %>
 
-<p class="stats-presets"><%= safe_join(stats_preset_links, " ") %></p>
-
 <div class="tabs stats-tabs"><%= safe_join(stats_tab_links, " ") %></div>
+
+<% if @tiles %>
+  <div class="stats-tiles">
+    <% stats_tile_cards.each do |tile| %>
+      <div class="stats-tile" data-tile="<%= tile[:key] %>"<%= tile[:direction] ? " data-direction=#{tile[:direction]}".html_safe : "" %>>
+        <div class="stats-tile-label"><%= l("label_stats_tile_#{tile[:key]}") %></div>
+        <div class="stats-tile-value">
+          <% if tile[:arrow] %><span class="stats-tile-arrow" aria-hidden="true"><%= tile[:arrow] %></span><% end %>
+          <%= tile[:value] %>
+          <% if tile[:unit] %><small><%= tile[:unit] %></small><% end %>
+        </div>
+        <div class="stats-tile-detail"><%= tile[:detail] %></div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
 
 <% if @query.valid? %>
   <% if @charts.empty? %>
     <p class="nodata"><%= l(:label_stats_tab_empty) %></p>
   <% end %>
-  <% @charts.each do |chart| %>
-    <div id="stats-chart-<%= chart.chart_name %>" class="stats-chart"
-         data-specification="<%= chart.specification.to_json %>"></div>
-  <% end %>
+  <div class="stats-grid">
+    <% @charts.each do |chart| %>
+      <section id="stats-card-<%= chart.chart_name %>" class="stats-card<%= " stats-card-wide" if chart.wide? %>">
+        <h3 class="stats-card-title"><%= chart.card_title %></h3>
+        <p class="stats-card-subtitle"><%= chart.card_subtitle %></p>
+        <div id="stats-chart-<%= chart.chart_name %>" class="stats-chart"
+             data-specification="<%= chart.specification.to_json %>"></div>
+        <% if chart.card_note %><p class="stats-card-note"><%= chart.card_note %></p><% end %>
+      </section>
+    <% end %>
+  </div>
 <% end %>

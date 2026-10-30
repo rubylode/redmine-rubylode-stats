@@ -27,7 +27,6 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => title,
           "width" => "container",
           "data" => { "values" => rows_with_links },
           "params" => legend_toggle_params("person"),

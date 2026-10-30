@@ -22,11 +22,14 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => "#{I18n.t(:label_stats_tickets_by)} #{I18n.t("label_stats_slice_#{slice_by}").downcase}",
           "data" => { "values" => rows_with_links },
           "mark" => pie? ? { "type" => "arc", "tooltip" => true, "cursor" => "pointer" } : { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => pie? ? pie_encoding : bar_encoding
         }
+      end
+
+      def card_title
+        "#{I18n.t(:label_stats_tickets_by)} #{slice_label.downcase}"
       end
 
       private
