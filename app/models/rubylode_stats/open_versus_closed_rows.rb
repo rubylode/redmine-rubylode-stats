@@ -22,8 +22,16 @@ module RubylodeStats
       @query = query
     end
 
+    def self.population(query)
+      QueryPopulation.scope(query, ignored_fields: ["status_id"])
+    end
+
+    def self.closed_scope(query)
+      population(query).where(issue_statuses: { is_closed: true })
+    end
+
     def rows
-      ticket_counts = QueryPopulation.scope(@query, ignored_fields: ["status_id"]).group("#{IssueStatus.table_name}.is_closed").count
+      ticket_counts = self.class.population(@query).group("#{IssueStatus.table_name}.is_closed").count
       closed_tickets = ticket_counts.sum { |is_closed, tickets| ActiveModel::Type::Boolean.new.cast(is_closed) ? tickets : 0 }
       [
         { "state" => "open", "tickets" => ticket_counts.values.sum - closed_tickets },

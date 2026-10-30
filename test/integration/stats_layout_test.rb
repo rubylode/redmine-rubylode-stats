@@ -98,7 +98,7 @@ class StatsLayoutTest < Redmine::IntegrationTest
     assert_equal "4", css_select(".stats-tile[data-tile=open] .stats-tile-value").first.text.strip
     assert_match(/of 7 tickets/, css_select(".stats-tile[data-tile=open] .stats-tile-detail").first.text)
     assert_equal "3", css_select(".stats-tile[data-tile=closed_in_range] .stats-tile-value").first.text.strip
-    assert_match(/43% of all tickets/, css_select(".stats-tile[data-tile=closed_in_range] .stats-tile-detail").first.text)
+    assert_match(/43% of the tickets counted/, css_select(".stats-tile[data-tile=closed_in_range] .stats-tile-detail").first.text)
     backlog = css_select(".stats-tile[data-tile=backlog_change]").first
     assert_match(/(Growing: up|Shrinking: down|Steady: no change)/, backlog.text)
     assert_not_empty backlog.css(".stats-tile-arrow")
