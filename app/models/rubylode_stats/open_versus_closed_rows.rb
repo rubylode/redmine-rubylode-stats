@@ -15,14 +15,15 @@
 # along with this program; if not, write to the Free Software
 
 module RubylodeStats
-  # Two rows, open and closed (always both, even with no tickets), by the "closed" flag of the ticket's status.
+  # Two rows, open and closed (always both, even with no tickets), by the "closed" flag of the ticket's status. The status
+  # filter is ignored (this question is about both halves); every other filter applies.
   class OpenVersusClosedRows
     def initialize(query)
       @query = query
     end
 
     def rows
-      ticket_counts = @query.base_scope.group("#{IssueStatus.table_name}.is_closed").count
+      ticket_counts = QueryPopulation.scope(@query, ignored_fields: ["status_id"]).group("#{IssueStatus.table_name}.is_closed").count
       closed_tickets = ticket_counts.sum { |is_closed, tickets| ActiveModel::Type::Boolean.new.cast(is_closed) ? tickets : 0 }
       [
         { "state" => "open", "tickets" => ticket_counts.values.sum - closed_tickets },
