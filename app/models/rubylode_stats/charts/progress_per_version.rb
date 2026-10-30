@@ -24,6 +24,7 @@ module RubylodeStats
     class ProgressPerVersion < Base
       STATE_COLORS = { done: "#6aa84f", remaining: "#adb5bd" }.freeze
       ROW_HEIGHT = 34
+      END_LABEL_ROOM = 1.35
 
       def specification
         {
@@ -66,7 +67,7 @@ module RubylodeStats
           ],
           "mark" => { "type" => "bar", "height" => { "band" => 0.7 }, "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {
-            "x" => { "field" => "tickets", "type" => "quantitative", "stack" => "zero", "title" => I18n.t(:label_stats_tickets), "axis" => { "tickMinStep" => 1 } },
+            "x" => count_axis("tickets").merge("stack" => "zero", "scale" => { "domainMax" => domain_maximum, "nice" => false }),
             "color" => {
               "field" => "state", "type" => "nominal", "title" => nil, "legend" => { "orient" => "top", "symbolType" => "square" },
               "scale" => { "domain" => state_labels.values, "range" => [STATE_COLORS[:done], STATE_COLORS[:remaining]] }
@@ -81,6 +82,11 @@ module RubylodeStats
             ]
           }
         }
+      end
+
+      # Room to the right of the longest bar for its end label, which is wider than any bar segment.
+      def domain_maximum
+        (rows_with_labels.map { |row| row["total"] }.max.to_i * END_LABEL_ROOM).ceil
       end
 
       def end_labels

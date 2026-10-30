@@ -205,6 +205,35 @@ class StatsPageTest < Redmine::IntegrationTest
     assert_equal "!*", no_version_link["op"]["fixed_version_id"]
   end
 
+  def test_the_versions_chart_leaves_room_to_the_right_of_the_longest_bar_for_its_end_label
+    get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=*"
+
+    bars = chart_specification("progress_per_version")["layer"].first
+    longest_bar = 4
+    assert_operator bars.dig("encoding", "x", "scale", "domainMax"), :>=, 5
+    assert_equal false, bars.dig("encoding", "x", "scale", "nice")
+    assert_operator longest_bar, :<, bars.dig("encoding", "x", "scale", "domainMax")
+  end
+
+  def test_every_count_axis_shows_whole_tickets_only
+    count_axes = {
+      "overview" => %w[tickets_by_status tickets_by_slice opened_and_closed],
+      "people" => %w[closed_per_person],
+      "speed" => %w[time_to_close_histogram],
+      "versions" => %w[progress_per_version]
+    }
+    count_axes.each do |tab, chart_names|
+      get "/projects/#{@project.identifier}/stats?tab=#{tab}&set_filter=1&f[]=status_id&op[status_id]=*&period=month"
+      chart_names.each do |chart_name|
+        specification = chart_specification(chart_name)
+        encodings = [specification["encoding"], *Array(specification["layer"]).map { |layer| layer["encoding"] }].compact
+        count_encodings = encodings.flat_map { |encoding| encoding.values_at("x", "y") }.compact.select { |channel| channel["title"] == "Tickets" }
+        assert_not_empty count_encodings, chart_name
+        count_encodings.each { |channel| assert_equal 1, channel.dig("axis", "tickMinStep"), "#{chart_name} count axis" }
+      end
+    end
+  end
+
   def test_the_versions_chart_ignores_the_status_filter
     get "/projects/#{@project.identifier}/stats?tab=versions&set_filter=1&f[]=status_id&op[status_id]=c"
 

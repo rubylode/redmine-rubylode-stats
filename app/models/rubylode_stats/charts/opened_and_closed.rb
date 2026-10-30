@@ -63,7 +63,7 @@ module RubylodeStats
         {
           "x" => { "field" => "period", "type" => "ordinal", "timeUnit" => "yearmonthdate", "title" => period_label,
                    "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
-          "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+          "y" => count_axis("tickets"),
           "color" => { "field" => "series", "type" => "nominal", "title" => nil, "scale" => { "domain" => series_labels } },
           "opacity" => legend_toggle_opacity,
           "tooltip" => [

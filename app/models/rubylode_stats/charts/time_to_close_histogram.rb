@@ -28,7 +28,7 @@ module RubylodeStats
           "encoding" => {
             "x" => { "field" => "bin", "type" => "ordinal", "sort" => TimeToCloseRows::BINS.map(&:first),
                      "title" => I18n.t(:label_stats_days_to_close), "axis" => { "labelAngle" => 0 } },
-            "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+            "y" => count_axis("tickets"),
             "tooltip" => [
               { "field" => "bin", "type" => "ordinal", "title" => I18n.t(:label_stats_days_to_close) },
               { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }

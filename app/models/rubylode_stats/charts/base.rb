@@ -68,6 +68,11 @@ module RubylodeStats
 
       attr_reader :query, :issue_list_link, :options
 
+      # A count axis of whole tickets: the title says Tickets and no tick falls between two whole numbers.
+      def count_axis(field)
+        { "field" => field, "type" => "quantitative", "title" => I18n.t(:label_stats_tickets), "axis" => { "tickMinStep" => 1 } }
+      end
+
       # Clicking a legend entry hides the series; add the result to a mark's encoding as "opacity" and to the chart's
       # "params". Only for charts with a legend.
       def legend_toggle_params(field)
