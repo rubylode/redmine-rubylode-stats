@@ -3,6 +3,7 @@ en:
   label_stats_tickets_by_status: Tickets by status
   label_stats_tickets: Tickets
   label_stats_none: None
+  label_stats_no_version: No version
   label_stats_tickets_by: Tickets by
   label_stats_open_versus_closed: Open versus closed
   label_stats_opened_and_closed: Opened and closed
