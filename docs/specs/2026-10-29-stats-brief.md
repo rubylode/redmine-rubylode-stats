@@ -88,5 +88,5 @@ and a link from a bar or slice to the matching Redmine issue list.
 
 ## Try it and deploy it
 
-`docker compose up -d` then http://localhost:3008; `bin/test` for the tests. The deploy to the home tracker follows the to-do
-plugin's (a folder on Moneta, a bind mount in the tracker's compose file, a restart).
+`docker compose up -d` then http://localhost:3008; `bin/test` for the tests. A live deploy follows the to-do
+plugin's: copy the plugin folder to the server, add a bind mount in the Redmine compose file, restart.
