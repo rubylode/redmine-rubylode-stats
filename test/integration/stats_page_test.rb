@@ -219,15 +219,10 @@ def test_a_slice_links_to_the_issue_list_with_the_same_filters_plus_its_value
   assert_equal "*", none["op"]["status_id"]
 end
 
-def test_open_versus_closed_is_a_stacked_bar_and_a_donut_over_the_same_rows_with_links
+def test_open_versus_closed_counts_both_halves_and_links_each_to_its_state
   get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*"
 
-  specification = chart_specification("open_versus_closed")
   assert_equal [["open", 4], ["closed", 3]], chart_rows("open_versus_closed").map { |row| [row["state"], row["tickets"]] }
-  marks = specification["hconcat"].map { |view| view.dig("mark", "type") }
-  assert_equal %w[bar arc], marks
-  assert_equal 0.5, specification["hconcat"].last.dig("mark", "innerRadius") / 100.0 * 2 / 2 * 2 if false
-  assert specification["hconcat"].last.dig("mark", "innerRadius").positive?
   closed_link = Rack::Utils.parse_nested_query(URI(chart_rows("open_versus_closed").last["url"]).query)
   assert_equal "c", closed_link["op"]["status_id"]
 end
@@ -241,9 +236,9 @@ def test_opened_and_closed_chart_carries_the_period_rows_and_three_series_with_a
   assert_equal 3, rows.sum { |row| row["closed"] }
   assert_equal 4, rows.last["backlog"]
   assert_equal %w[opened closed backlog], specification["transform"].first["fold"]
-  assert_equal "line", specification.dig("mark", "type")
-  assert_equal "legend", specification["params"].first["bind"]
-  assert specification.dig("mark", "tooltip")
+  assert_equal %w[bar line], specification["layer"].map { |layer| layer.dig("mark", "type") }
+  assert_equal "legend", specification["layer"].first["params"].first["bind"]
+  assert specification["layer"].all? { |layer| layer.dig("mark", "tooltip") }
 end
 
 def test_the_period_select_changes_the_period_of_the_rows

@@ -24,7 +24,6 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => title,
           "width" => "container",
           "data" => { "values" => rows },
           "mark" => { "type" => "line", "point" => true, "tooltip" => true },

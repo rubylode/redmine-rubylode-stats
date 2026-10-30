@@ -21,7 +21,6 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => title,
           "data" => { "values" => rows_with_links },
           "mark" => { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {

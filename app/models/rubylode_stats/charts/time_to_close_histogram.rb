@@ -22,7 +22,6 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => title,
           "width" => "container",
           "data" => { "values" => TimeToCloseRows.new(query).histogram_rows },
           "mark" => { "type" => "bar", "tooltip" => true },

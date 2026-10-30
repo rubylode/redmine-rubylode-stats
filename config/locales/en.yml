@@ -41,3 +41,30 @@ en:
   label_stats_tab_empty: No charts on this tab yet.
   permission_view_rubylode_stats: View stats
   project_module_rubylode_stats: Stats
+  label_stats_filters_and_options: Filters and options
+  label_stats_filters_active: "%{count} active"
+  label_stats_tickets_by_status_subtitle: Where does the work sit right now?
+  label_stats_tickets_by_slice_subtitle: Which areas take most of the tickets?
+  label_stats_open_versus_closed_subtitle: How much of the work is finished, whatever the status filter says?
+  label_stats_open_versus_closed_note: "The status filter is ignored here: this card always counts open and closed tickets."
+  label_stats_opened_and_closed_subtitle: Is the backlog growing or shrinking?
+  label_stats_closed_per_person_subtitle: Who closed the tickets, period by period?
+  label_stats_time_to_close_histogram_subtitle: How long do tickets take, from created to closed?
+  label_stats_median_time_to_close_subtitle: Is the median time to close getting shorter?
+  label_stats_legend_with_count: "%{state} %{tickets} (%{percent}%)"
+  label_stats_tile_open: Open
+  label_stats_tile_open_detail: "of %{count} tickets"
+  label_stats_tile_closed_in_range: Closed in range
+  label_stats_tile_closed_in_range_detail: "%{percent}% of all tickets"
+  label_stats_tile_closed_in_range_detail_empty: "of all tickets"
+  label_stats_tile_median_days: Median days to close
+  label_stats_tile_median_days_detail: "%{count} closed tickets"
+  label_stats_tile_median_days_unit: days
+  label_stats_tile_backlog_change: Backlog change
+  label_stats_tile_backlog_growing: "Growing: up %{difference} in %{periods} %{period_name}"
+  label_stats_tile_backlog_shrinking: "Shrinking: down %{difference} in %{periods} %{period_name}"
+  label_stats_tile_backlog_steady: "Steady: no change in %{periods} %{period_name}"
+  label_stats_tile_backlog_empty: No data
+  label_stats_period_unit_day: days
+  label_stats_period_unit_week: weeks
+  label_stats_period_unit_month: months

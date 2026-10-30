@@ -21,6 +21,8 @@ module RubylodeStats
   module Presets
     KEYS = %w[this_week this_month this_quarter last_30_days this_year all_time].freeze
 
+    DEFAULT_KEY = "this_quarter".freeze
+
     def self.filter_for(key, today)
       case key
       when "this_week"

@@ -25,32 +25,54 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
-          "title" => title,
           "width" => "container",
           "data" => { "values" => rows },
           "transform" => [
             { "fold" => SERIES, "as" => ["series_key", "tickets"] },
             { "calculate" => series_label_expression, "as" => "series" }
           ],
-          "params" => legend_toggle_params("series"),
-          "mark" => { "type" => "line", "point" => true, "tooltip" => true },
-          "encoding" => {
-            "x" => { "field" => "period", "type" => "temporal", "title" => period_label,
-                     "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
-            "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
-            "color" => { "field" => "series", "type" => "nominal", "title" => nil,
-                         "scale" => { "domain" => series_labels } },
-            "opacity" => legend_toggle_opacity,
-            "tooltip" => [
-              { "field" => "period", "type" => "temporal", "title" => period_label },
-              { "field" => "series", "type" => "nominal", "title" => nil },
-              { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
-            ]
-          }
+          "layer" => [bars, backlog_line]
         }
       end
 
+      def wide?
+        true
+      end
+
       private
+
+      # Opened and closed are bars side by side in each period; the backlog is a line over them.
+      def bars
+        {
+          "params" => legend_toggle_params("series"),
+          "transform" => [{ "filter" => "datum.series_key !== 'backlog'" }],
+          "mark" => { "type" => "bar", "tooltip" => true, "cornerRadiusEnd" => 2 },
+          "encoding" => shared_encoding.merge("xOffset" => { "field" => "series" })
+        }
+      end
+
+      def backlog_line
+        {
+          "transform" => [{ "filter" => "datum.series_key === 'backlog'" }],
+          "mark" => { "type" => "line", "point" => true, "tooltip" => true, "strokeWidth" => 2.5 },
+          "encoding" => shared_encoding
+        }
+      end
+
+      def shared_encoding
+        {
+          "x" => { "field" => "period", "type" => "ordinal", "timeUnit" => "yearmonthdate", "title" => period_label,
+                   "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
+          "y" => { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) },
+          "color" => { "field" => "series", "type" => "nominal", "title" => nil, "scale" => { "domain" => series_labels } },
+          "opacity" => legend_toggle_opacity,
+          "tooltip" => [
+            { "field" => "period", "type" => "temporal", "title" => period_label },
+            { "field" => "series", "type" => "nominal", "title" => nil },
+            { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+          ]
+        }
+      end
 
       def period
         options.fetch(:period, Registry::DEFAULT_PERIOD)
