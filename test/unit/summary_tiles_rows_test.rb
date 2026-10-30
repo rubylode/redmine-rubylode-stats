@@ -22,7 +22,6 @@ class SummaryTilesRowsTest < ActiveSupport::TestCase
            :trackers, :projects_trackers, :enumerations, :workflows
 
   UTC = ActiveSupport::TimeZone["UTC"]
-  TODAY = Date.new(2026, 10, 30)
 
   def setup
     User.current = User.find(1)
@@ -34,23 +33,21 @@ class SummaryTilesRowsTest < ActiveSupport::TestCase
     User.current = nil
   end
 
-  def test_the_tiles_count_open_tickets_closed_in_the_range_their_share_the_median_and_the_backlog_change
-    create_ticket("2026-09-01 10:00", nil)
-    create_ticket("2026-09-02 10:00", nil)
-    create_ticket("2026-08-01 10:00", "2026-10-05 10:00") # 65 days
+  def test_the_tiles_count_the_same_tickets_as_the_open_versus_closed_donut_and_ignore_tickets_outside_the_range
+    create_ticket("2026-10-02 10:00", nil)
+    create_ticket("2026-10-05 10:00", nil)
     create_ticket("2026-10-01 10:00", "2026-10-03 10:00") # 2 days
-    create_ticket("2026-08-01 10:00", "2026-09-10 10:00") # closed before the range
-    filter = { "closed_on" => { operator: "><", values: %w[2026-10-01 2026-10-31] } }
+    create_ticket("2026-10-10 10:00", "2026-10-20 10:00") # 10 days
+    create_ticket("2026-08-01 10:00", nil)                # created before the range
+    create_ticket("2026-08-01 10:00", "2026-09-10 10:00") # created and closed before the range
+    filter = { "created_on" => { operator: "><", values: %w[2026-10-01 2026-10-31] } }
 
-    assert_equal(
-      {
-        "open" => { "tickets" => 2, "of_tickets" => 5 },
-        "closed_in_range" => { "tickets" => 2, "percent_of_tickets" => 40 },
-        "median_days" => { "days" => 33.5, "closed_tickets" => 2 },
-        "backlog_change" => { "difference" => -1, "periods" => 2, "period" => "week", "direction" => "shrinking" }
-      },
-      tiles(filter)
-    )
+    tile_numbers = tiles(filter)
+    assert_equal({ "tickets" => 2, "of_tickets" => 4 }, tile_numbers["open"])
+    assert_equal({ "tickets" => 2, "percent_of_tickets" => 50 }, tile_numbers["closed_in_range"])
+    assert_equal({ "days" => 6, "closed_tickets" => 2 }, tile_numbers["median_days"])
+    assert_equal({ "difference" => 2, "periods" => 4, "period" => "week", "direction" => "growing" }, tile_numbers["backlog_change"])
+    assert_equal [2, 2], donut_counts(filter)
   end
 
   def test_the_backlog_change_looks_at_the_last_four_periods_only
@@ -103,9 +100,15 @@ class SummaryTilesRowsTest < ActiveSupport::TestCase
     Time.utc(*text.scan(/\d+/).map(&:to_i))
   end
 
+  def donut_counts(filters)
+    query = IssueQuery.new(name: "_", project: Project.find(1))
+    filters.each { |field, filter| query.add_filter(field, filter[:operator], filter[:values]) }
+    RubylodeStats::OpenVersusClosedRows.new(query).rows.map { |row| row["tickets"] }
+  end
+
   def tiles(filters = {})
     query = IssueQuery.new(name: "_", project: Project.find(1))
     filters.each { |field, filter| query.add_filter(field, filter[:operator], filter[:values]) }
-    RubylodeStats::SummaryTilesRows.new(query, period: "week", time_zone: UTC, today: TODAY).tiles
+    RubylodeStats::SummaryTilesRows.new(query, period: "week", time_zone: UTC).tiles
   end
 end

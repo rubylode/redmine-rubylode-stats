@@ -57,6 +57,10 @@ a legend that hides a series when clicked, and a bar or slice that links to the 
     "(overdue)" when the date is past and the version is still open; rows run by due date, versions without a date next, and
     tickets without a version last as "No version". Like open versus closed, the status filter is ignored and every other
     filter applies; a bar opens the issue list of that version, and a legend click hides Done or Remaining.
+18. When the Overview is opened, then the Open and Closed in range tiles, the "of N tickets" and the closed percentage count
+    exactly the tickets of the Open versus closed donut: the filters and the date range apply, the status filter is ignored, so
+    a ticket outside the date range is in neither. The median days to close is taken over the closed tickets of that same
+    population; the backlog change keeps its own definition (opened minus closed per period over the last four periods).
 
 ## Decisions
 

@@ -58,7 +58,7 @@ class StatsController < ApplicationController
     return unless @tab.key == "overview" && @query.valid?
 
     time_zone = User.current.time_zone || Time.zone
-    RubylodeStats::SummaryTilesRows.new(@query, period: @period, time_zone: time_zone, today: User.current.today).tiles
+    RubylodeStats::SummaryTilesRows.new(@query, period: @period, time_zone: time_zone).tiles
   end
 
   def find_optional_project_by_project_id

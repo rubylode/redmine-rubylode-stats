@@ -64,8 +64,8 @@ en:
   label_stats_tile_open: Open
   label_stats_tile_open_detail: "of %{count} tickets"
   label_stats_tile_closed_in_range: Closed in range
-  label_stats_tile_closed_in_range_detail: "%{percent}% of all tickets"
-  label_stats_tile_closed_in_range_detail_empty: "of all tickets"
+  label_stats_tile_closed_in_range_detail: "%{percent}% of the tickets counted"
+  label_stats_tile_closed_in_range_detail_empty: "of the tickets counted"
   label_stats_tile_median_days: Median days to close
   label_stats_tile_median_days_detail: "%{count} closed tickets"
   label_stats_tile_median_days_unit: days
