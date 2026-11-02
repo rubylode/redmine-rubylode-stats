@@ -60,3 +60,62 @@
   .stats-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/*
+ * Tooltip of the charts. It sits at the end of the page's body, so it is styled by custom properties on the root. A theme can
+ * set --stats-tooltip-background, --stats-tooltip-color, --stats-tooltip-key-color and --stats-tooltip-border; without them
+ * the tooltip takes the theme's own colours, and a light or dark default by the system colour scheme.
+ */
+:root {
+  --stats-tooltip-default-background: #ffffff;
+  --stats-tooltip-default-color: #212529;
+  --stats-tooltip-default-key-color: #495057;
+  --stats-tooltip-default-border: #ced4da;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --stats-tooltip-default-background: #25262b;
+    --stats-tooltip-default-color: #e6e6e6;
+    --stats-tooltip-default-key-color: #adb5bd;
+    --stats-tooltip-default-border: #555555;
+  }
+}
+#vg-tooltip-element.stats-theme {
+  max-width: 28em;
+  padding: 0.5em 0.75em;
+  border: 1px solid var(--stats-tooltip-border, var(--oc-gray-4, var(--stats-tooltip-default-border)));
+  border-radius: 4px;
+  background-color: var(--stats-tooltip-background, var(--oc-white, var(--stats-tooltip-default-background)));
+  color: var(--stats-tooltip-color, var(--oc-gray-9, var(--stats-tooltip-default-color)));
+  font-family: var(--fonts-main, sans-serif);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+#vg-tooltip-element.stats-theme table tr td.key {
+  color: var(--stats-tooltip-key-color, var(--oc-gray-7, var(--stats-tooltip-default-key-color)));
+  padding-right: 0.75em;
+  white-space: nowrap;
+}
+#vg-tooltip-element.stats-theme table tr td.value { max-width: 18em; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* The table behind each chart: the same figures without a pointer. */
+.stats-data { margin-top: 0.4em; font-size: 0.85em; }
+.stats-data > summary { cursor: pointer; width: fit-content; color: var(--oc-blue-7, #1c7ed6); }
+.stats-data > summary:focus-visible, .stats-data-link:focus-visible { outline: 2px solid var(--oc-blue-7, #1c7ed6); outline-offset: 2px; }
+.stats-data-table { width: 100%; margin-top: 0.4em; }
+.stats-data-table th, .stats-data-table td { text-align: left; }
+.stats-data-table td:not(:first-child), .stats-data-table th[scope=col]:not(:first-child) { font-variant-numeric: tabular-nums; }
+.stats-visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Marks that link to the ticket list show a pointing hand; the SVG anchors keep a visible keyboard focus. */
+.stats-chart svg a:focus-visible { outline: 2px solid var(--oc-blue-7, #1c7ed6); }
+
+@media (prefers-reduced-motion: reduce) {
+  #vg-tooltip-element, .stats-chart, .stats-chart * { transition: none !important; animation: none !important; }
+  .stats-data > summary { scroll-behavior: auto; }
+}
