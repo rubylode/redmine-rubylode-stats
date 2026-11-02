@@ -4,6 +4,25 @@ All notable changes to this plugin. The format follows [Keep a Changelog](https:
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-01
+
+Interactive charts.
+
+### Added
+
+- A tooltip on every mark with the exact figures: the count, the share of the total, the total, and the change on the previous period where it makes sense. Numbers and month names follow the page's language.
+- The mark under the pointer stays bright and the others dim. A click on a legend entry hides a series, as before.
+- A click on a bar, a point or a slice opens the ticket list with the page's filters plus that mark's value, in the same tab or, with ctrl or cmd, in a new one. The median line links to the tickets closed in each period, and the opened and closed bars to the tickets created and closed in it.
+- A "View data" table under every chart with the same figures and links, and a label on each chart for screen readers.
+- The tooltip follows the theme through `--stats-tooltip-background`, `--stats-tooltip-color`, `--stats-tooltip-key-color` and `--stats-tooltip-border`.
+- A browser check (`npm run check`) and a script that retakes the screenshots (`npm run screenshots`).
+
+### Changed
+
+- Ticket list addresses are built by one small class that keeps to Redmine's own query format and leaves out any filter or operator it does not know. A link shows only to people who may open the ticket list.
+- Charts are drawn as SVG, so a mark that links is a real link.
+- Motion is switched off for people whose system asks for less of it.
+
 ## [1.0.0] - 2026-10-30
 
 First release. Redmine 7.0 and newer.
@@ -20,5 +39,6 @@ First release. Redmine 7.0 and newer.
 - A page across projects, limited to the projects where the user holds the permission and the module is on.
 - A demo data script for the throwaway Redmine, and screenshots of each tab.
 
-[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.0.0...main
+[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.0...main
+[1.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/rubylode/redmine-rubylode-stats/releases/tag/v1.0.0
