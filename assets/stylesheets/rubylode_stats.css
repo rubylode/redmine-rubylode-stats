@@ -96,7 +96,10 @@
 #vg-tooltip-element.stats-theme table tr td.key {
   color: var(--stats-tooltip-key-color, var(--oc-gray-7, var(--stats-tooltip-default-key-color)));
   padding-right: 0.75em;
+  max-width: none;
   white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
 }
 #vg-tooltip-element.stats-theme table tr td.value { max-width: 18em; font-weight: 600; font-variant-numeric: tabular-nums; }
 

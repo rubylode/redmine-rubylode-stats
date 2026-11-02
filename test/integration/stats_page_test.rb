@@ -393,7 +393,7 @@ end
     assert_equal "–", rows.first["opened_change_text"]
     assert_match(/\A([+-]\d+|0)\z/, rows[1]["opened_change_text"]) if rows.size > 1
     titles = tooltip_lines(chart_specification("opened_and_closed")).map { |line| line["title"] }
-    assert_includes titles, "Backlog, change on the previous week"
+    assert_includes titles, "Backlog vs previous week"
   end
 
   def test_every_link_is_an_issue_list_address_in_the_query_format_with_ids_and_dates_only
@@ -434,7 +434,7 @@ end
     link = Rack::Utils.parse_nested_query(URI(row["url"]).query)
     assert_equal "><", link["op"]["closed_on"]
     assert_equal [row["period"], Date.parse(row["period"]).end_of_month.iso8601], link["v"]["closed_on"]
-    assert_equal "Median days to close, change on the previous month", tooltip_lines(chart_specification("median_time_to_close")).last["title"]
+    assert_equal "Median days to close vs previous month", tooltip_lines(chart_specification("median_time_to_close")).last["title"]
   end
 
   def test_every_chart_has_a_label_and_a_table_of_its_figures_under_it
