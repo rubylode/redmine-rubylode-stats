@@ -19,14 +19,14 @@ module RubylodeStats
   module Charts
     # Open versus closed as a donut with the percentage closed in its centre; the legend carries the counts and a click on an
     # entry hides that half. Both halves are always counted, whatever the status filter says (see OpenVersusClosedRows). A slice
-    # links to the issue list narrowed to open or closed tickets.
+    # links to the issue list narrowed to open or closed tickets; its tooltip names the count, the share and the total.
     class OpenVersusClosed < Base
       STATE_FILTERS = { "open" => "o", "closed" => "c" }.freeze
-      DASH = "–".freeze
 
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "data" => { "values" => rows_with_links },
           "width" => 220, "height" => 220,
           "layer" => [donut, centre_text(percent_closed_text, 34, "bold", 0), centre_text(I18n.t(:label_stats_state_closed).downcase, 13, "normal", 26)]
@@ -35,6 +35,15 @@ module RubylodeStats
 
       def card_note
         I18n.t(:label_stats_open_versus_closed_note)
+      end
+
+      def data_table
+        DataTable.new(
+          headers: [I18n.t(:field_status), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          rows: rows_with_links.map do |row|
+            DataTable.row([row["state_label"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+          end
+        )
       end
 
       private
@@ -53,19 +62,21 @@ module RubylodeStats
 
       def tooltip
         [
-          { "field" => "state_label", "type" => "nominal", "title" => I18n.t(:field_status) },
-          { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+          tooltip_line("state_label", I18n.t(:field_status), "nominal"),
+          count_line("tickets", I18n.t(:label_stats_tickets)),
+          share_line,
+          count_line("total", I18n.t(:label_stats_all_tickets))
         ]
       end
 
       def donut
         {
-          "params" => legend_toggle_params("legend_label"),
+          "params" => legend_toggle_params("legend_label") + hover_params,
           "mark" => { "type" => "arc", "innerRadius" => 70, "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {
             "theta" => { "field" => "tickets", "type" => "quantitative", "stack" => true },
             "color" => state_color,
-            "opacity" => legend_toggle_opacity,
+            "opacity" => emphasis_opacity,
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => tooltip
           }
@@ -87,8 +98,11 @@ module RubylodeStats
       end
 
       def percent_of_all(tickets)
-        total = rows.sum { |row| row["tickets"] }
-        (tickets * 100.0 / total).round unless total.zero?
+        (tickets * 100.0 / total_tickets).round unless total_tickets.zero?
+      end
+
+      def total_tickets
+        @total_tickets ||= rows.sum { |row| row["tickets"] }
       end
 
       def rows
@@ -101,6 +115,8 @@ module RubylodeStats
           percent = percent_of_all(row["tickets"])
           row.merge(
             "position" => position,
+            "total" => total_tickets,
+            "share" => share_of(row["tickets"], total_tickets),
             "state_label" => state_label,
             "legend_label" => I18n.t(:label_stats_legend_with_count, state: state_label, tickets: row["tickets"], percent: percent || DASH),
             "url" => issue_list_link.call("status_id" => { operator: STATE_FILTERS.fetch(row["state"]), values: [] })

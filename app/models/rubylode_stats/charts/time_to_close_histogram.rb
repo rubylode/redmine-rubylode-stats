@@ -18,23 +18,52 @@
 module RubylodeStats
   module Charts
     # How many closed tickets took 0-1, 2-3, 4-7, 8-14, 15-30, 31-90 or 91+ days from creation to closing, as a histogram.
+    # The tooltip names the count, the share of the closed tickets, and the share closed in that time or faster. A bar has no
+    # link: the issue list has no filter for how long a ticket took.
     class TimeToCloseHistogram < Base
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "width" => "container",
-          "data" => { "values" => TimeToCloseRows.new(query).histogram_rows },
+          "data" => { "values" => rows },
+          "params" => hover_params,
           "mark" => { "type" => "bar", "tooltip" => true },
           "encoding" => {
             "x" => { "field" => "bin", "type" => "ordinal", "sort" => TimeToCloseRows::BINS.map(&:first),
                      "title" => I18n.t(:label_stats_days_to_close), "axis" => { "labelAngle" => 0 } },
             "y" => count_axis("tickets"),
+            "opacity" => emphasis_opacity(with_legend: false),
             "tooltip" => [
-              { "field" => "bin", "type" => "ordinal", "title" => I18n.t(:label_stats_days_to_close) },
-              { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+              tooltip_line("bin", I18n.t(:label_stats_days_to_close), "ordinal"),
+              count_line("tickets", I18n.t(:label_stats_tickets)),
+              share_line("share", I18n.t(:label_stats_share_of_closed)),
+              share_line("cumulative_share", I18n.t(:label_stats_share_within)),
+              count_line("total", I18n.t(:label_stats_all_closed))
             ]
           }
         }
+      end
+
+      def data_table
+        DataTable.new(
+          headers: [I18n.t(:label_stats_days_to_close), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_closed), I18n.t(:label_stats_share_within)],
+          rows: rows.map { |row| DataTable.row([row["bin"], count_text(row["tickets"]), share_text(row["share"]), share_text(row["cumulative_share"])]) }
+        )
+      end
+
+      private
+
+      def rows
+        @rows ||= begin
+          bins = TimeToCloseRows.new(query).histogram_rows
+          total = bins.sum { |row| row["tickets"] }
+          running = 0
+          bins.map do |row|
+            running += row["tickets"]
+            row.merge("total" => total, "share" => share_of(row["tickets"], total), "cumulative_share" => share_of(running, total))
+          end
+        end
       end
     end
   end

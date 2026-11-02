@@ -29,6 +29,7 @@ module RubylodeStats
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "data" => { "values" => rows_with_labels },
           "height" => { "step" => ROW_HEIGHT },
           "encoding" => { "y" => row_axis },
@@ -38,6 +39,17 @@ module RubylodeStats
 
       def card_note
         I18n.t(:label_stats_progress_per_version_note)
+      end
+
+      def data_table
+        DataTable.new(
+          headers: [I18n.t(:label_version), I18n.t(:field_effective_date), I18n.t(:label_stats_progress_done), I18n.t(:label_stats_progress_remaining),
+                    I18n.t(:label_stats_all_tickets), I18n.t(:label_stats_table_tickets)],
+          rows: rows_with_labels.map do |row|
+            DataTable.row([row["name"], row["due_text"], "#{count_text(row["done"])} (#{row["percent"]}%)", count_text(row["remaining"]),
+                           count_text(row["total"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+          end
+        )
       end
 
       def wide?
@@ -60,7 +72,7 @@ module RubylodeStats
 
       def bars
         {
-          "params" => legend_toggle_params("state"),
+          "params" => legend_toggle_params("state") + hover_params,
           "transform" => [
             { "fold" => %w[done remaining], "as" => %w[state_key tickets] },
             { "calculate" => "#{JSON.generate(state_labels)}[datum.state_key]", "as" => "state" }
@@ -73,12 +85,17 @@ module RubylodeStats
               "scale" => { "domain" => state_labels.values, "range" => [STATE_COLORS[:done], STATE_COLORS[:remaining]] }
             },
             "order" => { "field" => "state_key", "sort" => "ascending" },
-            "opacity" => legend_toggle_opacity,
+            "opacity" => emphasis_opacity,
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
-              { "field" => "name", "type" => "nominal", "title" => I18n.t(:label_version) },
-              { "field" => "state", "type" => "nominal", "title" => I18n.t(:field_status) },
-              { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+              tooltip_line("name", I18n.t(:label_version), "nominal"),
+              tooltip_line("due_text", I18n.t(:field_effective_date), "nominal"),
+              tooltip_line("state", I18n.t(:field_status), "nominal"),
+              count_line("tickets", I18n.t(:label_stats_tickets)),
+              count_line("done", I18n.t(:label_stats_progress_done)),
+              count_line("remaining", I18n.t(:label_stats_progress_remaining)),
+              count_line("total", I18n.t(:label_stats_all_tickets)),
+              tooltip_line("percent_text", I18n.t(:label_stats_progress_percent), "nominal")
             ]
           }
         }
@@ -101,6 +118,8 @@ module RubylodeStats
           row.merge(
             "position" => position,
             "label" => row_label(row),
+            "due_text" => row["due_date"] ? format_date(Date.iso8601(row["due_date"])) : DASH,
+            "percent_text" => "#{row["percent"]}%",
             "end_label" => I18n.t(:label_stats_progress_end, percent: row["percent"], done: row["done"], total: row["total"]),
             "url" => issue_list_link.call("fixed_version_id" => row["version_id"], "status_id" => { operator: "*", values: [] })
           )

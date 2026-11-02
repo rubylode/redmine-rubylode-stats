@@ -342,11 +342,154 @@ end
     assert_equal %w[0-1 2-3 4-7 8-14 15-30 31-90 91+], histogram.dig("data", "values").map { |row| row["bin"] }
     median = chart_specification("median_time_to_close")
     assert_equal 3, median.dig("data", "values").sum { |row| row["closed"] }
-    assert_equal "line", median.dig("mark", "type")
-    assert median.dig("mark", "tooltip")
+    assert_equal %w[line point], median["layer"].map { |layer| layer.dig("mark", "type") }
+    assert median["layer"].last.dig("mark", "tooltip")
+  end
+
+  ALL_STATUSES = "set_filter=1&f[]=status_id&op[status_id]=*".freeze
+  TAB_CHARTS = {
+    "overview" => %w[tickets_by_status tickets_by_slice open_versus_closed opened_and_closed],
+    "people" => %w[closed_per_person],
+    "speed" => %w[time_to_close_histogram median_time_to_close],
+    "versions" => %w[progress_per_version]
+  }.freeze
+
+  def test_every_chart_has_a_tooltip_and_a_hover_selection_that_dims_the_other_marks
+    TAB_CHARTS.each do |tab, chart_names|
+      get "/projects/#{@project.identifier}/stats?tab=#{tab}&#{ALL_STATUSES}&period=month"
+      chart_names.each do |chart_name|
+        specification = chart_specification(chart_name)
+        hover = all_params(specification).find { |param| param["name"] == "hover" }
+
+        assert hover, "#{chart_name} has no hover selection"
+        assert_equal "pointerover", hover.dig("select", "on"), chart_name
+        assert_equal "pointerout", hover.dig("select", "clear"), chart_name
+        assert_not_empty tooltip_lines(specification), "#{chart_name} has no tooltip"
+        assert tooltip_lines(specification).all? { |line| line["title"].present? }, "#{chart_name} has a tooltip line without a title"
+        assert_includes specification.to_json, '"param":"hover"', chart_name
+      end
+    end
+  end
+
+  def test_the_status_and_slice_tooltips_carry_the_count_the_share_and_the_total
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&slice_by=tracker"
+
+    %w[tickets_by_status tickets_by_slice open_versus_closed].each do |chart_name|
+      titles = tooltip_lines(chart_specification(chart_name)).map { |line| line["title"] }
+      assert_includes titles, "Share of total", chart_name
+      assert_includes titles, "All tickets", chart_name
+      assert_includes titles, "Tickets", chart_name
+    end
+    rows = chart_rows("tickets_by_status")
+    assert_equal 7, rows.first["total"]
+    assert_in_delta 3 / 7.0, rows.first["share"], 0.0001
+    assert_equal ".1~%", tooltip_lines(chart_specification("tickets_by_status")).find { |line| line["title"] == "Share of total" }["format"]
+  end
+
+  def test_the_opened_and_closed_tooltip_compares_each_figure_with_the_previous_period
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&period=week"
+
+    rows = chart_rows("opened_and_closed")
+    assert_equal "–", rows.first["opened_change_text"]
+    assert_match(/\A([+-]\d+|0)\z/, rows[1]["opened_change_text"]) if rows.size > 1
+    titles = tooltip_lines(chart_specification("opened_and_closed")).map { |line| line["title"] }
+    assert_includes titles, "Backlog, change on the previous week"
+  end
+
+  def test_every_link_is_an_issue_list_address_in_the_query_format_with_ids_and_dates_only
+    TAB_CHARTS.each do |tab, chart_names|
+      get "/projects/#{@project.identifier}/stats?tab=#{tab}&#{ALL_STATUSES}&period=month"
+      chart_names.each do |chart_name|
+        addresses = chart_specification(chart_name).dig("data", "values").flat_map { |row| row.select { |key, _| key.end_with?("url") }.values }.compact
+
+        addresses.each do |address|
+          assert_match(%r{\A/projects/#{@project.identifier}/issues\?set_filter=1&f\[\]=}, address, chart_name)
+          Rack::Utils.parse_nested_query(URI(address).query).fetch("v").each_value do |values|
+            assert values.all? { |value| value.match?(/\A(\d+|\d{4}-\d{2}-\d{2})?\z/) }, "#{chart_name}: #{values.inspect}"
+          end
+        end
+      end
+    end
+  end
+
+  def test_opened_and_closed_bars_link_to_the_tickets_created_and_closed_in_the_period_and_the_backlog_has_no_link
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&period=month&f[]=created_on&op[created_on]=><&v[created_on][]=2026-10-01&v[created_on][]=2026-10-31"
+
+    specification = chart_specification("opened_and_closed")
+    row = specification.dig("data", "values").first
+    opened = Rack::Utils.parse_nested_query(URI(row["opened_url"]).query)
+    closed = Rack::Utils.parse_nested_query(URI(row["closed_url"]).query)
+    assert_equal %w[2026-10-01 2026-10-31], opened["v"]["created_on"]
+    assert_equal %w[2026-10-01 2026-10-31], closed["v"]["closed_on"]
+    assert_not_includes closed["f"], "created_on", "the range filter of the page is the chart's range, not a selection"
+    layer_encodings = specification["layer"].map { |layer| layer["encoding"] }
+    assert layer_encodings.first.key?("href")
+    assert_not layer_encodings.last.key?("href")
+  end
+
+  def test_median_points_link_to_the_tickets_closed_in_the_period
+    get "/projects/#{@project.identifier}/stats?tab=speed&#{ALL_STATUSES}&period=month"
+
+    row = chart_rows("median_time_to_close").first
+    link = Rack::Utils.parse_nested_query(URI(row["url"]).query)
+    assert_equal "><", link["op"]["closed_on"]
+    assert_equal [row["period"], Date.parse(row["period"]).end_of_month.iso8601], link["v"]["closed_on"]
+    assert_equal "Median days to close, change on the previous month", tooltip_lines(chart_specification("median_time_to_close")).last["title"]
+  end
+
+  def test_every_chart_has_a_label_and_a_table_of_its_figures_under_it
+    TAB_CHARTS.each do |tab, chart_names|
+      get "/projects/#{@project.identifier}/stats?tab=#{tab}&#{ALL_STATUSES}&period=month"
+      chart_names.each do |chart_name|
+        assert_select "#stats-chart-#{chart_name}[role=img][aria-label]"
+        assert_select "#stats-chart-#{chart_name}[aria-describedby=?]", "stats-data-#{chart_name}"
+        assert_select "#stats-card-#{chart_name} details#stats-data-#{chart_name}.stats-data summary", text: "View data"
+        assert_select "#stats-data-#{chart_name} table caption"
+        assert_select "#stats-data-#{chart_name} thead th[scope=col]"
+        assert_select "#stats-data-#{chart_name} tbody tr th[scope=row]"
+      end
+    end
+  end
+
+  def test_the_data_table_holds_the_figures_of_the_chart_and_links_to_the_tickets
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}"
+
+    rows = css_select("#stats-data-tickets_by_status tbody tr")
+    assert_equal chart_rows("tickets_by_status").size, rows.size
+    first = rows.first
+    assert_equal "New", first.css("th").text
+    assert_equal ["3", "42.9%"], first.css("td").first(2).map { |cell| cell.text.strip }
+    link = first.css("a.stats-data-link").first
+    assert_equal chart_rows("tickets_by_status").first["url"], link["href"]
+    assert_equal "Show tickets: New", link["aria-label"]
+  end
+
+  def test_the_data_table_of_opened_and_closed_has_a_link_for_each_series
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&period=month"
+
+    assert_select "#stats-data-opened_and_closed tbody tr:first-child a.stats-data-link", count: 2
+  end
+
+  def test_hostile_text_in_the_page_parameters_cannot_leave_the_issue_list_address
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&f[]=subject&op[subject]=~&v[subject][]=a%26f%5B%5D%3Dassigned_to_id%23x%22%3E%3Cscript%3E"
+
+    assert_response :success
+    chart_rows("tickets_by_status").each do |row|
+      assert_equal 1, row["url"].scan("f[]=subject").size
+      assert_no_match(/[<>"# ]/, row["url"])
+      assert_equal ["a&f[]=assigned_to_id#x\"><script>"], Rack::Utils.parse_nested_query(URI(row["url"]).query)["v"]["subject"]
+    end
   end
 
   private
+
+  def all_params(specification)
+    [specification, *Array(specification["layer"])].flat_map { |unit| Array(unit["params"]) }
+  end
+
+  def tooltip_lines(specification)
+    [specification, *Array(specification["layer"])].flat_map { |unit| Array(unit.dig("encoding", "tooltip")) }
+  end
 
   def chart_specification(chart_name)
     JSON.parse(css_select("#stats-chart-#{chart_name}").first["data-specification"])

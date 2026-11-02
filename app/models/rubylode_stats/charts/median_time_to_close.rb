@@ -17,30 +17,57 @@
 
 module RubylodeStats
   module Charts
-    # The median days to close of the tickets closed in each period, as a line.
+    # The median days to close of the tickets closed in each period, as a line with a point per period. The point under the
+    # pointer grows; the tooltip names the median, the tickets closed and the change of the median against the previous
+    # period; a point links to the issue list of the tickets closed in that period.
     class MedianTimeToClose < Base
       AXIS_FORMATS = { "day" => "%b %d", "week" => "%b %d", "month" => "%b %Y" }.freeze
+      POINT_SIZE = 60
+      POINT_SIZE_HOVERED = 220
 
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "width" => "container",
-          "data" => { "values" => rows },
-          "mark" => { "type" => "line", "point" => true, "tooltip" => true },
+          "data" => { "values" => rows_with_links },
           "encoding" => {
             "x" => { "field" => "period", "type" => "temporal", "title" => period_label,
                      "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
-            "y" => { "field" => "median_days", "type" => "quantitative", "title" => I18n.t(:label_stats_median_days) },
+            "y" => { "field" => "median_days", "type" => "quantitative", "title" => I18n.t(:label_stats_median_days) }
+          },
+          "layer" => [{ "mark" => { "type" => "line" } }, points]
+        }
+      end
+
+      def data_table
+        DataTable.new(
+          headers: [period_label, I18n.t(:label_stats_median_days), I18n.t(:label_stats_series_closed), I18n.t(:label_stats_table_tickets)],
+          rows: rows_with_links.map do |row|
+            DataTable.row([row["period_text"], "#{row["median_days"]} (#{row["median_change_text"]})", count_text(row["closed"])],
+                          [I18n.t(:label_stats_table_open_closed), row["url"]])
+          end
+        )
+      end
+
+      private
+
+      def points
+        {
+          "params" => hover_params,
+          "mark" => { "type" => "point", "filled" => true, "tooltip" => true, "cursor" => "pointer" },
+          "encoding" => {
+            "size" => { "condition" => { "param" => "hover", "empty" => false, "value" => POINT_SIZE_HOVERED }, "value" => POINT_SIZE },
+            "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
-              { "field" => "period", "type" => "temporal", "title" => period_label },
-              { "field" => "median_days", "type" => "quantitative", "title" => I18n.t(:label_stats_median_days) },
-              { "field" => "closed", "type" => "quantitative", "title" => I18n.t(:label_stats_series_closed) }
+              tooltip_line("period_text", period_label, "nominal"),
+              tooltip_line("median_days", I18n.t(:label_stats_median_days), "quantitative", ",.1~f"),
+              count_line("closed", I18n.t(:label_stats_series_closed)),
+              tooltip_line("median_change_text", change_title(I18n.t(:label_stats_median_days), period), "nominal")
             ]
           }
         }
       end
-
-      private
 
       def period
         options.fetch(:period, Registry::DEFAULT_PERIOD)
@@ -50,9 +77,20 @@ module RubylodeStats
         I18n.t("label_stats_period_#{period}")
       end
 
-      def rows
-        time_zone = options.fetch(:time_zone) { ActiveSupport::TimeZone["UTC"] }
-        TimeToCloseRows.new(query).median_rows(period: period, time_zone: time_zone)
+      def rows_with_links
+        @rows_with_links ||= begin
+          time_zone = options.fetch(:time_zone) { ActiveSupport::TimeZone["UTC"] }
+          rows = TimeToCloseRows.new(query).median_rows(period: period, time_zone: time_zone)
+          rows.each_with_index.map do |row, index|
+            first_day = Date.iso8601(row["period"])
+            previous = rows[index - 1] if index.positive?
+            row.merge(
+              "period_text" => period_text(first_day, period),
+              "median_change_text" => change_text(row["median_days"], previous && previous["median_days"]),
+              "url" => issue_list_link.call(date_range_filter("closed_on", *period_days(first_day, period)))
+            )
+          end
+        end
       end
     end
   end

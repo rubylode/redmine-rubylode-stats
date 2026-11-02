@@ -13,16 +13,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module RubylodeStats
   module Charts
     # The query's tickets counted by the page's Slice-by (category, version, assignee, tracker, priority, author), as a bar
-    # chart, or as a pie when the page asks for the "pie" shape. Tickets without a value are the "None" slice.
+    # chart, or as a pie when the page asks for the "pie" shape. Tickets without a value are the "None" slice. A bar or slice
+    # links to the issue list narrowed to its value; the tooltip names the count, the share of all the tickets and the total.
     class TicketsBySlice < Base
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "data" => { "values" => rows_with_links },
+          "params" => hover_params,
           "mark" => pie? ? { "type" => "arc", "tooltip" => true, "cursor" => "pointer" } : { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => pie? ? pie_encoding : bar_encoding
         }
@@ -30,6 +34,15 @@ module RubylodeStats
 
       def card_title
         "#{I18n.t(:label_stats_tickets_by)} #{slice_label.downcase}"
+      end
+
+      def data_table
+        DataTable.new(
+          headers: [slice_label, I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          rows: rows_with_links.map do |row|
+            DataTable.row([row["slice"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+          end
+        )
       end
 
       private
@@ -48,8 +61,10 @@ module RubylodeStats
 
       def tooltip
         [
-          { "field" => "slice", "type" => "nominal", "title" => slice_label },
-          { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+          tooltip_line("slice", slice_label, "nominal"),
+          count_line("tickets", I18n.t(:label_stats_tickets)),
+          share_line,
+          count_line("total", I18n.t(:label_stats_all_tickets))
         ]
       end
 
@@ -57,6 +72,7 @@ module RubylodeStats
         {
           "x" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
           "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
+          "opacity" => emphasis_opacity(with_legend: false),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
         }
@@ -66,6 +82,7 @@ module RubylodeStats
         {
           "theta" => { "field" => "tickets", "type" => "quantitative", "stack" => true },
           "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => slice_label },
+          "opacity" => emphasis_opacity(with_legend: false),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
         }
@@ -73,8 +90,13 @@ module RubylodeStats
 
       def rows_with_links
         filter_field = SlicedTicketsRows.filter_field(slice_by)
-        @rows_with_links ||= SlicedTicketsRows.new(query, slice_by).rows.each_with_index.map do |row, position|
-          row.merge("position" => position, "url" => issue_list_link.call(filter_field => row["slice_id"]))
+        @rows_with_links ||= begin
+          rows = SlicedTicketsRows.new(query, slice_by).rows
+          total = rows.sum { |row| row["tickets"] }
+          rows.each_with_index.map do |row, position|
+            row.merge("position" => position, "total" => total, "share" => share_of(row["tickets"], total),
+                      "url" => issue_list_link.call(filter_field => row["slice_id"]))
+          end
         end
       end
     end

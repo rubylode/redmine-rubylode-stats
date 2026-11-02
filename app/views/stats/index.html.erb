@@ -75,8 +75,10 @@
       <section id="stats-card-<%= chart.chart_name %>" class="stats-card<%= " stats-card-wide" if chart.wide? %>">
         <h3 class="stats-card-title"><%= chart.card_title %></h3>
         <p class="stats-card-subtitle"><%= chart.card_subtitle %></p>
-        <div id="stats-chart-<%= chart.chart_name %>" class="stats-chart"
+        <div id="stats-chart-<%= chart.chart_name %>" class="stats-chart" role="img"
+             aria-label="<%= chart.description %>" aria-describedby="stats-data-<%= chart.chart_name %>"
              data-specification="<%= chart.specification.to_json %>"></div>
+        <%= render partial: "stats/data_table", locals: { chart: chart } %>
         <% if chart.card_note %><p class="stats-card-note"><%= chart.card_note %></p><% end %>
       </section>
     <% end %>

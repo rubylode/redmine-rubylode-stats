@@ -77,3 +77,18 @@ en:
   label_stats_period_unit_day: days
   label_stats_period_unit_week: weeks
   label_stats_period_unit_month: months
+  label_stats_all_tickets: All tickets
+  label_stats_all_closed: All closed tickets
+  label_stats_share_of_total: Share of total
+  label_stats_share_of_period: Share of the period
+  label_stats_share_of_closed: Share of closed tickets
+  label_stats_share_within: Closed in this time or faster
+  label_stats_period_total: Total closed
+  label_stats_progress_percent: Percent done
+  label_stats_change_title: "%{name}, change on the previous %{period}"
+  label_stats_view_data: View data
+  label_stats_data_caption: "Figures behind the chart: %{chart}"
+  label_stats_table_tickets: Ticket list
+  label_stats_table_open_tickets: Show tickets
+  label_stats_table_open_opened: Show opened tickets
+  label_stats_table_open_closed: Show closed tickets

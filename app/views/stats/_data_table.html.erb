@@ -1,0 +1,46 @@
+<%#
+  Rubylode Stats: charts over a project's tickets, for Redmine
+  Copyright (C) 2026  Nick Gorbikoff
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+%>
+
+<%# The figures of a chart as a table, for keyboard and screen reader users and for anyone who wants the exact numbers. %>
+<% table = chart.data_table %>
+<% if table %>
+  <details id="stats-data-<%= chart.chart_name %>" class="stats-data">
+    <summary><%= l(:label_stats_view_data) %></summary>
+    <table class="list stats-data-table">
+      <caption class="stats-visually-hidden"><%= l(:label_stats_data_caption, chart: chart.card_title) %></caption>
+      <thead>
+        <tr><% table.headers.each do |header| %><th scope="col"><%= header %></th><% end %></tr>
+      </thead>
+      <tbody>
+        <% table.rows.each do |row| %>
+          <tr>
+            <% row.cells.each_with_index do |cell, index| %>
+              <% if index.zero? %><th scope="row"><%= cell %></th><% else %><td><%= cell %></td><% end %>
+            <% end %>
+            <td>
+              <% row.links.each do |text, address| %>
+                <%= link_to text, address, class: "stats-data-link", "aria-label": "#{text}: #{row.cells.first}" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </details>
+<% end %>

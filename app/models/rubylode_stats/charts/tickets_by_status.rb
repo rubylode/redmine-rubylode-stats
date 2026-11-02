@@ -17,29 +17,50 @@
 
 module RubylodeStats
   module Charts
+    # The query's tickets counted by status, one bar each. A bar links to the issue list narrowed to that status, the
+    # tooltip names the count, the share of all the tickets and the total.
     class TicketsByStatus < Base
       def specification
         {
           "$schema" => SCHEMA,
+          "description" => description,
           "data" => { "values" => rows_with_links },
+          "params" => hover_params,
           "mark" => { "type" => "bar", "tooltip" => true, "cursor" => "pointer" },
           "encoding" => {
             "x" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
             "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
+            "opacity" => emphasis_opacity(with_legend: false),
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
-              { "field" => "status", "type" => "nominal", "title" => I18n.t(:field_status) },
-              { "field" => "tickets", "type" => "quantitative", "title" => I18n.t(:label_stats_tickets) }
+              tooltip_line("status", I18n.t(:field_status), "nominal"),
+              count_line("tickets", I18n.t(:label_stats_tickets)),
+              share_line,
+              count_line("total", I18n.t(:label_stats_all_tickets))
             ]
           }
         }
       end
 
+      def data_table
+        DataTable.new(
+          headers: [I18n.t(:field_status), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          rows: rows_with_links.map do |row|
+            DataTable.row([row["status"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+          end
+        )
+      end
+
       private
 
       def rows_with_links
-        @rows_with_links ||= TicketsByStatusRows.new(query).rows.each_with_index.map do |row, position|
-          row.merge("position" => position, "url" => issue_list_link.call("status_id" => row["status_id"]))
+        @rows_with_links ||= begin
+          rows = TicketsByStatusRows.new(query).rows
+          total = rows.sum { |row| row["tickets"] }
+          rows.each_with_index.map do |row, position|
+            row.merge("position" => position, "total" => total, "share" => share_of(row["tickets"], total),
+                      "url" => issue_list_link.call("status_id" => row["status_id"]))
+          end
         end
       end
     end

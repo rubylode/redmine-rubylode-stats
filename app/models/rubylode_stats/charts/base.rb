@@ -25,6 +25,8 @@ module RubylodeStats
     # issue_list_link is a callable that takes an extra filter (for example "status_id" => 5) and returns the URL of the
     # issue list with the query's filters plus that one, so a bar can link to what it counts.
     class Base
+      include Redmine::I18n
+
       SCHEMA = "https://vega.github.io/schema/vega-lite/v5.json".freeze
 
       # The name used in the page's element ids: RubylodeStats::Charts::TicketsByStatus becomes "tickets_by_status".
@@ -64,6 +66,17 @@ module RubylodeStats
         false
       end
 
+      # The same figures as the chart, for people who do not use a pointer: a table under the chart (see DataTable). A chart
+      # that has no table returns nil.
+      def data_table
+        nil
+      end
+
+      # What a screen reader announces for the chart; the table holds the figures.
+      def description
+        "#{card_title}. #{card_subtitle}"
+      end
+
       private
 
       attr_reader :query, :issue_list_link, :options
@@ -88,6 +101,109 @@ module RubylodeStats
       # "params". Only for charts with a legend.
       def legend_toggle_params(field)
         [{ "name" => "legend_selection", "select" => { "type" => "point", "fields" => [field] }, "bind" => "legend" }]
+      end
+
+      # The mark under the pointer. With no fields the selection is the mark itself; with fields, every mark that shares
+      # their values (all the bars of one period, say) is emphasised together.
+      def hover_params(fields = nil)
+        select = { "type" => "point", "on" => "pointerover", "clear" => "pointerout" }
+        select["fields"] = fields if fields
+        [{ "name" => "hover", "select" => select }]
+      end
+
+      DIMMED_OPACITY = 0.45
+      HIDDEN_SERIES_OPACITY = 0.2
+
+      # A mark hidden through the legend is faint; with the pointer over a mark, the others dim a little; otherwise all are
+      # full. Add the result to a mark's encoding as "opacity", with hover_params (and legend_toggle_params when
+      # with_legend) among the chart's params.
+      def emphasis_opacity(with_legend: true)
+        conditions = []
+        conditions << { "test" => { "not" => { "param" => "legend_selection" } }, "value" => HIDDEN_SERIES_OPACITY } if with_legend
+        conditions << { "param" => "hover", "empty" => false, "value" => 1 }
+        conditions << { "test" => "length(data('hover_store')) === 0", "value" => 1 }
+        { "condition" => conditions, "value" => DIMMED_OPACITY }
+      end
+
+      # Number formats are Vega's (d3), which the page's script sets to the user's language.
+      COUNT_FORMAT = ",d".freeze
+      SHARE_FORMAT = ".1~%".freeze
+      DASH = "–".freeze
+
+      def tooltip_line(field, title, type = "quantitative", format = nil)
+        line = { "field" => field, "type" => type, "title" => title }
+        line["format"] = format if format
+        line
+      end
+
+      def count_line(field, title)
+        tooltip_line(field, title, "quantitative", COUNT_FORMAT)
+      end
+
+      def share_line(field = "share", title = I18n.t(:label_stats_share_of_total))
+        tooltip_line(field, title, "quantitative", SHARE_FORMAT)
+      end
+
+      # The mark's share of the whole, as a fraction (the tooltip formats it as a percentage); nil for an empty whole.
+      def share_of(part, whole)
+        part.to_f / whole if whole.positive?
+      end
+
+      def count_text(count)
+        ActiveSupport::NumberHelper.number_to_delimited(count)
+      end
+
+      def share_text(fraction)
+        return DASH unless fraction
+
+        percent = (fraction * 100).round(1)
+        "#{percent == percent.to_i ? percent.to_i : percent}%"
+      end
+
+      # "+3", "-2" or "0" against the previous period; a dash when there is no previous period to compare with.
+      def change_text(current, previous)
+        return DASH if previous.nil? || current.nil?
+
+        difference = (current - previous).round(1)
+        difference = difference.to_i if difference == difference.to_i
+        difference.positive? ? "+#{difference}" : difference.to_s
+      end
+
+      def change_title(name, period)
+        I18n.t(:label_stats_change_title, name: name, period: I18n.t("label_stats_period_#{period}").downcase)
+      end
+
+      PREVIOUS_PERIOD = {
+        "day" => ->(date) { date - 1 },
+        "week" => ->(date) { date - 7 },
+        "month" => ->(date) { date.prev_month }
+      }.freeze
+
+      # The first and last day of the period that starts on first_day.
+      def period_days(first_day, period)
+        last_day = case period
+                   when "day" then first_day
+                   when "week" then first_day + 6
+                   else first_day.end_of_month
+                   end
+        [first_day, last_day]
+      end
+
+      # The issue list of an open-tickets query would hide the closed tickets of a bar, so the default "open" status filter
+      # gives way to every status; any status filter the user chose stays, as the chart honours it too.
+      def date_range_filter(field, first_day, last_day)
+        filter = { field => { operator: "><", values: [first_day.iso8601, last_day.iso8601] } }
+        filter["status_id"] = { operator: "*", values: [] } if query.filters.dig("status_id", :operator) == "o"
+        filter
+      end
+
+      # "Oct 5, 2026" for a day, "Oct 5, 2026 – Oct 11, 2026" for a week, "October 2026" for a month, in the user's date format.
+      def period_text(first_day, period)
+        case period
+        when "day" then format_date(first_day)
+        when "week" then "#{format_date(first_day)} – #{format_date(first_day + 6)}"
+        else ::I18n.l(first_day, format: "%B %Y")
+        end
       end
 
       def legend_toggle_opacity
