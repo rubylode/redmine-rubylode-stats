@@ -81,10 +81,21 @@ class StatsController < ApplicationController
     Project.where(RubylodeStats::PermittedProjects.condition(User.current)).pluck(:id) unless @project
   end
 
+  # A callable that turns one more filter into the address of the issue list (see RubylodeStats::IssueListUrl), or into nil
+  # when the viewer could not open that list: a link is emitted only to what the viewer may see.
   def issue_list_link
+    return ->(_extra_filter, _without = []) { nil } unless issue_list_openable?
+
     link_builder = RubylodeStats::IssueListLink.new(@query, permitted_project_ids: permitted_project_ids)
-    lambda do |extra_filter|
-      url_for(link_builder.parameters(extra_filter).merge(controller: "issues", action: "index", project_id: @project, only_path: true))
+    path = @project ? project_issues_path(@project) : issues_path
+    ->(extra_filter, without = []) { RubylodeStats::IssueListUrl.build(path, link_builder.filters(extra_filter, without)) }
+  end
+
+  def issue_list_openable?
+    if @project
+      @project.module_enabled?(:issue_tracking) && User.current.allowed_to?(:view_issues, @project)
+    else
+      User.current.allowed_to?(:view_issues, nil, global: true)
     end
   end
 end

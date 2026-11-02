@@ -121,8 +121,8 @@ end
 
     specification = css_select("#stats-chart-tickets_by_status").first["data-specification"]
     urls = JSON.parse(specification).dig("data", "values").map { |row| row["url"] }
-    assert urls.all? { |url| url.include?("v%5Bproject_id%5D%5B%5D=1") }
-    assert urls.none? { |url| url.include?("v%5Bproject_id%5D%5B%5D=5") }
+    assert urls.all? { |url| url.include?("v[project_id][]=1") }
+    assert urls.none? { |url| url.include?("v[project_id][]=5") }
   end
 
   def test_the_versions_chart_counts_only_permitted_projects_and_its_links_carry_the_project_filter
@@ -133,8 +133,8 @@ end
     assert_response :success
     rows = JSON.parse(css_select("#stats-chart-progress_per_version").first["data-specification"]).dig("data", "values")
     assert_equal 7, rows.sum { |row| row["total"] }
-    assert rows.all? { |row| row["url"].include?("v%5Bproject_id%5D%5B%5D=1") }
-    assert rows.none? { |row| row["url"].include?("v%5Bproject_id%5D%5B%5D=5") }
+    assert rows.all? { |row| row["url"].include?("v[project_id][]=1") }
+    assert rows.none? { |row| row["url"].include?("v[project_id][]=5") }
   end
 
   private

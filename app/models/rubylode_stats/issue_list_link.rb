@@ -28,14 +28,20 @@ module RubylodeStats
 
     # extra_filter: for example "category_id" => 5; it replaces any filter the query already has on that field. A nil value
     # selects the tickets without a value; a Hash ({ operator: "o", values: [] }) is used as the filter itself.
-    def parameters(extra_filter)
-      filters = @query.filters.dup
+    # without (second argument): fields whose filters of the query are dropped, for a chart that reads them as its range, not as a selection.
+    def filters(extra_filter, without = [])
+      filters = @query.filters.except(*without)
       extra_filter.each { |field, value| filters[field] = filter_for(value) }
       filters["project_id"] = filter_for(@permitted_project_ids.map(&:to_s)) if @permitted_project_ids
-      QueryParameters.from_filters(filters)
+      filters
+    end
+
+    def parameters(extra_filter, without = [])
+      QueryParameters.from_filters(filters(extra_filter, without))
     end
 
     private
+
 
     def filter_for(value)
       case value
