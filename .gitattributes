@@ -7,3 +7,7 @@ docker export-ignore
 docker-compose.yml export-ignore
 docs/demo export-ignore
 docs/screenshots export-ignore
+docs/design/previews export-ignore
+script export-ignore
+package.json export-ignore
+package-lock.json export-ignore
