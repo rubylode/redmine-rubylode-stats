@@ -2,8 +2,7 @@
 
 [![tests](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml/badge.svg)](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml)
 
-TL;DR: a Stats page for every [Redmine](https://www.redmine.org) project, and one across projects, that answers "what is
-getting done" with a few clear charts.
+A Stats page for every [Redmine](https://www.redmine.org) project, and one across projects, with charts over the tickets.
 
 Contents:
 
@@ -16,8 +15,8 @@ Contents:
 - [What's missing](#whats-missing)
 - [Try it](#try-it)
 - [Tests](#tests)
+- [Releasing](#releasing)
 - [License](#license)
-- [Disclaimer](#disclaimer)
 
 I wanted a page that answers "what is getting done" in a few seconds: who closed tickets this week, which categories and
 versions are being worked on, how many tickets are open and closed, how long closing takes. Redmine has the tickets but
@@ -38,8 +37,7 @@ already has. Point at a bar for the exact figures, click it for the matching tic
 
 ## What it does
 
-- Four tabs, each one answering one family of questions: Overview, People, Speed and Versions. The charts sit in cards
-  on a grid, under a filter bar.
+- Four tabs: Overview, People, Speed and Versions. The charts sit in cards on a grid, under a filter bar.
 - Redmine's own ticket filters narrow every chart, and a saved query works as a report. Every chart counts what the
   ticket list shows for the same filters.
 - One row of presets (This week, This month, This quarter, Last 30 days, This year, All time) sets the dates.
@@ -53,7 +51,7 @@ already has. Point at a bar for the exact figures, click it for the matching tic
 - Tickets without a value (no category, no assignee) show as "None" and are not dropped.
 - Only tickets the user may see are counted.
 - The charts are drawn in the browser by [Vega-Lite](https://vega.github.io/vega-lite/), which ships inside the plugin.
-  No extra gem, no table, no settings page.
+  It needs no extra gem, no table and no settings page.
 
 ## Installation
 
@@ -175,7 +173,7 @@ Open Demo Garden and click Stats. The script is safe to run twice. Wipe the prev
     bin/test test/unit/issue_list_link_test.rb     one file
 
 They run in a Redmine 7 image with its test gems. The numbers behind the charts are tested first, and a chart is checked
-by the data it carries, not by how it looks. The browser parts are checked with [Playwright](https://playwright.dev) against the throwaway Redmine below, filled with
+by the data it carries, not by how it looks. The browser parts are checked with [Playwright](https://playwright.dev) against the throwaway Redmine above, filled with
 its demo data. It needs [Node](https://nodejs.org) and a Chrome or Chromium (set `CHROME_PATH` if it is not found):
 
     npm install
@@ -195,15 +193,13 @@ The text to paste when listing the plugin on www.redmine.org, and how to read th
 
 ## License
 
-GNU General Public License, version 2 or (at your option) any later version, the same as Redmine. See `LICENSE`.
+GPL v2 or later, the same as Redmine. See `LICENSE`.
 
-Copyright (C) 2026 Nick Gorbikoff. Each Ruby file carries the same short notice Redmine puts on its own.
+Copyright (C) 2026  Nick Gorbikoff. Each Ruby file carries the same short notice Redmine puts on its own.
 
-## Disclaimer
+[Vega](https://github.com/vega/vega), [Vega-Lite](https://github.com/vega/vega-lite) and
+[Vega-Embed](https://github.com/vega/vega-embed) (BSD 3-Clause) are bundled in `assets/javascripts`, and the fallback
+colours are [Open Color](https://github.com/yeun/open-color) values (MIT). Their notices are in `NOTICE.md`.
 
-Use it at your own risk. It comes with no warranty of any kind, as the license says: the software is provided "as is",
-without any promise that it works, that it fits your purpose or that it's free of bugs. I'm not liable for any damage,
-data loss or downtime that comes from using it, installing it or removing it.
-
-The plugin only reads tickets. It adds no table and changes no ticket. Back up your Redmine database before you install
-or upgrade anything anyway, and try it on a test instance first. I've tested it on Redmine 7.0.2, and nothing else.
+No warranty, as the GPL says. The plugin only reads tickets: it adds no table and changes no ticket. I tested it on
+Redmine 7.0.2 and nothing else, so try it on a copy of your tracker first.
