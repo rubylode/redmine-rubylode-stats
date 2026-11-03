@@ -1,0 +1,22 @@
+<%# Rubylode Stats: Administration, Plugins, Configure. The values are checked in RubylodeStats::SettingsControllerPatch before they are saved. %>
+<% current = RubylodeStats::PluginSettings.new(settings) %>
+<% typed = settings.to_h.stringify_keys %>
+<p>
+  <label for="settings_palette_preset"><%= l(:rubylode_stats_setting_palette_preset) %></label>
+  <%= select_tag "settings[palette_preset]",
+                 options_for_select(RubylodeStats::PluginSettings::PRESET_CHOICES.map { |choice| [l(:"rubylode_stats_palette_preset_#{choice}"), choice] }, current.palette_preset),
+                 id: "settings_palette_preset" %>
+  <em class="info"><%= l(:rubylode_stats_setting_palette_preset_help) %></em>
+</p>
+<p>
+  <label for="settings_custom_colours"><%= l(:rubylode_stats_setting_custom_colours) %></label>
+  <%= text_field_tag "settings[custom_colours]", typed.fetch("custom_colours", ""), id: "settings_custom_colours", size: 60, placeholder: "#1e88e5, #ea6a00, #00897b" %>
+  <em class="info"><%= l(:rubylode_stats_setting_custom_colours_help) %></em>
+</p>
+<% %w[open closed neutral].each do |role| %>
+  <p>
+    <label for="settings_custom_<%= role %>_colour"><%= l(:"rubylode_stats_setting_custom_#{role}_colour") %></label>
+    <%= text_field_tag "settings[custom_#{role}_colour]", typed.fetch("custom_#{role}_colour", ""), id: "settings_custom_#{role}_colour", size: 10 %>
+  </p>
+<% end %>
+<p><em class="info"><%= l(:rubylode_stats_setting_role_colour_help) %></em></p>
