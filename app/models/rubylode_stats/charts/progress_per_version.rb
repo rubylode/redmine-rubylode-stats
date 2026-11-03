@@ -22,7 +22,8 @@ module RubylodeStats
     # entry hides that half; a click on a bar opens the issue list of that version's tickets, of every status. The status filter
     # is ignored (see ProgressPerVersionRows).
     class ProgressPerVersion < Base
-      STATE_COLORS = { done: "#6aa84f", remaining: "#adb5bd" }.freeze
+      # Done takes the closed role colour and remaining the neutral one; the script turns the tokens into the palette's colours.
+      STATE_COLORS = { done: "role:closed", remaining: "role:neutral" }.freeze
       ROW_HEIGHT = 34
       END_LABEL_ROOM = 1.35
 

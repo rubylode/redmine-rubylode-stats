@@ -52,7 +52,7 @@ module RubylodeStats
         {
           "field" => "legend_label", "type" => "nominal", "sort" => { "field" => "position" },
           "title" => nil, "legend" => { "orient" => "right", "symbolType" => "square" },
-          "scale" => { "domain" => legend_labels, "range" => ["#2f6fb0", "#6aa84f"] }
+          "scale" => { "domain" => legend_labels, "range" => %w[role:open role:closed] }
         }
       end
 

@@ -33,6 +33,7 @@ class StatsController < ApplicationController
     @slice_by = RubylodeStats::Registry.slice(params[:slice_by])
     @shape = params[:shape] == "pie" ? "pie" : "bar"
     @tiles = overview_tiles
+    @palette = RubylodeStats::PluginSettings.new.palette
     @charts = @query.valid? ? @tab.chart_classes.map { |chart_class| chart_class.new(query: @query, issue_list_link: issue_list_link, options: chart_options) } : []
   end
 

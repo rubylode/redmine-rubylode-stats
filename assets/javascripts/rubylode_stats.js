@@ -19,8 +19,9 @@
 
 /*
  * Draws every .stats-chart on the page with vega-embed. The specification travels in the element's data-specification
- * attribute. Colours and the font come from the theme's CSS variables, each with a fallback; the fallback light or dark set
- * follows the system colour scheme. The charts are drawn again when that changes and when the window is resized, so they
+ * attribute. The text, grid and font come from the theme's CSS variables, each with a fallback; the fallback light or dark set
+ * follows the system colour scheme. The chart colours come from rubylode_stats_palette.js (the plugin's palette, or the theme's
+ * --theme-chart-* properties), read again on every draw. The charts are drawn again when that changes and when the window is resized, so they
  * always fill their card. The button of the filter bar shows and hides the filter panel.
  *
  * The charts answer the pointer: a tooltip with the figures of the mark, the mark under the pointer emphasised (the
@@ -38,31 +39,32 @@
     return value || fallback;
   }
 
-  function chartConfiguration() {
+  function readCustomProperty(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function currentPalette() {
+    var element = document.querySelector("[data-palette]");
+    var payload = element ? JSON.parse(element.dataset.palette) : null;
+    return payload ? window.RubylodeStatsPalette.resolve(payload, readCustomProperty, darkSchemeQuery.matches) : null;
+  }
+
+  function chartConfiguration(palette) {
     var dark = darkSchemeQuery.matches;
     var text = themeColor("--oc-gray-9", dark ? "#e6e6e6" : "#212529");
     var background = themeColor("--oc-white", dark ? "#1e1e1e" : "#ffffff");
     var grid = themeColor("--oc-gray-3", dark ? "#444444" : "#dee2e6");
     var axis = themeColor("--oc-gray-4", dark ? "#555555" : "#ced4da");
-    var neutral = themeColor("--oc-gray-5", dark ? "#868e96" : "#adb5bd");
-    var accent = themeColor("--oc-blue-7", dark ? "#6fa8dc" : "#1c7ed6");
     var font = themeColor("--fonts-main", "sans-serif");
-    return {
+    return Object.assign({
       background: background,
       font: font,
       title: { color: text, font: font },
       axis: { labelColor: text, titleColor: text, labelFont: font, titleFont: font, domainColor: axis, tickColor: axis, gridColor: grid },
       legend: { labelColor: text, titleColor: text, labelFont: font, titleFont: font },
       text: { color: text, font: font },
-      view: { stroke: "transparent" },
-      bar: { fill: accent },
-      arc: { fill: neutral },
-      range: {
-        category: dark
-          ? ["#6fa8dc", "#f6b26b", "#93c47d", "#e06666", "#b4a7d6", "#ffd966", "#76a5af", "#c27ba0"]
-          : ["#2f6fb0", "#e69138", "#6aa84f", "#cc0000", "#674ea7", "#bf9000", "#45818e", "#a64d79"]
-      }
-    };
+      view: { stroke: "transparent" }
+    }, palette ? window.RubylodeStatsPalette.colourConfiguration(palette) : {});
   }
 
   function pageLanguage() {
@@ -109,10 +111,10 @@
     return specification;
   }
 
-  function embedOptions() {
+  function embedOptions(palette) {
     var options = {
       actions: false,
-      config: chartConfiguration(),
+      config: chartConfiguration(palette),
       renderer: "svg",
       tooltip: { theme: "stats", offsetX: 12, offsetY: 12 }
     };
@@ -127,9 +129,12 @@
   function drawCharts() {
     drawnViews.forEach(function (result) { result.finalize(); });
     drawnViews = [];
-    var options = embedOptions();
+    var palette = currentPalette();
+    var options = embedOptions(palette);
     document.querySelectorAll(".stats-chart").forEach(function (element) {
-      var specification = withContainerWidth(JSON.parse(element.dataset.specification));
+      var specification = JSON.parse(element.dataset.specification);
+      if (palette) { specification = window.RubylodeStatsPalette.applyTokens(specification, palette); }
+      specification = withContainerWidth(specification);
       vegaEmbed(element, specification, options).then(function (result) { drawnViews.push(result); });
     });
   }

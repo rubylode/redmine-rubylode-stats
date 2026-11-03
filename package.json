@@ -5,6 +5,7 @@
   "license": "GPL-2.0-or-later",
   "type": "module",
   "scripts": {
+    "test": "node --test test/javascript/",
     "check": "node script/browser_check.mjs",
     "screenshots": "node script/screenshots.mjs"
   },

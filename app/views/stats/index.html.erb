@@ -19,7 +19,7 @@
 
 <% html_title l(:label_stats) %>
 <%= stylesheet_link_tag "rubylode_stats", plugin: "redmine_rubylode_stats" %>
-<%= javascript_include_tag "vega.min", "vega-lite.min", "vega-embed.min", "rubylode_stats", plugin: "redmine_rubylode_stats" %>
+<%= javascript_include_tag "vega.min", "vega-lite.min", "vega-embed.min", "rubylode_stats_palette", "rubylode_stats", plugin: "redmine_rubylode_stats" %>
 
 <h2><%= @query.new_record? ? l(:label_stats) : "#{l(:label_stats)}: #{@query.name}" %></h2>
 
@@ -70,7 +70,7 @@
   <% if @charts.empty? %>
     <p class="nodata"><%= l(:label_stats_tab_empty) %></p>
   <% end %>
-  <div class="stats-grid">
+  <div class="stats-grid" data-palette="<%= @palette.to_json %>">
     <% @charts.each do |chart| %>
       <section id="stats-card-<%= chart.chart_name %>" class="stats-card<%= " stats-card-wide" if chart.wide? %>">
         <h3 class="stats-card-title"><%= chart.card_title %></h3>
