@@ -75,3 +75,10 @@ test("the configuration colours single series with the first colour and categori
 
   assert.deepEqual(colourConfiguration(palette), { mark: { color: "#1" }, range: { category: ["#1", "#2"] } })
 })
+
+test("open status tokens take the palette in order and skip the colour of the closed role", () => {
+  const palette = { categorical: ["#1", "#2", "#3", "#4"], open: "#O", closed: "#2", neutral: "#N" }
+  const specification = { range: ["open_status:1", "open_status:2", "open_status:3", "open_status:4", "role:closed"] }
+
+  assert.deepEqual(applyTokens(specification, palette).range, ["#1", "#3", "#4", "#1", "#2"])
+})

@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module RubylodeStats
-  # One row per status: how many of the query's tickets have it. The query decides which tickets (filters, visibility,
+  # One row per status: how many of the query's tickets have it, and whether the status is a closed one. The query decides which tickets (filters, visibility,
   # subprojects); this class works with or without a project.
   class TicketsByStatusRows
     def initialize(query)
@@ -26,7 +26,7 @@ module RubylodeStats
     def rows
       ticket_counts = @query.base_scope.group("issues.status_id").count
       IssueStatus.where(id: ticket_counts.keys).sorted.map do |status|
-        { "status_id" => status.id, "status" => status.name, "tickets" => ticket_counts.fetch(status.id) }
+        { "status_id" => status.id, "status" => status.name, "is_closed" => status.is_closed?, "tickets" => ticket_counts.fetch(status.id) }
       end
     end
   end

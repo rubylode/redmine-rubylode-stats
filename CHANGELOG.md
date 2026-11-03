@@ -13,6 +13,7 @@ Calmer chart colours.
 ### Changed
 
 - Editorial is the palette used when the preset is Follow the theme and the theme defines no chart colours. Material stays selectable.
+- Tickets by status colours by meaning: closed statuses use the closed colour, open statuses take the palette in order without the closed colour, and a None bucket is grey.
 - A None, Other or unnamed bucket in the category and closed per person charts is drawn in the neutral grey instead of a palette colour.
 
 ## [1.2.0] - 2026-11-02

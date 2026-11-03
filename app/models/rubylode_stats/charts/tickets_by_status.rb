@@ -30,7 +30,7 @@ module RubylodeStats
           "encoding" => {
             "x" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
             "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
-            "color" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "legend" => nil },
+            "color" => { "field" => "status", "type" => "nominal", "sort" => { "field" => "position" }, "legend" => nil, "scale" => status_color_scale(rows_with_links) },
             "opacity" => emphasis_opacity(with_legend: false),
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
@@ -53,6 +53,21 @@ module RubylodeStats
       end
 
       private
+
+      # Colour by meaning: a closed status takes the closed role colour, an empty or None bucket the neutral grey, and the
+      # open statuses the palette in order (the script skips the colour the closed role uses, so no open bar looks closed).
+      def status_color_scale(rows)
+        neutral_labels = [I18n.t(:label_stats_none), "Other"]
+        position = 0
+        range = rows.map do |row|
+          next "role:closed" if row["is_closed"]
+          next "role:neutral" if neutral_labels.include?(row["status"].to_s) || row["status"].to_s.strip.empty?
+
+          position += 1
+          "open_status:#{position}"
+        end
+        { "domain" => rows.map { |row| row["status"] }, "range" => range }
+      end
 
       def rows_with_links
         @rows_with_links ||= begin

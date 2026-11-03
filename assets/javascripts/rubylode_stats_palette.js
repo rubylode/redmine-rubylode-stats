@@ -22,7 +22,7 @@
  * RubylodeStats::Palette) in the data-palette attribute. When the setting follows the theme and the page defines
  * --theme-chart-1, the theme's colours win: --theme-chart-1 to --theme-chart-10 for categories and --theme-chart-open,
  * --theme-chart-closed and --theme-chart-neutral for the roles. The chart specifications name colours as tokens
- * ("role:open", "role:closed", "role:neutral", "category:3"), which applyTokens turns into the chosen colours. The functions
+ * ("role:open", "role:closed", "role:neutral", "category:3", "open_status:2"), which applyTokens turns into the chosen colours. The functions
  * take what they read as arguments, so they run under Node as well (test/javascript).
  */
 (function (root) {
@@ -56,6 +56,12 @@
       if (role) { return palette[role[1]]; }
       var category = /^category:(\d+)$/.exec(value);
       if (category) { return palette.categorical[(Number(category[1]) - 1) % palette.categorical.length]; }
+      var openStatus = /^open_status:(\d+)$/.exec(value);
+      if (openStatus) {
+        var others = palette.categorical.filter(function (colour) { return colour !== palette.closed; });
+        if (others.length === 0) { others = palette.categorical; }
+        return others[(Number(openStatus[1]) - 1) % others.length];
+      }
       return value;
     });
   }

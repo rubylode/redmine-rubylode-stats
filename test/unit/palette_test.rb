@@ -178,7 +178,19 @@ class PaletteTest < ActiveSupport::TestCase
     assert_equal %w[category:1 category:2 role:neutral role:neutral role:neutral], scale["range"]
   end
 
+  def test_a_status_scale_colours_closed_statuses_by_role_and_open_ones_in_order
+    chart = RubylodeStats::Charts::TicketsByStatus.allocate
+    scale = chart.send(:status_color_scale, [
+      { "status" => "New", "is_closed" => false }, { "status" => "Done", "is_closed" => true },
+      { "status" => "Doing", "is_closed" => false }, { "status" => "None", "is_closed" => false }
+    ])
+
+    assert_equal %w[New Done Doing None], scale["domain"]
+    assert_equal %w[open_status:1 role:closed open_status:2 role:neutral], scale["range"]
+  end
+
   def test_the_palette_serialises_for_the_page
+
     data = JSON.parse(build_palette({}).to_json)
 
     assert_equal true, data["follow_theme"]

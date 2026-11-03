@@ -38,9 +38,9 @@ class TicketsByStatusRowsTest < ActiveSupport::TestCase
     rows = RubylodeStats::TicketsByStatusRows.new(query).rows
 
     assert_equal [
-      { "status_id" => 1, "status" => "New", "tickets" => 3 },
-      { "status_id" => 2, "status" => "Assigned", "tickets" => 1 },
-      { "status_id" => 5, "status" => "Closed", "tickets" => 3 }
+      { "status_id" => 1, "status" => "New", "is_closed" => false, "tickets" => 3 },
+      { "status_id" => 2, "status" => "Assigned", "is_closed" => false, "tickets" => 1 },
+      { "status_id" => 5, "status" => "Closed", "is_closed" => true, "tickets" => 3 }
     ], rows
   end
 
@@ -51,7 +51,7 @@ class TicketsByStatusRowsTest < ActiveSupport::TestCase
 
     rows = RubylodeStats::TicketsByStatusRows.new(query).rows
 
-    assert_equal [{ "status_id" => 5, "status" => "Closed", "tickets" => 3 }], rows
+    assert_equal [{ "status_id" => 5, "status" => "Closed", "is_closed" => true, "tickets" => 3 }], rows
   end
 
   def test_includes_subproject_tickets_when_the_setting_is_on

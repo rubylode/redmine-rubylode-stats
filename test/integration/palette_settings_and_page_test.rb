@@ -166,6 +166,18 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_equal "editorial", Setting.plugin_redmine_rubylode_stats["palette_preset"]
   end
 
+  def test_the_status_bars_colour_closed_statuses_by_role_and_open_ones_from_the_palette
+    log_user("jsmith", "jsmith")
+    get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*"
+
+    scale = specification_of("tickets_by_status").dig("encoding", "color", "scale")
+    closed_position = scale["domain"].index("Closed")
+
+    assert closed_position, "the fixtures have closed tickets"
+    assert_equal "role:closed", scale["range"][closed_position]
+    (scale["range"] - ["role:closed"]).each_with_index { |token, index| assert_equal "open_status:#{index + 1}", token }
+  end
+
   def test_the_category_bars_and_the_pie_draw_the_none_bucket_in_the_neutral_role
     log_user("jsmith", "jsmith")
     get "/projects/#{@project.identifier}/stats"
