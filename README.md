@@ -11,6 +11,7 @@ Contents:
 - [Using the charts](#using-the-charts)
 - [What the tabs answer](#what-the-tabs-answer)
 - [Presets and filters](#presets-and-filters)
+- [Chart colours](#chart-colours)
 - [The page across projects](#the-page-across-projects)
 - [What's missing](#whats-missing)
 - [Try it](#try-it)
@@ -51,7 +52,7 @@ already has. Point at a bar for the exact figures, click it for the matching tic
 - Tickets without a value (no category, no assignee) show as "None" and are not dropped.
 - Only tickets the user may see are counted.
 - The charts are drawn in the browser by [Vega-Lite](https://vega.github.io/vega-lite/), which ships inside the plugin.
-  It needs no extra gem, no table and no settings page.
+  It needs no extra gem and no table. One settings page sets the chart colours.
 
 ## Installation
 
@@ -132,6 +133,90 @@ A ticket that was reopened and closed again counts once, at its latest closing.
   and closed inside it still counts.
 - Weeks start on Monday, in your time zone. Subproject tickets are included when Redmine's setting for that is on.
 
+## Chart colours
+
+The charts take their colours from the theme when it provides them, and from a preset of the plugin otherwise. Choose the
+preset under Administration, Plugins, Configure.
+
+| Preset | What it is |
+|---|---|
+| Follow the theme (default) | The theme's own chart colours when the page defines `--theme-chart-1`, Material when it does not |
+| Material | Ten saturated Material Design hues, a darker set for a light page and a lighter set for a dark page |
+| Colour-blind safe | The Okabe-Ito set, with grey in place of black and darker tones on a light page |
+| Data visualisation | Ten saturated categorical colours in the style of the wpdatatables palettes |
+| Custom | Up to ten hex colours of your own, and optional colours for open, closed and neutral |
+
+A single-series chart (tickets by status, tickets by category, time to close) is drawn in the first colour. A chart that
+colours by category (the donut by slice, closed per person) takes the colours in order and starts again after the last
+one. Open and closed use the same two colours in every chart: the open and closed donut, opened and closed per period, and
+done against remaining per version. The neutral colour draws remaining tickets and the backlog line. Every colour of the
+presets keeps a contrast of at least 3:1 against a white page in the light set and against a #1E1E1E page in the dark set.
+The test suite checks it. The light or dark set follows the system colour scheme, and the charts are drawn again when it changes.
+
+### The theme contract
+
+A theme gives the charts its colours by defining these CSS custom properties on the page (on `:root`, or on `html`):
+
+| Property | Meaning |
+|---|---|
+| `--theme-chart-1` to `--theme-chart-10` | Categorical colours, in order. Define as many as you have. The first one also draws single-series charts |
+| `--theme-chart-open` | Open tickets. Without it, categorical colour 1 |
+| `--theme-chart-closed` | Closed tickets and the done part of a version. Without it, categorical colour 2 |
+| `--theme-chart-neutral` | Remaining tickets, the backlog line and grey fills. Without it, a neutral grey of the plugin |
+
+The script reads the properties each time it draws, so a theme that changes them for light and dark gets the right ones.
+It uses them only when the preset is Follow the theme and `--theme-chart-1` is defined. Example:
+
+    :root {
+      --theme-chart-1: #1e88e5;
+      --theme-chart-2: #ea6a00;
+      --theme-chart-3: #00897b;
+      --theme-chart-open: #1e88e5;
+      --theme-chart-closed: #43a047;
+      --theme-chart-neutral: #78909c;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --theme-chart-1: #64b5f6;
+        --theme-chart-2: #ffa726;
+        --theme-chart-3: #4db6ac;
+        --theme-chart-open: #64b5f6;
+        --theme-chart-closed: #81c784;
+        --theme-chart-neutral: #90a4ae;
+      }
+    }
+
+Pick colours that keep 3:1 against the page background, or the bars will be hard to see.
+
+### Palette values
+
+| Preset | Light set | Dark set |
+|---|---|---|
+| Material | `#1E88E5` `#EA6A00` `#00897B` `#D81B60` `#689F38` `#8E24AA` `#0097A7` `#3949AB` `#6D4C41` `#546E7A` | `#64B5F6` `#FFA726` `#4DB6AC` `#F06292` `#9CCC65` `#BA68C8` `#4DD0E1` `#7986CB` `#A1887F` `#90A4AE` |
+| Colour-blind safe | `#0072B2` `#D55E00` `#009E73` `#CB75A5` `#C28600` `#1D99E0` `#9C920C` `#919191` | `#0072B2` `#D55E00` `#009E73` `#CC79A7` `#E69F00` `#56B4E9` `#F0E442` `#999999` |
+| Data visualisation | `#1A53FF` `#CC8200` `#00A58B` `#E60049` `#9B19F5` `#0098DC` `#899623` `#DC0AB4` `#7C1158` `#729F39` | `#245BFF` `#FFA300` `#00BFA0` `#E60049` `#9D1EF5` `#0BB4FF` `#BDCF32` `#DC0AB4` `#C81B8E` `#87BC45` |
+
+### Writing the settings from a deployment tool
+
+Redmine keeps the settings as one hash in `Setting.plugin_redmine_rubylode_stats`. Missing keys read as the default, so a
+tool can write only the keys it wants to change, and an upgrade with no stored keys follows the theme. All values are strings.
+
+| Key | Allowed values | Default |
+|---|---|---|
+| `palette_preset` | `"follow_theme"`, `"material"`, `"colour_blind_safe"`, `"data_visualisation"`, `"custom"` | `"follow_theme"` |
+| `custom_colours` | 1 to 10 hex colours (`#rgb` or `#rrggbb`) separated by commas; used only with `"custom"` | `""` |
+| `custom_open_colour` | one hex colour, or `""` for the first custom colour | `""` |
+| `custom_closed_colour` | one hex colour, or `""` for the second custom colour (the first when there is only one) | `""` |
+| `custom_neutral_colour` | one hex colour, or `""` for a grey | `""` |
+
+For example, from `rails runner`:
+
+    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "custom", "custom_colours" => "#1e88e5, #ea6a00, #00897b" }
+
+The form checks the values before it saves them and names every colour it does not accept. Writing the hash directly skips
+that check: an unusable value reads as the default, and unusable custom colours leave the Material palette.
+
 ## The page across projects
 
 The Stats link in the top menu opens the same tabs over every project where the user holds the permission and the
@@ -177,6 +262,7 @@ by the data it carries, not by how it looks. The browser parts are checked with 
 its demo data. It needs [Node](https://nodejs.org) and a Chrome or Chromium (set `CHROME_PATH` if it is not found):
 
     npm install
+    npm test               the palette script, with Node's own test runner
     npm run check          hover, tooltip, dimming, click-through, new tab, legend, data table, dark scheme
     npm run screenshots    retake the screenshots in docs/screenshots
 

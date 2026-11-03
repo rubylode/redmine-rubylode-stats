@@ -4,6 +4,21 @@ All notable changes to this plugin. The format follows [Keep a Changelog](https:
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-02
+
+Better chart colours, set in the plugin settings.
+
+### Added
+
+- A settings page (Administration, Plugins, Configure) with the presets Follow the theme, Material, Colour-blind safe, Data visualisation and Custom. Custom takes up to ten hex colours and optional colours for open, closed and neutral, and is checked on save.
+- The charts use the theme's own colours when the page defines `--theme-chart-1` to `--theme-chart-10`, `--theme-chart-open`, `--theme-chart-closed` and `--theme-chart-neutral`. They are read again on every draw.
+- The settings keys and their allowed values are in the README, for tools that write `Setting.plugin_redmine_rubylode_stats`.
+- A test of the palette script (`npm test`).
+
+### Changed
+
+- Single-series charts are drawn in the first colour of the palette, not near-black. The default palette is a ten colour Material set with a light and a dark variant. Every preset keeps 3:1 contrast against the page.
+- Open and closed use the same colours in every chart, and remaining tickets and the backlog line use the neutral colour.
 ## [1.1.1] - 2026-11-02
 
 ### Added
@@ -48,6 +63,7 @@ First release. Needs Redmine 7.0 or newer.
 - A page across projects, limited to the projects where the user holds the permission and the module is on.
 - A demo data script for the throwaway Redmine, and a screenshot of each tab.
 
-[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.0...main
+[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.2.0...main
+[1.2.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.1...v1.2.0
 [1.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/rubylode/redmine-rubylode-stats/releases/tag/v1.0.0
