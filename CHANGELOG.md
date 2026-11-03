@@ -17,7 +17,7 @@ Better chart colours, set in the plugin settings.
 
 ### Changed
 
-- Single-series charts are drawn in the first colour of the palette, not near-black. The default palette is a ten colour Material set with a light and a dark variant. Every preset keeps 3:1 contrast against the page.
+- Tickets by status and by category colour each bar from the palette in order. Charts with a single series are drawn in the first colour of the palette, not near-black. The default palette is a ten colour Material set with a light and a dark variant. Every preset keeps 3:1 contrast against the page.
 - Open and closed use the same colours in every chart, and remaining tickets and the backlog line use the neutral colour.
 ## [1.1.1] - 2026-11-02
 

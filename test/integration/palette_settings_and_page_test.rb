@@ -110,6 +110,28 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_equal %w[role:closed role:neutral], range
   end
 
+  def test_the_status_and_category_bars_are_coloured_by_their_own_label_in_order_with_no_legend
+    log_user("jsmith", "jsmith")
+    get "/projects/#{@project.identifier}/stats"
+
+    { "tickets_by_status" => "status", "tickets_by_slice" => "slice" }.each do |chart_name, field|
+      color = specification_of(chart_name).dig("encoding", "color")
+
+      assert_equal field, color["field"], chart_name
+      assert_equal({ "field" => "position" }, color["sort"], chart_name)
+      assert_nil color["legend"], chart_name
+      assert color.key?("legend"), "#{chart_name} must switch the legend off"
+    end
+  end
+
+  def test_the_time_to_close_histogram_and_the_median_line_keep_the_single_colour
+    log_user("jsmith", "jsmith")
+    get "/projects/#{@project.identifier}/stats", params: { tab: "speed" }
+
+    assert_nil specification_of("time_to_close_histogram").dig("encoding", "color")
+    assert_nil specification_of("median_time_to_close").dig("encoding", "color")
+  end
+
   def test_no_chart_specification_holds_a_hex_colour
     log_user("jsmith", "jsmith")
     %w[overview people speed versions].each do |tab|

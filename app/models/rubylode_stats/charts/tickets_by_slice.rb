@@ -72,6 +72,7 @@ module RubylodeStats
         {
           "x" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
           "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
+          "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "legend" => nil },
           "opacity" => emphasis_opacity(with_legend: false),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip

@@ -146,9 +146,9 @@ preset under Administration, Plugins, Configure.
 | Data visualisation | Ten saturated categorical colours in the style of the wpdatatables palettes |
 | Custom | Up to ten hex colours of your own, and optional colours for open, closed and neutral |
 
-A single-series chart (tickets by status, tickets by category, time to close) is drawn in the first colour. A chart that
-colours by category (the donut by slice, closed per person) takes the colours in order and starts again after the last
-one. Open and closed use the same two colours in every chart: the open and closed donut, opened and closed per period, and
+A chart that groups by a category (tickets by status, tickets by category and its donut, closed per person) takes the
+colours in order and starts again after the last one. The bars of tickets by status and by category need no legend, as
+the axis names them. Charts with a single series (time to close, the median line) are drawn in the first colour. Open and closed use the same two colours in every chart: the open and closed donut, opened and closed per period, and
 done against remaining per version. The neutral colour draws remaining tickets and the backlog line. Every colour of the
 presets keeps a contrast of at least 3:1 against a white page in the light set and against a #1E1E1E page in the dark set.
 The test suite checks it. The light or dark set follows the system colour scheme, and the charts are drawn again when it changes.
