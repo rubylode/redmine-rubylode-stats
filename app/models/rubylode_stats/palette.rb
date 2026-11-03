@@ -24,6 +24,18 @@ module RubylodeStats
     CUSTOM_NEUTRAL = "#8A8A8A".freeze
 
     PRESETS = {
+      # An original muted set in the manner of editorial newsroom graphics: restrained hues, one idea per colour, a grey for
+      # context. The light set keeps 3:1 against white, the dark set 3:1 against #1E1E1E. It is not any publisher's palette.
+      "editorial" => {
+        "light" => {
+          "categorical" => %w[#2F6C9F #D4662A #3F8F6B #B5493F #7A5C9A #B88C27 #4F9AA0 #8C6D5A #6B7F94 #8E959B],
+          "open" => "#2F6C9F", "closed" => "#3F8F6B", "neutral" => "#8E959B"
+        },
+        "dark" => {
+          "categorical" => %w[#6FA3D0 #EE9A63 #7CC09E #E08A82 #A98CC9 #E3BE63 #86C4C9 #BBA08F #9FB0C2 #B4BAC0],
+          "open" => "#6FA3D0", "closed" => "#7CC09E", "neutral" => "#8A9199"
+        }
+      },
       # Material Design hues: the 600 to 700 shades on a light page, the 300 to 400 shades on a dark one. The order puts
       # unlike hues next to each other.
       "material" => {
@@ -61,7 +73,7 @@ module RubylodeStats
       }
     }.freeze
 
-    FALLBACK_PRESET = "material".freeze
+    FALLBACK_PRESET = "editorial".freeze
 
     # variants: { "light" => set, "dark" => set }; follow_theme: whether the script should look for the theme's own colours first.
     def initialize(variants:, follow_theme:)

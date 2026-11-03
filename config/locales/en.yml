@@ -93,8 +93,9 @@ en:
   label_stats_table_open_opened: Show opened tickets
   label_stats_table_open_closed: Show closed tickets
   rubylode_stats_setting_palette_preset: Chart colours
-  rubylode_stats_setting_palette_preset_help: "Follow the theme uses the colours the theme defines and falls back to Material. The other choices ignore the theme."
+  rubylode_stats_setting_palette_preset_help: "Follow the theme uses the colours the theme defines and falls back to Editorial. The other choices ignore the theme."
   rubylode_stats_palette_preset_follow_theme: Follow the theme
+  rubylode_stats_palette_preset_editorial: Editorial
   rubylode_stats_palette_preset_material: Material
   rubylode_stats_palette_preset_colour_blind_safe: Colour-blind safe
   rubylode_stats_palette_preset_data_visualisation: Data visualisation
@@ -105,7 +106,7 @@ en:
   rubylode_stats_setting_custom_closed_colour: Custom colour for closed
   rubylode_stats_setting_custom_neutral_colour: Custom colour for neutral
   rubylode_stats_setting_role_colour_help: "Optional hex colour. Left empty, open and closed take the first two custom colours and neutral a grey."
-  rubylode_stats_error_palette_preset: "Chart colours: \"%{value}\" is not one of follow_theme, material, colour_blind_safe, data_visualisation or custom."
+  rubylode_stats_error_palette_preset: "Chart colours: \"%{value}\" is not one of follow_theme, editorial, material, colour_blind_safe, data_visualisation or custom."
   rubylode_stats_error_custom_colours_missing: "Custom colours: enter at least one colour."
   rubylode_stats_error_custom_colours_too_many: "Custom colours: enter no more than %{count} colours."
   rubylode_stats_error_custom_colours_invalid: "Custom colours: %{values} is not a hex colour such as #abc or #aabbcc."

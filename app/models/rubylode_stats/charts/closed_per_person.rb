@@ -37,7 +37,7 @@ module RubylodeStats
             "x" => { "field" => "period", "type" => "temporal", "timeUnit" => TIME_UNITS.fetch(period), "title" => period_label,
                      "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
             "y" => count_axis("closed"),
-            "color" => { "field" => "person", "type" => "nominal", "title" => I18n.t(:label_stats_person) },
+            "color" => { "field" => "person", "type" => "nominal", "title" => I18n.t(:label_stats_person), "scale" => category_color_scale(person_labels) },
             "opacity" => emphasis_opacity,
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
@@ -74,6 +74,13 @@ module RubylodeStats
 
       def period_label
         I18n.t("label_stats_period_#{period}")
+      end
+
+      # The people in the order they first appear, with the "None" bucket last.
+      def person_labels
+        labels = rows_with_links.map { |row| row["person"] }.uniq
+        none = I18n.t(:label_stats_none)
+        labels - [none] + (labels.include?(none) ? [none] : [])
       end
 
       def rows_with_links

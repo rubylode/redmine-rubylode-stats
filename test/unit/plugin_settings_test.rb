@@ -30,7 +30,7 @@ class PluginSettingsTest < ActiveSupport::TestCase
   end
 
   def test_the_choices_are_the_five_presets_in_display_order
-    assert_equal %w[follow_theme material colour_blind_safe data_visualisation custom], RubylodeStats::PluginSettings::PRESET_CHOICES
+    assert_equal %w[follow_theme editorial material colour_blind_safe data_visualisation custom], RubylodeStats::PluginSettings::PRESET_CHOICES
   end
 
   def test_an_empty_hash_is_valid_and_reads_as_the_defaults

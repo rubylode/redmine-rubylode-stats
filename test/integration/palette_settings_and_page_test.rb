@@ -48,14 +48,14 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     JSON.parse(css_select("#stats-chart-#{chart_name}").first["data-specification"])
   end
 
-  def test_the_page_carries_the_theme_following_material_palette_by_default
+  def test_the_page_carries_the_theme_following_editorial_palette_by_default
     log_user("jsmith", "jsmith")
     Setting.plugin_redmine_rubylode_stats = {}
 
     palette = palette_on_page
 
     assert_equal true, palette["follow_theme"]
-    assert_equal RubylodeStats::Palette::PRESETS.fetch("material")["light"], palette["light"]
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial")["light"], palette["light"]
   end
 
   def test_the_page_carries_the_chosen_preset
@@ -149,12 +149,33 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     get SETTINGS_PATH
 
     assert_response :success
-    assert_select "select#settings_palette_preset option", 5
+    assert_select "select#settings_palette_preset option", 6
     assert_select "select#settings_palette_preset option[selected][value=follow_theme]"
     assert_select "input#settings_custom_colours"
     assert_select "input#settings_custom_open_colour"
     assert_select "input#settings_custom_closed_colour"
     assert_select "input#settings_custom_neutral_colour"
+  end
+
+  def test_the_settings_form_saves_the_editorial_preset
+    log_user("admin", "admin")
+
+    post SETTINGS_PATH, params: { settings: { palette_preset: "editorial" } }
+
+    assert_redirected_to SETTINGS_PATH
+    assert_equal "editorial", Setting.plugin_redmine_rubylode_stats["palette_preset"]
+  end
+
+  def test_the_category_bars_and_the_pie_draw_the_none_bucket_in_the_neutral_role
+    log_user("jsmith", "jsmith")
+    get "/projects/#{@project.identifier}/stats"
+
+    scale = specification_of("tickets_by_slice").dig("encoding", "color", "scale")
+    none_position = scale["domain"].index("None")
+
+    assert none_position, "the category chart of the fixtures has a None bucket"
+    assert_equal "role:neutral", scale["range"][none_position]
+    (scale["range"] - ["role:neutral"]).each_with_index { |token, index| assert_equal "category:#{index + 1}", token }
   end
 
   def test_the_settings_form_saves_a_valid_custom_palette

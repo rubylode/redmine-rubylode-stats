@@ -37,11 +37,47 @@ class PaletteTest < ActiveSupport::TestCase
     (lighter + 0.05) / (darker + 0.05)
   end
 
-  def test_with_no_stored_keys_the_palette_follows_the_theme_and_falls_back_to_material
+  def test_with_no_stored_keys_the_palette_follows_the_theme_and_falls_back_to_editorial
     palette = build_palette({})
 
     assert palette.follow_theme?
-    assert_equal RubylodeStats::Palette::PRESETS.fetch("material"), palette.to_h.slice("light", "dark")
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial"), palette.to_h.slice("light", "dark")
+  end
+
+  def test_the_editorial_preset_has_the_published_light_and_dark_values
+    editorial = RubylodeStats::Palette::PRESETS.fetch("editorial")
+
+    assert_equal %w[#2F6C9F #D4662A #3F8F6B #B5493F #7A5C9A #B88C27 #4F9AA0 #8C6D5A #6B7F94 #8E959B], editorial["light"]["categorical"]
+    assert_equal %w[#6FA3D0 #EE9A63 #7CC09E #E08A82 #A98CC9 #E3BE63 #86C4C9 #BBA08F #9FB0C2 #B4BAC0], editorial["dark"]["categorical"]
+    assert_equal({ "open" => "#2F6C9F", "closed" => "#3F8F6B", "neutral" => "#8E959B" }, editorial["light"].slice("open", "closed", "neutral"))
+    assert_equal({ "open" => "#6FA3D0", "closed" => "#7CC09E", "neutral" => "#8A9199" }, editorial["dark"].slice("open", "closed", "neutral"))
+  end
+
+  def test_the_editorial_preset_is_muted_and_keeps_graphics_contrast_in_both_sets
+    editorial = RubylodeStats::Palette::PRESETS.fetch("editorial")
+
+    { "light" => LIGHT_PAGE, "dark" => DARK_PAGE }.each do |variant, page|
+      set = editorial.fetch(variant)
+      (set["categorical"] + set.values_at("open", "closed", "neutral")).each do |colour|
+        assert_operator contrast_ratio(colour, page), :>=, MINIMUM_GRAPHICS_CONTRAST, "#{variant} #{colour}"
+      end
+    end
+  end
+
+  def test_the_editorial_neutral_is_a_grey
+    editorial = RubylodeStats::Palette::PRESETS.fetch("editorial")
+
+    %w[light dark].each do |variant|
+      red, green, blue = editorial[variant]["neutral"].delete("#").scan(/../).map { |pair| pair.to_i(16) }
+      assert_operator [red, green, blue].max - [red, green, blue].min, :<=, 24, variant
+    end
+  end
+
+  def test_the_editorial_preset_is_choosable
+    palette = build_palette("palette_preset" => "editorial")
+
+    refute palette.follow_theme?
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial"), palette.to_h.slice("light", "dark")
   end
 
   def test_the_material_preset_has_ten_distinct_colours_with_a_light_and_a_dark_variant
@@ -54,7 +90,7 @@ class PaletteTest < ActiveSupport::TestCase
   end
 
   def test_the_choosable_presets_use_the_preset_named_in_the_setting
-    %w[material colour_blind_safe data_visualisation].each do |preset|
+    %w[editorial material colour_blind_safe data_visualisation].each do |preset|
       palette = build_palette("palette_preset" => preset)
 
       refute palette.follow_theme?, preset
@@ -128,10 +164,18 @@ class PaletteTest < ActiveSupport::TestCase
     assert_equal "#808080", set["neutral"]
   end
 
-  def test_a_custom_preset_with_nothing_usable_falls_back_to_material
+  def test_a_custom_preset_with_nothing_usable_falls_back_to_editorial
     palette = build_palette("palette_preset" => "custom", "custom_colours" => "")
 
-    assert_equal RubylodeStats::Palette::PRESETS.fetch("material"), palette.to_h.slice("light", "dark")
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial"), palette.to_h.slice("light", "dark")
+  end
+
+  def test_a_category_scale_gives_the_none_bucket_the_neutral_role_and_the_others_palette_colours_in_order
+    chart = RubylodeStats::Charts::TicketsBySlice.allocate
+    scale = chart.send(:category_color_scale, ["Printing", "Docs", "Other", "", "None"])
+
+    assert_equal ["Printing", "Docs", "Other", "", "None"], scale["domain"]
+    assert_equal %w[category:1 category:2 role:neutral role:neutral role:neutral], scale["range"]
   end
 
   def test_the_palette_serialises_for_the_page

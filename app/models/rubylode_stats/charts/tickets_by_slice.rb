@@ -72,7 +72,7 @@ module RubylodeStats
         {
           "x" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => nil },
           "y" => count_axis("tickets", largest_count(rows_with_links, "tickets")),
-          "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "legend" => nil },
+          "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "legend" => nil, "scale" => slice_color_scale },
           "opacity" => emphasis_opacity(with_legend: false),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
@@ -82,11 +82,15 @@ module RubylodeStats
       def pie_encoding
         {
           "theta" => { "field" => "tickets", "type" => "quantitative", "stack" => true },
-          "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => slice_label },
+          "color" => { "field" => "slice", "type" => "nominal", "sort" => { "field" => "position" }, "title" => slice_label, "scale" => slice_color_scale },
           "opacity" => emphasis_opacity(with_legend: false),
           "href" => { "field" => "url", "type" => "nominal" },
           "tooltip" => tooltip
         }
+      end
+
+      def slice_color_scale
+        category_color_scale(rows_with_links.map { |row| row["slice"] })
       end
 
       def rows_with_links

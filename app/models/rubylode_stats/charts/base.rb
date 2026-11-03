@@ -93,6 +93,20 @@ module RubylodeStats
         { "field" => field, "type" => "quantitative", "title" => I18n.t(:label_stats_tickets), "axis" => axis }
       end
 
+      # A colour scale for a category chart: each label takes the next palette colour in order, except the "None" and "Other" buckets,
+      # which is drawn in the neutral grey so it reads as context and does not use up a hue.
+      def category_color_scale(labels)
+        neutral_labels = [I18n.t(:label_stats_none), "Other"]
+        position = 0
+        range = labels.map do |label|
+          next "role:neutral" if neutral_labels.include?(label.to_s) || label.to_s.strip.empty?
+
+          position += 1
+          "category:#{position}"
+        end
+        { "domain" => labels, "range" => range }
+      end
+
       def largest_count(rows, field)
         rows.map { |row| row[field] }.max || 0
       end

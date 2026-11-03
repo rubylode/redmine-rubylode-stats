@@ -21,7 +21,7 @@ module RubylodeStats
   # default, so an upgrade with no stored keys works.
   class PluginSettings
     PLUGIN_ID = :redmine_rubylode_stats
-    PRESET_CHOICES = %w[follow_theme material colour_blind_safe data_visualisation custom].freeze
+    PRESET_CHOICES = %w[follow_theme editorial material colour_blind_safe data_visualisation custom].freeze
     MAXIMUM_CUSTOM_COLOURS = 10
     HEX_COLOUR = /\A#(\h{3}|\h{6})\z/
 
