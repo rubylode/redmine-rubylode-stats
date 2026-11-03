@@ -140,14 +140,15 @@ preset under Administration, Plugins, Configure.
 
 | Preset | What it is |
 |---|---|
-| Follow the theme (default) | The theme's own chart colours when the page defines `--theme-chart-1`, Material when it does not |
+| Follow the theme (default) | The theme's own chart colours when the page defines `--theme-chart-1`, Editorial when it does not |
+| Editorial | Ten muted hues in the manner of newsroom graphics, with a grey for context: steel blue, burnt orange, muted green, brick red and so on. A darker set for a light page and a lighter set for a dark page |
 | Material | Ten saturated Material Design hues, a darker set for a light page and a lighter set for a dark page |
 | Colour-blind safe | The Okabe-Ito set, with grey in place of black and darker tones on a light page |
 | Data visualisation | Ten saturated categorical colours in the style of the wpdatatables palettes |
 | Custom | Up to ten hex colours of your own, and optional colours for open, closed and neutral |
 
 A chart that groups by a category (tickets by status, tickets by category and its donut, closed per person) takes the
-colours in order and starts again after the last one. The bars of tickets by status and by category need no legend, as
+colours in order and starts again after the last one. A bucket named None or Other, or with an empty name, is drawn in the neutral grey instead, so it reads as context and uses no hue. The bars of tickets by status and by category need no legend, as
 the axis names them. Charts with a single series (time to close, the median line) are drawn in the first colour. Open and closed use the same two colours in every chart: the open and closed donut, opened and closed per period, and
 done against remaining per version. The neutral colour draws remaining tickets and the backlog line. Every colour of the
 presets keeps a contrast of at least 3:1 against a white page in the light set and against a #1E1E1E page in the dark set.
@@ -191,8 +192,11 @@ Pick colours that keep 3:1 against the page background, or the bars will be hard
 
 ### Palette values
 
+The roles are open, closed and neutral. Editorial uses `#2F6C9F`, `#3F8F6B` and `#8E959B` in the light set and `#6FA3D0`, `#7CC09E` and `#8A9199` in the dark set. The Editorial palette is original to this plugin and is not taken from any publisher.
+
 | Preset | Light set | Dark set |
 |---|---|---|
+| Editorial | `#2F6C9F` `#D4662A` `#3F8F6B` `#B5493F` `#7A5C9A` `#B88C27` `#4F9AA0` `#8C6D5A` `#6B7F94` `#8E959B` | `#6FA3D0` `#EE9A63` `#7CC09E` `#E08A82` `#A98CC9` `#E3BE63` `#86C4C9` `#BBA08F` `#9FB0C2` `#B4BAC0` |
 | Material | `#1E88E5` `#EA6A00` `#00897B` `#D81B60` `#689F38` `#8E24AA` `#0097A7` `#3949AB` `#6D4C41` `#546E7A` | `#64B5F6` `#FFA726` `#4DB6AC` `#F06292` `#9CCC65` `#BA68C8` `#4DD0E1` `#7986CB` `#A1887F` `#90A4AE` |
 | Colour-blind safe | `#0072B2` `#D55E00` `#009E73` `#CB75A5` `#C28600` `#1D99E0` `#9C920C` `#919191` | `#0072B2` `#D55E00` `#009E73` `#CC79A7` `#E69F00` `#56B4E9` `#F0E442` `#999999` |
 | Data visualisation | `#1A53FF` `#CC8200` `#00A58B` `#E60049` `#9B19F5` `#0098DC` `#899623` `#DC0AB4` `#7C1158` `#729F39` | `#245BFF` `#FFA300` `#00BFA0` `#E60049` `#9D1EF5` `#0BB4FF` `#BDCF32` `#DC0AB4` `#C81B8E` `#87BC45` |
@@ -204,7 +208,7 @@ tool can write only the keys it wants to change, and an upgrade with no stored k
 
 | Key | Allowed values | Default |
 |---|---|---|
-| `palette_preset` | `"follow_theme"`, `"material"`, `"colour_blind_safe"`, `"data_visualisation"`, `"custom"` | `"follow_theme"` |
+| `palette_preset` | `"follow_theme"`, `"editorial"`, `"material"`, `"colour_blind_safe"`, `"data_visualisation"`, `"custom"` | `"follow_theme"` |
 | `custom_colours` | 1 to 10 hex colours (`#rgb` or `#rrggbb`) separated by commas; used only with `"custom"` | `""` |
 | `custom_open_colour` | one hex colour, or `""` for the first custom colour | `""` |
 | `custom_closed_colour` | one hex colour, or `""` for the second custom colour (the first when there is only one) | `""` |
@@ -215,7 +219,7 @@ For example, from `rails runner`:
     Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "custom", "custom_colours" => "#1e88e5, #ea6a00, #00897b" }
 
 The form checks the values before it saves them and names every colour it does not accept. Writing the hash directly skips
-that check: an unusable value reads as the default, and unusable custom colours leave the Material palette.
+that check: an unusable value reads as the default, and unusable custom colours leave the Editorial palette.
 
 ## The page across projects
 

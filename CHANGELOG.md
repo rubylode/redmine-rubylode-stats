@@ -2,7 +2,18 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.3.0] - 2026-11-03
+
+Calmer chart colours.
+
+### Added
+
+- An Editorial preset: ten muted hues with a grey for context, in a light and a dark set, each keeping 3:1 contrast against the page.
+
+### Changed
+
+- Editorial is the palette used when the preset is Follow the theme and the theme defines no chart colours. Material stays selectable.
+- A None, Other or unnamed bucket in the category and closed per person charts is drawn in the neutral grey instead of a palette colour.
 
 ## [1.2.0] - 2026-11-02
 
@@ -63,7 +74,8 @@ First release. Needs Redmine 7.0 or newer.
 - A page across projects, limited to the projects where the user holds the permission and the module is on.
 - A demo data script for the throwaway Redmine, and a screenshot of each tab.
 
-[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.2.0...main
+[Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.3.0...main
+[1.3.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.1...v1.2.0
 [1.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/rubylode/redmine-rubylode-stats/releases/tag/v1.0.0
