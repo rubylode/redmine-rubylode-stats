@@ -1,5 +1,7 @@
 # Rubylode Stats for Redmine
 
+<p><img src="docs/thumbnail.png" alt="Rubylode Stats plugin" width="160"></p>
+
 [![tests](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml/badge.svg)](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml)
 
 A Stats page for every [Redmine](https://www.redmine.org) project, and one across projects, with charts over the tickets.

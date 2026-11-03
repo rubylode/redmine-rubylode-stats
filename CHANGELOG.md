@@ -2,6 +2,14 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.1] - 2026-11-03
+
+A thumbnail for the plugin.
+
+### Added
+
+- The plugin has a Rubylode thumbnail, shown at the top of the README. No change to the plugin itself.
+
 ## [1.3.0] - 2026-11-03
 
 Calmer chart colours.
