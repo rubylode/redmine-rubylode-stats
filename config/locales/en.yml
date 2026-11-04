@@ -1,113 +1,151 @@
 en:
   label_stats: Stats
-  label_stats_tickets_by_status: Tickets by status
-  label_stats_tickets: Tickets
-  label_stats_none: None
-  label_stats_no_version: No version
-  label_stats_tickets_by: Tickets by
-  label_stats_open_versus_closed: Open versus closed
-  label_stats_opened_and_closed: Opened and closed
-  label_stats_closed_per_person: Closed per person
-  label_stats_person: Person
-  label_stats_time_to_close_histogram: Time to close
-  label_stats_median_time_to_close: Median time to close
-  label_stats_days_to_close: Days to close
-  label_stats_median_days: Median days to close
-  label_stats_series_opened: Opened
-  label_stats_series_closed: Closed
-  label_stats_series_backlog: Backlog
-  label_stats_state_open: Open
-  label_stats_state_closed: Closed
-  label_stats_period: Period
-  label_stats_slice_by: Slice by
-  label_stats_period_day: Day
-  label_stats_period_week: Week
-  label_stats_period_month: Month
-  label_stats_slice_category: Category
-  label_stats_slice_version: Version
-  label_stats_slice_assignee: Assignee
-  label_stats_slice_tracker: Tracker
-  label_stats_slice_priority: Priority
-  label_stats_slice_author: Author
-  label_stats_preset_this_week: This week
-  label_stats_preset_this_month: This month
-  label_stats_preset_this_quarter: This quarter
-  label_stats_preset_last_30_days: Last 30 days
-  label_stats_preset_this_year: This year
-  label_stats_preset_all_time: All time
-  label_stats_tab_overview: Overview
-  label_stats_tab_people: People
-  label_stats_tab_speed: Speed
-  label_stats_tab_versions: Versions
-  label_stats_progress_per_version: Progress per version
-  label_stats_progress_per_version_subtitle: How much of each version is done, in order of due date?
-  label_stats_progress_per_version_note: "Ordered by due date; versions without a date come last. Percentage is done tickets over all tickets in the version."
-  label_stats_progress_done: Done
-  label_stats_progress_remaining: Remaining
-  label_stats_progress_end: "%{percent}% (%{done} of %{total})"
-  label_stats_progress_row_due: "%{name}  ·  due %{date}"
-  label_stats_progress_overdue: "(overdue)"
-  label_stats_tab_empty: No charts on this tab yet.
   permission_view_rubylode_stats: View stats
   project_module_rubylode_stats: Stats
-  label_stats_filters_and_options: Filters and options
-  label_stats_filters_active: "%{count} active"
-  label_stats_tickets_by_status_subtitle: Where does the work sit right now?
-  label_stats_tickets_by_slice_subtitle: Which areas take most of the tickets?
-  label_stats_open_versus_closed_subtitle: How much of the work is finished, whatever the status filter says?
-  label_stats_open_versus_closed_note: "The status filter is ignored here: this card always counts open and closed tickets."
-  label_stats_opened_and_closed_subtitle: Is the backlog growing or shrinking?
-  label_stats_closed_per_person_subtitle: Who closed the tickets, period by period?
-  label_stats_time_to_close_histogram_subtitle: How long do tickets take, from created to closed?
-  label_stats_median_time_to_close_subtitle: Is the median time to close getting shorter?
-  label_stats_legend_with_count: "%{state} %{tickets} (%{percent}%)"
-  label_stats_tile_open: Open
-  label_stats_tile_open_detail: "of %{count} tickets"
-  label_stats_tile_closed_in_range: Closed in range
-  label_stats_tile_closed_in_range_detail: "%{percent}% of the tickets counted"
-  label_stats_tile_closed_in_range_detail_empty: "of the tickets counted"
-  label_stats_tile_median_days: Median days to close
-  label_stats_tile_median_days_detail: "%{count} closed tickets"
-  label_stats_tile_median_days_unit: days
-  label_stats_tile_backlog_change: Backlog change
-  label_stats_tile_backlog_growing: "Growing: up %{difference} in %{periods} %{period_name}"
-  label_stats_tile_backlog_shrinking: "Shrinking: down %{difference} in %{periods} %{period_name}"
-  label_stats_tile_backlog_steady: "Steady: no change in %{periods} %{period_name}"
-  label_stats_tile_backlog_empty: No data
-  label_stats_period_unit_day: days
-  label_stats_period_unit_week: weeks
-  label_stats_period_unit_month: months
-  label_stats_all_tickets: All tickets
-  label_stats_all_closed: All closed tickets
-  label_stats_share_of_total: Share of total
-  label_stats_share_of_period: Share of the period
-  label_stats_share_of_closed: Share of closed tickets
-  label_stats_share_within: Closed in this time or faster
-  label_stats_period_total: Total closed
-  label_stats_progress_percent: Percent done
-  label_stats_change_title: "%{name} vs previous %{period}"
-  label_stats_view_data: View data
-  label_stats_data_caption: "Figures behind the chart: %{chart}"
-  label_stats_table_tickets: Ticket list
-  label_stats_table_open_tickets: Show tickets
-  label_stats_table_open_opened: Show opened tickets
-  label_stats_table_open_closed: Show closed tickets
-  rubylode_stats_setting_palette_preset: Chart colours
-  rubylode_stats_setting_palette_preset_help: "Follow the theme uses the colours the theme defines and falls back to Editorial. The other choices ignore the theme."
-  rubylode_stats_palette_preset_follow_theme: Follow the theme
-  rubylode_stats_palette_preset_editorial: Editorial
-  rubylode_stats_palette_preset_material: Material
-  rubylode_stats_palette_preset_colour_blind_safe: Colour-blind safe
-  rubylode_stats_palette_preset_data_visualisation: Data visualisation
-  rubylode_stats_palette_preset_custom: Custom
-  rubylode_stats_setting_custom_colours: Custom colours
-  rubylode_stats_setting_custom_colours_help: "Used with Custom. One to 10 hex colours separated by commas, such as #1e88e5, #ea6a00, #00897b. The first one draws single-series charts."
-  rubylode_stats_setting_custom_open_colour: Custom colour for open
-  rubylode_stats_setting_custom_closed_colour: Custom colour for closed
-  rubylode_stats_setting_custom_neutral_colour: Custom colour for neutral
-  rubylode_stats_setting_role_colour_help: "Optional hex colour. Left empty, open and closed take the first two custom colours and neutral a grey."
-  rubylode_stats_error_palette_preset: "Chart colours: \"%{value}\" is not one of follow_theme, editorial, material, colour_blind_safe, data_visualisation or custom."
-  rubylode_stats_error_custom_colours_missing: "Custom colours: enter at least one colour."
-  rubylode_stats_error_custom_colours_too_many: "Custom colours: enter no more than %{count} colours."
-  rubylode_stats_error_custom_colours_invalid: "Custom colours: %{values} is not a hex colour such as #abc or #aabbcc."
-  rubylode_stats_error_role_colour: "Custom colour for %{role}: \"%{value}\" is not a hex colour such as #abc or #aabbcc."
+  rubylode_stats:
+    none: None
+    no_version: No version
+    not_available: n/a
+    date_range: "%{first} to %{last}"
+    tickets: Tickets
+    tickets_by: Tickets by
+    person: Person
+    days_to_close: Days to close
+    median_days: Median days to close
+    period: Period
+    slice_by: Slice by
+    all_tickets: All tickets
+    all_closed: All closed tickets
+    share_of_total: Share of total
+    share_of_period: Share of the period
+    share_of_closed: Share of closed tickets
+    share_within: Closed in this time or faster
+    period_total: Total closed
+    change_title: "%{name} versus previous %{period}"
+    legend_with_count: "%{state} %{tickets} (%{percent}%)"
+    filters_and_options: Filters and options
+    filters_active: "%{count} active"
+    view_data: View data
+    data_caption: "Figures behind the chart: %{chart}"
+    series:
+      opened: Opened
+      closed: Closed
+      backlog: Backlog
+    states:
+      open: Open
+      closed: Closed
+    periods:
+      day: Day
+      week: Week
+      month: Month
+    period_units:
+      day: days
+      week: weeks
+      month: months
+    slices:
+      category: Category
+      version: Version
+      assignee: Assignee
+      tracker: Tracker
+      priority: Priority
+      author: Author
+    presets:
+      this_week: This week
+      this_month: This month
+      this_quarter: This quarter
+      last_30_days: Last 30 days
+      this_year: This year
+      all_time: All time
+    tabs:
+      overview: Overview
+      people: People
+      speed: Speed
+      versions: Versions
+      empty: No charts on this tab yet.
+    progress:
+      done: Done
+      remaining: Remaining
+      end: "%{percent}% (%{done} of %{total})"
+      row_due: "%{name}  ·  due %{date}"
+      overdue: "(overdue)"
+      percent: Percent done
+    charts:
+      tickets_by_status:
+        title: Tickets by status
+        subtitle: Where does the work sit right now?
+      tickets_by_slice:
+        subtitle: Which areas take most of the tickets?
+      open_versus_closed:
+        title: Open versus closed
+        subtitle: How much of the work is finished, whatever the status filter says?
+        note: "The status filter is ignored here: this card always counts open and closed tickets."
+      opened_and_closed:
+        title: Opened and closed
+        subtitle: Is the backlog growing or shrinking?
+      closed_per_person:
+        title: Closed per person
+        subtitle: Who closed the tickets, period by period?
+      time_to_close_histogram:
+        title: Time to close
+        subtitle: How long do tickets take, from created to closed?
+      median_time_to_close:
+        title: Median time to close
+        subtitle: Is the median time to close getting shorter?
+      progress_per_version:
+        title: Progress per version
+        subtitle: How much of each version is done, in order of due date?
+        note: "Ordered by due date; versions without a date come last. Percent done is closed tickets divided by all tickets in the version."
+    tiles:
+      open: Open
+      open_detail:
+        one: "of %{count} ticket"
+        other: "of %{count} tickets"
+      closed_in_range: Closed in range
+      closed_in_range_detail: "%{percent}% of the tickets counted"
+      closed_in_range_detail_empty: "of the tickets counted"
+      median_days: Median days to close
+      median_days_detail:
+        one: "%{count} closed ticket"
+        other: "%{count} closed tickets"
+      median_days_unit: days
+      backlog_change: Backlog change
+      backlog_growing: "Growing: up %{difference} in %{periods} %{period_name}"
+      backlog_shrinking: "Shrinking: down %{difference} in %{periods} %{period_name}"
+      backlog_steady: "Steady: no change in %{periods} %{period_name}"
+      backlog_empty: No data
+    table:
+      tickets: Ticket list
+      open_tickets: Show tickets
+      open_opened: Show opened tickets
+      open_closed: Show closed tickets
+    settings:
+      palette_preset:
+        label: Chart colors
+        hint: "Follow the theme uses the theme's chart colors, and Editorial when the theme defines none. The other choices ignore the theme."
+        choices:
+          follow_theme: Follow the theme
+          editorial: Editorial
+          material: Material
+          color_blind_safe: Color-blind safe
+          data_visualization: Data visualization
+          custom: Custom
+      custom_colors:
+        label: Custom colors
+        hint: "Used with Custom. Enter 1 to 10 hex colors separated by commas. The first draws single-series charts."
+      custom_open_color:
+        label: Custom color for open
+        hint: "Optional hex color. If empty, open takes the first custom color."
+      custom_closed_color:
+        label: Custom color for closed
+        hint: "Optional hex color. If empty, closed takes the second custom color, or the first when there is only one."
+      custom_neutral_color:
+        label: Custom color for neutral
+        hint: "Optional hex color. If empty, neutral is a gray."
+    errors:
+      palette_preset: "Chart colors: \"%{value}\" is not one of Follow the theme, Editorial, Material, Color-blind safe, Data visualization or Custom."
+      custom_colors_missing: "Custom colors: enter at least one color."
+      custom_colors_too_many: "Custom colors: enter no more than %{count} colors."
+      custom_colors_invalid:
+        one: "Custom colors: %{values} is not a hex color such as #abc or #aabbcc."
+        other: "Custom colors: %{values} are not hex colors such as #abc or #aabbcc."
+      role_color: "Custom color for %{role}: \"%{value}\" is not a hex color such as #abc or #aabbcc."

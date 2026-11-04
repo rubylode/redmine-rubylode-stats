@@ -35,9 +35,9 @@ module RubylodeStats
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
               tooltip_line("status", I18n.t(:field_status), "nominal"),
-              count_line("tickets", I18n.t(:label_stats_tickets)),
+              count_line("tickets", I18n.t("rubylode_stats.tickets")),
               share_line,
-              count_line("total", I18n.t(:label_stats_all_tickets))
+              count_line("total", I18n.t("rubylode_stats.all_tickets"))
             ]
           }
         }
@@ -45,19 +45,19 @@ module RubylodeStats
 
       def data_table
         DataTable.new(
-          headers: [I18n.t(:field_status), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          headers: [I18n.t(:field_status), I18n.t("rubylode_stats.tickets"), I18n.t("rubylode_stats.share_of_total"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
-            DataTable.row([row["status"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+            DataTable.row([row["status"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t("rubylode_stats.table.open_tickets"), row["url"]])
           end
         )
       end
 
       private
 
-      # Colour by meaning: a closed status takes the closed role colour, an empty or None bucket the neutral grey, and the
-      # open statuses the palette in order (the script skips the colour the closed role uses, so no open bar looks closed).
+      # Color by meaning: a closed status takes the closed role color, an empty or None bucket the neutral gray, and the
+      # open statuses the palette in order (the script skips the color the closed role uses, so no open bar looks closed).
       def status_color_scale(rows)
-        neutral_labels = [I18n.t(:label_stats_none), "Other"]
+        neutral_labels = [I18n.t("rubylode_stats.none"), "Other"]
         position = 0
         range = rows.map do |row|
           next "role:closed" if row["is_closed"]

@@ -87,7 +87,7 @@ class SlicedTicketsRowsTest < ActiveSupport::TestCase
   end
 
   def test_an_unknown_slice_is_refused
-    assert_raises(ArgumentError) { RubylodeStats::SlicedTicketsRows.new(IssueQuery.new(name: "_"), "colour") }
+    assert_raises(ArgumentError) { RubylodeStats::SlicedTicketsRows.new(IssueQuery.new(name: "_"), "color") }
   end
 
   private

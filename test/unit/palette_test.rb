@@ -23,7 +23,7 @@ class PaletteTest < ActiveSupport::TestCase
   MINIMUM_GRAPHICS_CONTRAST = 3.0
 
   def build_palette(values = {})
-    RubylodeStats::PluginSettings.new(values).palette
+    RubylodeStats::Settings.new(values).palette
   end
 
   def relative_luminance(hex)
@@ -58,13 +58,13 @@ class PaletteTest < ActiveSupport::TestCase
 
     { "light" => LIGHT_PAGE, "dark" => DARK_PAGE }.each do |variant, page|
       set = editorial.fetch(variant)
-      (set["categorical"] + set.values_at("open", "closed", "neutral")).each do |colour|
-        assert_operator contrast_ratio(colour, page), :>=, MINIMUM_GRAPHICS_CONTRAST, "#{variant} #{colour}"
+      (set["categorical"] + set.values_at("open", "closed", "neutral")).each do |color|
+        assert_operator contrast_ratio(color, page), :>=, MINIMUM_GRAPHICS_CONTRAST, "#{variant} #{color}"
       end
     end
   end
 
-  def test_the_editorial_neutral_is_a_grey
+  def test_the_editorial_neutral_is_a_gray
     editorial = RubylodeStats::Palette::PRESETS.fetch("editorial")
 
     %w[light dark].each do |variant|
@@ -80,7 +80,7 @@ class PaletteTest < ActiveSupport::TestCase
     assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial"), palette.to_h.slice("light", "dark")
   end
 
-  def test_the_material_preset_has_ten_distinct_colours_with_a_light_and_a_dark_variant
+  def test_the_material_preset_has_ten_distinct_colors_with_a_light_and_a_dark_variant
     material = RubylodeStats::Palette::PRESETS.fetch("material")
 
     assert_equal 10, material["light"]["categorical"].size
@@ -90,7 +90,7 @@ class PaletteTest < ActiveSupport::TestCase
   end
 
   def test_the_choosable_presets_use_the_preset_named_in_the_setting
-    %w[editorial material colour_blind_safe data_visualisation].each do |preset|
+    %w[editorial material color_blind_safe data_visualization].each do |preset|
       palette = build_palette("palette_preset" => preset)
 
       refute palette.follow_theme?, preset
@@ -98,8 +98,8 @@ class PaletteTest < ActiveSupport::TestCase
     end
   end
 
-  def test_the_colour_blind_safe_dark_variant_is_the_okabe_ito_set_with_grey_for_black
-    dark = RubylodeStats::Palette::PRESETS.fetch("colour_blind_safe")["dark"]["categorical"]
+  def test_the_color_blind_safe_dark_variant_is_the_okabe_ito_set_with_gray_for_black
+    dark = RubylodeStats::Palette::PRESETS.fetch("color_blind_safe")["dark"]["categorical"]
 
     assert_equal %w[#0072B2 #D55E00 #009E73 #CC79A7 #E69F00 #56B4E9 #F0E442 #999999], dark
   end
@@ -112,15 +112,15 @@ class PaletteTest < ActiveSupport::TestCase
     RubylodeStats::Palette::PRESETS.each do |preset, variants|
       { "light" => LIGHT_PAGE, "dark" => DARK_PAGE }.each do |variant, page|
         set = variants.fetch(variant)
-        colours = set["categorical"] + set.values_at("open", "closed", "neutral")
-        colours.each do |colour|
-          assert_operator contrast_ratio(colour, page), :>=, MINIMUM_GRAPHICS_CONTRAST, "#{preset} #{variant} #{colour} on #{page}"
+        colors = set["categorical"] + set.values_at("open", "closed", "neutral")
+        colors.each do |color|
+          assert_operator contrast_ratio(color, page), :>=, MINIMUM_GRAPHICS_CONTRAST, "#{preset} #{variant} #{color} on #{page}"
         end
       end
     end
   end
 
-  def test_the_neutral_grey_of_a_custom_palette_keeps_graphics_contrast_in_both_variants
+  def test_the_neutral_gray_of_a_custom_palette_keeps_graphics_contrast_in_both_variants
     assert_operator contrast_ratio(RubylodeStats::Palette::CUSTOM_NEUTRAL, LIGHT_PAGE), :>=, MINIMUM_GRAPHICS_CONTRAST
     assert_operator contrast_ratio(RubylodeStats::Palette::CUSTOM_NEUTRAL, DARK_PAGE), :>=, MINIMUM_GRAPHICS_CONTRAST
   end
@@ -133,31 +133,31 @@ class PaletteTest < ActiveSupport::TestCase
     end
   end
 
-  def test_a_custom_palette_uses_the_listed_colours_in_both_variants_and_expands_short_hex
-    palette = build_palette("palette_preset" => "custom", "custom_colours" => "#f00, #00ff00 ,#0000FF")
+  def test_a_custom_palette_uses_the_listed_colors_in_both_variants_and_expands_short_hex
+    palette = build_palette("palette_preset" => "custom", "custom_colors" => "#f00, #00ff00 ,#0000FF")
 
     assert_equal %w[#FF0000 #00FF00 #0000FF], palette.to_h["light"]["categorical"]
     assert_equal palette.to_h["light"]["categorical"], palette.to_h["dark"]["categorical"]
   end
 
-  def test_a_custom_palette_takes_open_and_closed_from_its_first_two_colours_and_a_neutral_grey
-    set = build_palette("palette_preset" => "custom", "custom_colours" => "#111111,#222222").to_h["light"]
+  def test_a_custom_palette_takes_open_and_closed_from_its_first_two_colors_and_a_neutral_gray
+    set = build_palette("palette_preset" => "custom", "custom_colors" => "#111111,#222222").to_h["light"]
 
     assert_equal "#111111", set["open"]
     assert_equal "#222222", set["closed"]
     assert_equal RubylodeStats::Palette::CUSTOM_NEUTRAL, set["neutral"]
   end
 
-  def test_a_custom_palette_with_one_colour_uses_it_for_open_and_closed
-    set = build_palette("palette_preset" => "custom", "custom_colours" => "#336699").to_h["light"]
+  def test_a_custom_palette_with_one_color_uses_it_for_open_and_closed
+    set = build_palette("palette_preset" => "custom", "custom_colors" => "#336699").to_h["light"]
 
     assert_equal "#336699", set["open"]
     assert_equal "#336699", set["closed"]
   end
 
-  def test_custom_role_colours_override_the_fallbacks
-    set = build_palette("palette_preset" => "custom", "custom_colours" => "#111111,#222222", "custom_open_colour" => "#abc",
-                        "custom_closed_colour" => "#ddeeff", "custom_neutral_colour" => "#808080").to_h["light"]
+  def test_custom_role_colors_override_the_fallbacks
+    set = build_palette("palette_preset" => "custom", "custom_colors" => "#111111,#222222", "custom_open_color" => "#abc",
+                        "custom_closed_color" => "#ddeeff", "custom_neutral_color" => "#808080").to_h["light"]
 
     assert_equal "#AABBCC", set["open"]
     assert_equal "#DDEEFF", set["closed"]
@@ -165,12 +165,12 @@ class PaletteTest < ActiveSupport::TestCase
   end
 
   def test_a_custom_preset_with_nothing_usable_falls_back_to_editorial
-    palette = build_palette("palette_preset" => "custom", "custom_colours" => "")
+    palette = build_palette("palette_preset" => "custom", "custom_colors" => "")
 
     assert_equal RubylodeStats::Palette::PRESETS.fetch("editorial"), palette.to_h.slice("light", "dark")
   end
 
-  def test_a_category_scale_gives_the_none_bucket_the_neutral_role_and_the_others_palette_colours_in_order
+  def test_a_category_scale_gives_the_none_bucket_the_neutral_role_and_the_others_palette_colors_in_order
     chart = RubylodeStats::Charts::TicketsBySlice.allocate
     scale = chart.send(:category_color_scale, ["Printing", "Docs", "Other", "", "None"])
 
@@ -178,7 +178,7 @@ class PaletteTest < ActiveSupport::TestCase
     assert_equal %w[category:1 category:2 role:neutral role:neutral role:neutral], scale["range"]
   end
 
-  def test_a_status_scale_colours_closed_statuses_by_role_and_open_ones_in_order
+  def test_a_status_scale_colors_closed_statuses_by_role_and_open_ones_in_order
     chart = RubylodeStats::Charts::TicketsByStatus.allocate
     scale = chart.send(:status_color_scale, [
       { "status" => "New", "is_closed" => false }, { "status" => "Done", "is_closed" => true },

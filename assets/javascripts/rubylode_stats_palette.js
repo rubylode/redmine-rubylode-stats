@@ -18,11 +18,11 @@
  */
 
 /*
- * Chooses the colours of the charts. The server sends the plugin's palette (a light and a dark set, see
+ * Chooses the colors of the charts. The server sends the plugin's palette (a light and a dark set, see
  * RubylodeStats::Palette) in the data-palette attribute. When the setting follows the theme and the page defines
- * --theme-chart-1, the theme's colours win: --theme-chart-1 to --theme-chart-10 for categories and --theme-chart-open,
- * --theme-chart-closed and --theme-chart-neutral for the roles. The chart specifications name colours as tokens
- * ("role:open", "role:closed", "role:neutral", "category:3", "open_status:2"), which applyTokens turns into the chosen colours. The functions
+ * --theme-chart-1, the theme's colors win: --theme-chart-1 to --theme-chart-10 for categories and --theme-chart-open,
+ * --theme-chart-closed and --theme-chart-neutral for the roles. The chart specifications name colors as tokens
+ * ("role:open", "role:closed", "role:neutral", "category:3", "open_status:2"), which applyTokens turns into the chosen colors. The functions
  * take what they read as arguments, so they run under Node as well (test/javascript).
  */
 (function (root) {
@@ -35,8 +35,8 @@
     if (payload.follow_theme && readProperty("--theme-chart-1")) {
       var categorical = [];
       for (var number = 1; number <= CATEGORY_COUNT; number += 1) {
-        var colour = readProperty("--theme-chart-" + number);
-        if (colour) { categorical.push(colour); }
+        var color = readProperty("--theme-chart-" + number);
+        if (color) { categorical.push(color); }
       }
       return {
         categorical: categorical,
@@ -48,7 +48,7 @@
     return { categorical: variant.categorical, open: variant.open, closed: variant.closed, neutral: variant.neutral };
   }
 
-  // A copy of the specification with each colour token replaced. Categories wrap after the last colour.
+  // A copy of the specification with each color token replaced. Categories wrap after the last color.
   function applyTokens(specification, palette) {
     return JSON.parse(JSON.stringify(specification), function (key, value) {
       if (typeof value !== "string") { return value; }
@@ -58,7 +58,7 @@
       if (category) { return palette.categorical[(Number(category[1]) - 1) % palette.categorical.length]; }
       var openStatus = /^open_status:(\d+)$/.exec(value);
       if (openStatus) {
-        var others = palette.categorical.filter(function (colour) { return colour !== palette.closed; });
+        var others = palette.categorical.filter(function (color) { return color !== palette.closed; });
         if (others.length === 0) { others = palette.categorical; }
         return others[(Number(openStatus[1]) - 1) % others.length];
       }
@@ -66,12 +66,12 @@
     });
   }
 
-  // The parts of the chart configuration that carry colour: single-series marks take the first colour, and charts that colour
+  // The parts of the chart configuration that carry color: single-series marks take the first color, and charts that color
   // by category take the palette in order.
-  function colourConfiguration(palette) {
+  function colorConfiguration(palette) {
     return { mark: { color: palette.categorical[0] }, range: { category: palette.categorical } };
   }
 
-  var api = { resolve: resolve, applyTokens: applyTokens, colourConfiguration: colourConfiguration };
+  var api = { resolve: resolve, applyTokens: applyTokens, colorConfiguration: colorConfiguration };
   root.RubylodeStatsPalette = api;
 })(typeof window !== "undefined" ? window : globalThis);

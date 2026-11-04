@@ -54,7 +54,7 @@ module RubylodeStats
     end
 
     def row_without_version(counts)
-      build_row(nil, I18n.t(:label_stats_no_version), nil, false, counts)
+      build_row(nil, I18n.t("rubylode_stats.no_version"), nil, false, counts)
     end
 
     def build_row(version_id, name, due_date, overdue, counts)

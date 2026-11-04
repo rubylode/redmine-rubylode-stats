@@ -51,11 +51,11 @@ module RubylodeStats
       # The card around the chart: a title, a one-line subtitle naming the question the chart answers, an optional note and
       # whether the card spans the whole grid. The specification itself carries no title.
       def card_title
-        I18n.t("label_stats_#{chart_name}")
+        I18n.t("rubylode_stats.charts.#{chart_name}.title")
       end
 
       def card_subtitle
-        I18n.t("label_stats_#{chart_name}_subtitle")
+        I18n.t("rubylode_stats.charts.#{chart_name}.subtitle")
       end
 
       def card_note
@@ -90,13 +90,13 @@ module RubylodeStats
       def count_axis(field, maximum_count = nil)
         axis = { "tickMinStep" => 1, "format" => "d" }
         axis = axis.merge("values" => (0..maximum_count).to_a) if maximum_count && maximum_count <= EVERY_WHOLE_TICKET_LIMIT
-        { "field" => field, "type" => "quantitative", "title" => I18n.t(:label_stats_tickets), "axis" => axis }
+        { "field" => field, "type" => "quantitative", "title" => I18n.t("rubylode_stats.tickets"), "axis" => axis }
       end
 
-      # A colour scale for a category chart: each label takes the next palette colour in order, except the "None" and "Other" buckets,
-      # which is drawn in the neutral grey so it reads as context and does not use up a hue.
+      # A color scale for a category chart: each label takes the next palette color in order, except the "None" and "Other" buckets,
+      # which is drawn in the neutral gray so it reads as context and does not use up a hue.
       def category_color_scale(labels)
-        neutral_labels = [I18n.t(:label_stats_none), "Other"]
+        neutral_labels = [I18n.t("rubylode_stats.none"), "Other"]
         position = 0
         range = labels.map do |label|
           next "role:neutral" if neutral_labels.include?(label.to_s) || label.to_s.strip.empty?
@@ -142,7 +142,9 @@ module RubylodeStats
       # Number formats are Vega's (d3), which the page's script sets to the user's language.
       COUNT_FORMAT = ",d".freeze
       SHARE_FORMAT = ".1~%".freeze
-      DASH = "–".freeze
+      def not_available
+        ::I18n.t("rubylode_stats.not_available")
+      end
 
       def tooltip_line(field, title, type = "quantitative", format = nil)
         line = { "field" => field, "type" => type, "title" => title }
@@ -154,7 +156,7 @@ module RubylodeStats
         tooltip_line(field, title, "quantitative", COUNT_FORMAT)
       end
 
-      def share_line(field = "share", title = I18n.t(:label_stats_share_of_total))
+      def share_line(field = "share", title = I18n.t("rubylode_stats.share_of_total"))
         tooltip_line(field, title, "quantitative", SHARE_FORMAT)
       end
 
@@ -168,15 +170,15 @@ module RubylodeStats
       end
 
       def share_text(fraction)
-        return DASH unless fraction
+        return not_available unless fraction
 
         percent = (fraction * 100).round(1)
         "#{percent == percent.to_i ? percent.to_i : percent}%"
       end
 
-      # "+3", "-2" or "0" against the previous period; a dash when there is no previous period to compare with.
+      # "+3", "-2" or "0" against the previous period; n/a when there is no previous period to compare with.
       def change_text(current, previous)
-        return DASH if previous.nil? || current.nil?
+        return not_available if previous.nil? || current.nil?
 
         difference = (current - previous).round(1)
         difference = difference.to_i if difference == difference.to_i
@@ -184,7 +186,7 @@ module RubylodeStats
       end
 
       def change_title(name, period)
-        I18n.t(:label_stats_change_title, name: name, period: I18n.t("label_stats_period_#{period}").downcase)
+        I18n.t("rubylode_stats.change_title", name: name, period: I18n.t("rubylode_stats.periods.#{period}").downcase)
       end
 
       PREVIOUS_PERIOD = {
@@ -211,11 +213,11 @@ module RubylodeStats
         filter
       end
 
-      # "Oct 5, 2026" for a day, "Oct 5, 2026 – Oct 11, 2026" for a week, "October 2026" for a month, in the user's date format.
+      # "Oct 5, 2026" for a day, "Oct 5, 2026 to Oct 11, 2026" for a week, "October 2026" for a month, in the user's date format.
       def period_text(first_day, period)
         case period
         when "day" then format_date(first_day)
-        when "week" then "#{format_date(first_day)} – #{format_date(first_day + 6)}"
+        when "week" then ::I18n.t("rubylode_stats.date_range", first: format_date(first_day), last: format_date(first_day + 6))
         else ::I18n.l(first_day, format: "%B %Y")
         end
       end

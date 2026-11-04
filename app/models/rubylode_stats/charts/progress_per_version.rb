@@ -22,7 +22,7 @@ module RubylodeStats
     # entry hides that half; a click on a bar opens the issue list of that version's tickets, of every status. The status filter
     # is ignored (see ProgressPerVersionRows).
     class ProgressPerVersion < Base
-      # Done takes the closed role colour and remaining the neutral one; the script turns the tokens into the palette's colours.
+      # Done takes the closed role color and remaining the neutral one; the script turns the tokens into the palette's colors.
       STATE_COLORS = { done: "role:closed", remaining: "role:neutral" }.freeze
       ROW_HEIGHT = 34
       END_LABEL_ROOM = 1.35
@@ -39,16 +39,16 @@ module RubylodeStats
       end
 
       def card_note
-        I18n.t(:label_stats_progress_per_version_note)
+        I18n.t("rubylode_stats.charts.progress_per_version.note")
       end
 
       def data_table
         DataTable.new(
-          headers: [I18n.t(:label_version), I18n.t(:field_effective_date), I18n.t(:label_stats_progress_done), I18n.t(:label_stats_progress_remaining),
-                    I18n.t(:label_stats_all_tickets), I18n.t(:label_stats_table_tickets)],
+          headers: [I18n.t(:label_version), I18n.t(:field_effective_date), I18n.t("rubylode_stats.progress.done"), I18n.t("rubylode_stats.progress.remaining"),
+                    I18n.t("rubylode_stats.all_tickets"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_labels.map do |row|
             DataTable.row([row["name"], row["due_text"], "#{count_text(row["done"])} (#{row["percent"]}%)", count_text(row["remaining"]),
-                           count_text(row["total"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+                           count_text(row["total"])], [I18n.t("rubylode_stats.table.open_tickets"), row["url"]])
           end
         )
       end
@@ -60,7 +60,7 @@ module RubylodeStats
       private
 
       def state_labels
-        { "done" => I18n.t(:label_stats_progress_done), "remaining" => I18n.t(:label_stats_progress_remaining) }
+        { "done" => I18n.t("rubylode_stats.progress.done"), "remaining" => I18n.t("rubylode_stats.progress.remaining") }
       end
 
       def row_axis
@@ -92,11 +92,11 @@ module RubylodeStats
               tooltip_line("name", I18n.t(:label_version), "nominal"),
               tooltip_line("due_text", I18n.t(:field_effective_date), "nominal"),
               tooltip_line("state", I18n.t(:field_status), "nominal"),
-              count_line("tickets", I18n.t(:label_stats_tickets)),
-              count_line("done", I18n.t(:label_stats_progress_done)),
-              count_line("remaining", I18n.t(:label_stats_progress_remaining)),
-              count_line("total", I18n.t(:label_stats_all_tickets)),
-              tooltip_line("percent_text", I18n.t(:label_stats_progress_percent), "nominal")
+              count_line("tickets", I18n.t("rubylode_stats.tickets")),
+              count_line("done", I18n.t("rubylode_stats.progress.done")),
+              count_line("remaining", I18n.t("rubylode_stats.progress.remaining")),
+              count_line("total", I18n.t("rubylode_stats.all_tickets")),
+              tooltip_line("percent_text", I18n.t("rubylode_stats.progress.percent"), "nominal")
             ]
           }
         }
@@ -119,9 +119,9 @@ module RubylodeStats
           row.merge(
             "position" => position,
             "label" => row_label(row),
-            "due_text" => row["due_date"] ? format_date(Date.iso8601(row["due_date"])) : DASH,
+            "due_text" => row["due_date"] ? format_date(Date.iso8601(row["due_date"])) : not_available,
             "percent_text" => "#{row["percent"]}%",
-            "end_label" => I18n.t(:label_stats_progress_end, percent: row["percent"], done: row["done"], total: row["total"]),
+            "end_label" => I18n.t("rubylode_stats.progress.end", percent: row["percent"], done: row["done"], total: row["total"]),
             "url" => issue_list_link.call("fixed_version_id" => row["version_id"], "status_id" => { operator: "*", values: [] })
           )
         end
@@ -130,8 +130,8 @@ module RubylodeStats
       def row_label(row)
         return row["name"] unless row["due_date"]
 
-        label = I18n.t(:label_stats_progress_row_due, name: row["name"], date: row["due_date"])
-        row["overdue"] ? "#{label}  #{I18n.t(:label_stats_progress_overdue)}" : label
+        label = I18n.t("rubylode_stats.progress.row_due", name: row["name"], date: row["due_date"])
+        row["overdue"] ? "#{label}  #{I18n.t("rubylode_stats.progress.overdue")}" : label
       end
     end
   end

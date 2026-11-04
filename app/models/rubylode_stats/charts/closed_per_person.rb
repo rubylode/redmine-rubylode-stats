@@ -37,16 +37,16 @@ module RubylodeStats
             "x" => { "field" => "period", "type" => "temporal", "timeUnit" => TIME_UNITS.fetch(period), "title" => period_label,
                      "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
             "y" => count_axis("closed"),
-            "color" => { "field" => "person", "type" => "nominal", "title" => I18n.t(:label_stats_person), "scale" => category_color_scale(person_labels) },
+            "color" => { "field" => "person", "type" => "nominal", "title" => I18n.t("rubylode_stats.person"), "scale" => category_color_scale(person_labels) },
             "opacity" => emphasis_opacity,
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
               tooltip_line("period_text", period_label, "nominal"),
-              tooltip_line("person", I18n.t(:label_stats_person), "nominal"),
-              count_line("closed", I18n.t(:label_stats_series_closed)),
-              share_line("share", I18n.t(:label_stats_share_of_period)),
-              count_line("period_total", I18n.t(:label_stats_period_total)),
-              tooltip_line("period_change_text", change_title(I18n.t(:label_stats_period_total), period), "nominal")
+              tooltip_line("person", I18n.t("rubylode_stats.person"), "nominal"),
+              count_line("closed", I18n.t("rubylode_stats.series.closed")),
+              share_line("share", I18n.t("rubylode_stats.share_of_period")),
+              count_line("period_total", I18n.t("rubylode_stats.period_total")),
+              tooltip_line("period_change_text", change_title(I18n.t("rubylode_stats.period_total"), period), "nominal")
             ]
           }
         }
@@ -54,13 +54,13 @@ module RubylodeStats
 
       def data_table
         DataTable.new(
-          headers: [period_label, I18n.t(:label_stats_person), I18n.t(:label_stats_series_closed), I18n.t(:label_stats_share_of_period),
-                    I18n.t(:label_stats_period_total), I18n.t(:label_stats_table_tickets)],
+          headers: [period_label, I18n.t("rubylode_stats.person"), I18n.t("rubylode_stats.series.closed"), I18n.t("rubylode_stats.share_of_period"),
+                    I18n.t("rubylode_stats.period_total"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
             DataTable.row(
               [row["period_text"], row["person"], count_text(row["closed"]), share_text(row["share"]),
                "#{count_text(row["period_total"])} (#{row["period_change_text"]})"],
-              [I18n.t(:label_stats_table_open_closed), row["url"]]
+              [I18n.t("rubylode_stats.table.open_closed"), row["url"]]
             )
           end
         )
@@ -73,13 +73,13 @@ module RubylodeStats
       end
 
       def period_label
-        I18n.t("label_stats_period_#{period}")
+        I18n.t("rubylode_stats.periods.#{period}")
       end
 
       # The people in the order they first appear, with the "None" bucket last.
       def person_labels
         labels = rows_with_links.map { |row| row["person"] }.uniq
-        none = I18n.t(:label_stats_none)
+        none = I18n.t("rubylode_stats.none")
         labels - [none] + (labels.include?(none) ? [none] : [])
       end
 

@@ -60,26 +60,26 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
 
   def test_the_page_carries_the_chosen_preset
     log_user("jsmith", "jsmith")
-    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "colour_blind_safe" }
+    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "color_blind_safe" }
 
     palette = palette_on_page
 
     assert_equal false, palette["follow_theme"]
-    assert_equal RubylodeStats::Palette::PRESETS.fetch("colour_blind_safe")["light"]["categorical"], palette["light"]["categorical"]
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("color_blind_safe")["light"]["categorical"], palette["light"]["categorical"]
   end
 
   def test_the_page_carries_a_custom_palette
     log_user("jsmith", "jsmith")
-    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "custom", "custom_colours" => "#123456,#654321" }
+    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "custom", "custom_colors" => "#123456,#654321" }
 
     assert_equal %w[#123456 #654321], palette_on_page["dark"]["categorical"]
   end
 
   def test_a_deployment_tool_writing_the_hash_directly_changes_the_page
     log_user("jsmith", "jsmith")
-    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "data_visualisation" }
+    Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "data_visualization" }
 
-    assert_equal RubylodeStats::Palette::PRESETS.fetch("data_visualisation")["light"], palette_on_page["light"]
+    assert_equal RubylodeStats::Palette::PRESETS.fetch("data_visualization")["light"], palette_on_page["light"]
   end
 
   def test_the_page_loads_the_palette_script_before_the_page_script
@@ -110,7 +110,7 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_equal %w[role:closed role:neutral], range
   end
 
-  def test_the_status_and_category_bars_are_coloured_by_their_own_label_in_order_with_no_legend
+  def test_the_status_and_category_bars_are_colored_by_their_own_label_in_order_with_no_legend
     log_user("jsmith", "jsmith")
     get "/projects/#{@project.identifier}/stats"
 
@@ -124,7 +124,7 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     end
   end
 
-  def test_the_time_to_close_histogram_and_the_median_line_keep_the_single_colour
+  def test_the_time_to_close_histogram_and_the_median_line_keep_the_single_color
     log_user("jsmith", "jsmith")
     get "/projects/#{@project.identifier}/stats", params: { tab: "speed" }
 
@@ -132,7 +132,7 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_nil specification_of("median_time_to_close").dig("encoding", "color")
   end
 
-  def test_no_chart_specification_holds_a_hex_colour
+  def test_no_chart_specification_holds_a_hex_color
     log_user("jsmith", "jsmith")
     %w[overview people speed versions].each do |tab|
       get "/projects/#{@project.identifier}/stats", params: { tab: tab }
@@ -151,10 +151,10 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_response :success
     assert_select "select#settings_palette_preset option", 6
     assert_select "select#settings_palette_preset option[selected][value=follow_theme]"
-    assert_select "input#settings_custom_colours"
-    assert_select "input#settings_custom_open_colour"
-    assert_select "input#settings_custom_closed_colour"
-    assert_select "input#settings_custom_neutral_colour"
+    assert_select "input#settings_custom_colors"
+    assert_select "input#settings_custom_open_color"
+    assert_select "input#settings_custom_closed_color"
+    assert_select "input#settings_custom_neutral_color"
   end
 
   def test_the_settings_form_saves_the_editorial_preset
@@ -166,7 +166,7 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
     assert_equal "editorial", Setting.plugin_redmine_rubylode_stats["palette_preset"]
   end
 
-  def test_the_status_bars_colour_closed_statuses_by_role_and_open_ones_from_the_palette
+  def test_the_status_bars_color_closed_statuses_by_role_and_open_ones_from_the_palette
     log_user("jsmith", "jsmith")
     get "/projects/#{@project.identifier}/stats?set_filter=1&f[]=status_id&op[status_id]=*"
 
@@ -193,24 +193,24 @@ class PaletteSettingsAndPageTest < Redmine::IntegrationTest
   def test_the_settings_form_saves_a_valid_custom_palette
     log_user("admin", "admin")
 
-    post SETTINGS_PATH, params: { settings: { palette_preset: "custom", custom_colours: "#abc, #123456", custom_open_colour: "",
-                                              custom_closed_colour: "", custom_neutral_colour: "" } }
+    post SETTINGS_PATH, params: { settings: { palette_preset: "custom", custom_colors: "#abc, #123456", custom_open_color: "",
+                                              custom_closed_color: "", custom_neutral_color: "" } }
 
     assert_redirected_to SETTINGS_PATH
     saved = Setting.plugin_redmine_rubylode_stats
     assert_equal "custom", saved["palette_preset"]
-    assert_equal "#abc, #123456", saved["custom_colours"]
+    assert_equal "#abc, #123456", saved["custom_colors"]
   end
 
-  def test_the_settings_form_refuses_a_bad_colour_and_keeps_what_was_typed
+  def test_the_settings_form_refuses_a_bad_color_and_keeps_what_was_typed
     log_user("admin", "admin")
     Setting.plugin_redmine_rubylode_stats = { "palette_preset" => "material" }
 
-    post SETTINGS_PATH, params: { settings: { palette_preset: "custom", custom_colours: "#112233, banana" } }
+    post SETTINGS_PATH, params: { settings: { palette_preset: "custom", custom_colors: "#112233, banana" } }
 
     assert_response :unprocessable_entity
     assert_select ".flash.error", text: /banana/
-    assert_select "input#settings_custom_colours[value=?]", "#112233, banana"
+    assert_select "input#settings_custom_colors[value=?]", "#112233, banana"
     assert_select "select#settings_palette_preset option[selected][value=custom]"
     assert_equal "material", Setting.plugin_redmine_rubylode_stats["palette_preset"]
   end

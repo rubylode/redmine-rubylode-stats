@@ -33,14 +33,14 @@ module RubylodeStats
       end
 
       def card_title
-        "#{I18n.t(:label_stats_tickets_by)} #{slice_label.downcase}"
+        "#{I18n.t("rubylode_stats.tickets_by")} #{slice_label.downcase}"
       end
 
       def data_table
         DataTable.new(
-          headers: [slice_label, I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          headers: [slice_label, I18n.t("rubylode_stats.tickets"), I18n.t("rubylode_stats.share_of_total"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
-            DataTable.row([row["slice"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+            DataTable.row([row["slice"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t("rubylode_stats.table.open_tickets"), row["url"]])
           end
         )
       end
@@ -56,15 +56,15 @@ module RubylodeStats
       end
 
       def slice_label
-        I18n.t("label_stats_slice_#{slice_by}")
+        I18n.t("rubylode_stats.slices.#{slice_by}")
       end
 
       def tooltip
         [
           tooltip_line("slice", slice_label, "nominal"),
-          count_line("tickets", I18n.t(:label_stats_tickets)),
+          count_line("tickets", I18n.t("rubylode_stats.tickets")),
           share_line,
-          count_line("total", I18n.t(:label_stats_all_tickets))
+          count_line("total", I18n.t("rubylode_stats.all_tickets"))
         ]
       end
 

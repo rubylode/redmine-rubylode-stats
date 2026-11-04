@@ -16,8 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module StatsHelper
-  STATS_DASH = "–".freeze
-
   # Parameters that keep the query, the chosen tab, period and slice when a link changes one thing.
   def stats_link_parameters(replacement_filters: nil)
     parameters = if replacement_filters
@@ -44,7 +42,7 @@ module StatsHelper
       date_filter = RubylodeStats::Presets.filter_for(preset_key, today)
       filters = filters.merge(date_field => date_filter) if date_filter
       active = stats_preset_active?(date_filter)
-      link_to l("label_stats_preset_#{preset_key}"), stats_page_path(stats_link_parameters(replacement_filters: filters)),
+      link_to l("rubylode_stats.presets.#{preset_key}"), stats_page_path(stats_link_parameters(replacement_filters: filters)),
               class: ["stats-preset", ("active" if active)].compact.join(" "), data: { preset: preset_key },
               "aria-current": (active ? "true" : nil)
     end
@@ -62,45 +60,45 @@ module StatsHelper
     @query.filters.size
   end
 
-  # The four tiles of the Overview, as hashes for the view. A dash stands where there is nothing to show, and the backlog tile
-  # carries an arrow and words, so colour is never the only signal.
+  # The four tiles of the Overview, as hashes for the view. n/a stands where there is nothing to show, and the backlog tile
+  # carries an arrow and words, so color is never the only signal.
   def stats_tile_cards
     return [] unless @tiles
 
     open, closed, median, backlog = @tiles.values_at("open", "closed_in_range", "median_days", "backlog_change")
     [
-      { key: "open", value: open["tickets"], detail: l(:label_stats_tile_open_detail, count: open["of_tickets"]) },
+      { key: "open", value: open["tickets"], detail: l("rubylode_stats.tiles.open_detail", count: open["of_tickets"]) },
       { key: "closed_in_range", value: closed["tickets"],
-        detail: closed["percent_of_tickets"] ? l(:label_stats_tile_closed_in_range_detail, percent: closed["percent_of_tickets"]) : l(:label_stats_tile_closed_in_range_detail_empty) },
-      { key: "median_days", value: median["days"] || STATS_DASH, unit: (l(:label_stats_tile_median_days_unit) if median["days"]),
-        detail: l(:label_stats_tile_median_days_detail, count: median["closed_tickets"]) },
+        detail: closed["percent_of_tickets"] ? l("rubylode_stats.tiles.closed_in_range_detail", percent: closed["percent_of_tickets"]) : l("rubylode_stats.tiles.closed_in_range_detail_empty") },
+      { key: "median_days", value: median["days"] || l("rubylode_stats.not_available"), unit: (l("rubylode_stats.tiles.median_days_unit") if median["days"]),
+        detail: l("rubylode_stats.tiles.median_days_detail", count: median["closed_tickets"]) },
       stats_backlog_tile(backlog)
     ]
   end
 
   def stats_backlog_tile(backlog)
     direction = backlog["direction"]
-    return { key: "backlog_change", value: STATS_DASH, detail: l(:label_stats_tile_backlog_empty), direction: "empty" } unless direction
+    return { key: "backlog_change", value: l("rubylode_stats.not_available"), detail: l("rubylode_stats.tiles.backlog_empty"), direction: "empty" } unless direction
 
     arrow = { "growing" => "▲", "shrinking" => "▼", "steady" => "▶" }.fetch(direction)
     value = backlog["difference"].zero? ? "0" : format("%+d", backlog["difference"])
-    detail = l("label_stats_tile_backlog_#{direction}", difference: backlog["difference"].abs, periods: backlog["periods"],
-               period_name: l("label_stats_period_unit_#{backlog["period"]}"))
+    detail = l("rubylode_stats.tiles.backlog_#{direction}", difference: backlog["difference"].abs, periods: backlog["periods"],
+               period_name: l("rubylode_stats.period_units.#{backlog["period"]}"))
     { key: "backlog_change", value: value, arrow: arrow, detail: detail, direction: direction }
   end
 
   def stats_tab_links
     RubylodeStats::Registry::TABS.map do |tab|
-      link_to l("label_stats_tab_#{tab.key}"), stats_page_path(stats_link_parameters.merge(tab: tab.key)),
+      link_to l("rubylode_stats.tabs.#{tab.key}"), stats_page_path(stats_link_parameters.merge(tab: tab.key)),
               class: ["stats-tab", ("selected" if tab == @tab)].compact.join(" "), data: { tab: tab.key }
     end
   end
 
   def stats_period_options
-    options_for_select(RubylodeStats::Registry::PERIODS.map { |period| [l("label_stats_period_#{period}"), period] }, @period)
+    options_for_select(RubylodeStats::Registry::PERIODS.map { |period| [l("rubylode_stats.periods.#{period}"), period] }, @period)
   end
 
   def stats_slice_options
-    options_for_select(RubylodeStats::Registry::SLICES.map { |slice| [l("label_stats_slice_#{slice}"), slice] }, @slice_by)
+    options_for_select(RubylodeStats::Registry::SLICES.map { |slice| [l("rubylode_stats.slices.#{slice}"), slice] }, @slice_by)
   end
 end

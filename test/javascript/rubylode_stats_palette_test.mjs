@@ -4,7 +4,7 @@ import assert from "node:assert/strict"
 
 // The script is a plain browser script: loaded here, it puts its functions on globalThis as it does on window.
 await import("../../assets/javascripts/rubylode_stats_palette.js")
-const { resolve, applyTokens, colourConfiguration } = globalThis.RubylodeStatsPalette
+const { resolve, applyTokens, colorConfiguration } = globalThis.RubylodeStatsPalette
 
 const payload = {
   follow_theme: true,
@@ -44,7 +44,7 @@ test("theme roles are used when the theme defines them", () => {
   assert.deepEqual([palette.open, palette.closed, palette.neutral], ["#0a0a0a", "#0b0b0b", "#0c0c0c"])
 })
 
-test("a theme with one colour uses it for closed too", () => {
+test("a theme with one color uses it for closed too", () => {
   assert.equal(resolve(payload, readerOf({ "--theme-chart-1": "#111111" }), false).closed, "#111111")
 })
 
@@ -54,7 +54,7 @@ test("the theme is ignored when the setting does not follow it", () => {
   assert.equal(palette.categorical[0], "#L1")
 })
 
-test("reading again after the theme changes gives the new colours", () => {
+test("reading again after the theme changes gives the new colors", () => {
   const properties = { "--theme-chart-1": "#111111" }
   const read = (name) => properties[name] || ""
 
@@ -63,20 +63,20 @@ test("reading again after the theme changes gives the new colours", () => {
   assert.equal(resolve(payload, read, false).categorical[0], "#999999")
 })
 
-test("tokens become role colours and wrapping category colours, and other strings stay", () => {
+test("tokens become role colors and wrapping category colors, and other strings stay", () => {
   const palette = { categorical: ["#1", "#2", "#3"], open: "#O", closed: "#C", neutral: "#N" }
   const specification = { scale: { range: ["role:open", "role:closed", "role:neutral", "category:5"] }, title: "role:other", count: 3 }
 
   assert.deepEqual(applyTokens(specification, palette), { scale: { range: ["#O", "#C", "#N", "#2"] }, title: "role:other", count: 3 })
 })
 
-test("the configuration colours single series with the first colour and categories in order", () => {
+test("the configuration colors single series with the first color and categories in order", () => {
   const palette = { categorical: ["#1", "#2"], open: "#O", closed: "#C", neutral: "#N" }
 
-  assert.deepEqual(colourConfiguration(palette), { mark: { color: "#1" }, range: { category: ["#1", "#2"] } })
+  assert.deepEqual(colorConfiguration(palette), { mark: { color: "#1" }, range: { category: ["#1", "#2"] } })
 })
 
-test("open status tokens take the palette in order and skip the colour of the closed role", () => {
+test("open status tokens take the palette in order and skip the color of the closed role", () => {
   const palette = { categorical: ["#1", "#2", "#3", "#4"], open: "#O", closed: "#2", neutral: "#N" }
   const specification = { range: ["open_status:1", "open_status:2", "open_status:3", "open_status:4", "role:closed"] }
 

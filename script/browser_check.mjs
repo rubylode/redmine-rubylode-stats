@@ -141,10 +141,10 @@ await dark.goto(statsUrl())
 await waitForChart(dark, "tickets_by_status")
 await dark.locator(`#stats-chart-tickets_by_status svg .mark-rect.role-mark path`).first().hover()
 await dark.locator("#vg-tooltip-element.visible").waitFor()
-// The stock theme has no dark mode of its own, so its colours stay light; a dark theme sets the custom properties.
+// The stock theme has no dark mode of its own, so its colors stay light; a dark theme sets the custom properties.
 await dark.addStyleTag({ content: ":root { --stats-tooltip-background: #101010; --stats-tooltip-color: #f0f0f0; }" })
-const darkColours = await dark.locator("#vg-tooltip-element").evaluate((element) => [getComputedStyle(element).backgroundColor, getComputedStyle(element).color])
-expect("the tooltip takes its colours from the custom properties of the theme", darkColours, ["rgb(16, 16, 16)", "rgb(240, 240, 240)"])
+const darkColors = await dark.locator("#vg-tooltip-element").evaluate((element) => [getComputedStyle(element).backgroundColor, getComputedStyle(element).color])
+expect("the tooltip takes its colors from the custom properties of the theme", darkColors, ["rgb(16, 16, 16)", "rgb(240, 240, 240)"])
 
 expect("no script errors on the way", problems, [])
 await browser.close()

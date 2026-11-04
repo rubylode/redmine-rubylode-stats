@@ -47,7 +47,7 @@ module RubylodeStats
       names = @slice.model.where(id: ticket_counts.keys.compact).to_h { |record| [record.id, record.name.to_s] }
       valued_rows = names.map { |id, name| { "slice_id" => id, "slice" => name, "tickets" => ticket_counts.fetch(id) } }
       rows = valued_rows.sort_by { |row| [-row["tickets"], row["slice"]] }
-      rows << { "slice_id" => nil, "slice" => I18n.t(:label_stats_none), "tickets" => ticket_counts[nil] } if ticket_counts[nil]
+      rows << { "slice_id" => nil, "slice" => I18n.t("rubylode_stats.none"), "tickets" => ticket_counts[nil] } if ticket_counts[nil]
       rows
     end
   end

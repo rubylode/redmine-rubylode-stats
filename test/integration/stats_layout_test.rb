@@ -104,12 +104,12 @@ class StatsLayoutTest < Redmine::IntegrationTest
     assert_not_empty backlog.css(".stats-tile-arrow")
   end
 
-  def test_the_tiles_show_a_dash_when_there_is_nothing_to_divide
+  def test_the_tiles_show_not_available_when_there_is_nothing_to_divide
     get "#{stats_path}?#{ALL_STATUSES}&f[]=tracker_id&op[tracker_id]=%3D&v[tracker_id][]=3"
 
     assert_response :success
     assert_equal "0", css_select(".stats-tile[data-tile=open] .stats-tile-value").first.text.strip
-    assert_equal "–", css_select(".stats-tile[data-tile=median_days] .stats-tile-value").first.text.strip
+    assert_equal "n/a", css_select(".stats-tile[data-tile=median_days] .stats-tile-value").first.text.strip
     assert_no_match(/%/, css_select(".stats-tile[data-tile=closed_in_range] .stats-tile-detail").first.text)
   end
 

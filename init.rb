@@ -25,7 +25,7 @@ Redmine::Plugin.register :redmine_rubylode_stats do
   description "Charts over a project's tickets: by category, open and closed, over time, who closed what"
   version "1.4.1"
   requires_redmine version_or_higher: "5.1.0"
-  settings default: RubylodeStats::PluginSettings::DEFAULTS, partial: "settings/rubylode_stats_settings"
+  settings default: RubylodeStats::Settings::DEFAULTS, partial: "settings/rubylode_stats_settings"
 
   project_module :rubylode_stats do
     permission :view_rubylode_stats, { stats: %i[index] }, read: true

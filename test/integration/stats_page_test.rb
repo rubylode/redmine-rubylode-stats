@@ -158,7 +158,7 @@ class StatsPageTest < Redmine::IntegrationTest
   end
 
   def test_the_period_and_slice_by_default_when_the_value_is_unknown
-    get "/projects/#{@project.identifier}/stats?period=century&slice_by=colour"
+    get "/projects/#{@project.identifier}/stats?period=century&slice_by=color"
 
     assert_select "select#period option[selected][value=week]"
     assert_select "select#slice_by option[selected][value=category]"
@@ -180,7 +180,7 @@ class StatsPageTest < Redmine::IntegrationTest
     assert_select "p.nodata", false
     assert_select "#stats-chart-tickets_by_status", false
     assert_select "#stats-card-progress_per_version .stats-card-note",
-                  text: "Ordered by due date; versions without a date come last. Percentage is done tickets over all tickets in the version."
+                  text: "Ordered by due date; versions without a date come last. Percent done is closed tickets divided by all tickets in the version."
     rows = chart_rows("progress_per_version")
     assert_equal ["0.1", "1.0", "No version"], rows.map { |row| row["name"] }
     assert_equal [[1, 0, 1], [1, 1, 2], [1, 3, 4]], rows.map { |row| [row["done"], row["remaining"], row["total"]] }
@@ -390,10 +390,18 @@ end
     get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&period=week"
 
     rows = chart_rows("opened_and_closed")
-    assert_equal "–", rows.first["opened_change_text"]
+    assert_equal "n/a", rows.first["opened_change_text"]
     assert_match(/\A([+-]\d+|0)\z/, rows[1]["opened_change_text"]) if rows.size > 1
     titles = tooltip_lines(chart_specification("opened_and_closed")).map { |line| line["title"] }
-    assert_includes titles, "Backlog vs previous week"
+    assert_includes titles, "Backlog versus previous week"
+  end
+
+  def test_a_week_is_labeled_with_its_first_and_last_day_joined_by_to
+    get "/projects/#{@project.identifier}/stats?#{ALL_STATUSES}&period=week"
+
+    texts = chart_rows("opened_and_closed").map { |row| row["period_text"] }
+    assert_not_empty texts
+    texts.each { |text| assert_match(%r{\A[\d/-]+ to [\d/-]+\z}, text) }
   end
 
   def test_every_link_is_an_issue_list_address_in_the_query_format_with_ids_and_dates_only
@@ -434,7 +442,7 @@ end
     link = Rack::Utils.parse_nested_query(URI(row["url"]).query)
     assert_equal "><", link["op"]["closed_on"]
     assert_equal [row["period"], Date.parse(row["period"]).end_of_month.iso8601], link["v"]["closed_on"]
-    assert_equal "Median days to close vs previous month", tooltip_lines(chart_specification("median_time_to_close")).last["title"]
+    assert_equal "Median days to close versus previous month", tooltip_lines(chart_specification("median_time_to_close")).last["title"]
   end
 
   def test_every_chart_has_a_label_and_a_table_of_its_figures_under_it

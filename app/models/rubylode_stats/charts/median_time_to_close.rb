@@ -34,7 +34,7 @@ module RubylodeStats
           "encoding" => {
             "x" => { "field" => "period", "type" => "temporal", "title" => period_label,
                      "axis" => { "format" => AXIS_FORMATS.fetch(period) } },
-            "y" => { "field" => "median_days", "type" => "quantitative", "title" => I18n.t(:label_stats_median_days) }
+            "y" => { "field" => "median_days", "type" => "quantitative", "title" => I18n.t("rubylode_stats.median_days") }
           },
           "layer" => [{ "mark" => { "type" => "line" } }, points]
         }
@@ -42,10 +42,10 @@ module RubylodeStats
 
       def data_table
         DataTable.new(
-          headers: [period_label, I18n.t(:label_stats_median_days), I18n.t(:label_stats_series_closed), I18n.t(:label_stats_table_tickets)],
+          headers: [period_label, I18n.t("rubylode_stats.median_days"), I18n.t("rubylode_stats.series.closed"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
             DataTable.row([row["period_text"], "#{row["median_days"]} (#{row["median_change_text"]})", count_text(row["closed"])],
-                          [I18n.t(:label_stats_table_open_closed), row["url"]])
+                          [I18n.t("rubylode_stats.table.open_closed"), row["url"]])
           end
         )
       end
@@ -61,9 +61,9 @@ module RubylodeStats
             "href" => { "field" => "url", "type" => "nominal" },
             "tooltip" => [
               tooltip_line("period_text", period_label, "nominal"),
-              tooltip_line("median_days", I18n.t(:label_stats_median_days), "quantitative", ",.1~f"),
-              count_line("closed", I18n.t(:label_stats_series_closed)),
-              tooltip_line("median_change_text", change_title(I18n.t(:label_stats_median_days), period), "nominal")
+              tooltip_line("median_days", I18n.t("rubylode_stats.median_days"), "quantitative", ",.1~f"),
+              count_line("closed", I18n.t("rubylode_stats.series.closed")),
+              tooltip_line("median_change_text", change_title(I18n.t("rubylode_stats.median_days"), period), "nominal")
             ]
           }
         }
@@ -74,7 +74,7 @@ module RubylodeStats
       end
 
       def period_label
-        I18n.t("label_stats_period_#{period}")
+        I18n.t("rubylode_stats.periods.#{period}")
       end
 
       def rows_with_links

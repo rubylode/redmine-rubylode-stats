@@ -47,12 +47,12 @@ module RubylodeStats
 
       def data_table
         DataTable.new(
-          headers: [period_label, I18n.t(:label_stats_series_opened), I18n.t(:label_stats_series_closed), I18n.t(:label_stats_series_backlog),
-                    I18n.t(:label_stats_table_tickets)],
+          headers: [period_label, I18n.t("rubylode_stats.series.opened"), I18n.t("rubylode_stats.series.closed"), I18n.t("rubylode_stats.series.backlog"),
+                    I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
             DataTable.row(
               [row["period_text"], *SERIES.map { |series| "#{count_text(row[series])} (#{row["#{series}_change_text"]})" }],
-              [I18n.t(:label_stats_table_open_opened), row["opened_url"]], [I18n.t(:label_stats_table_open_closed), row["closed_url"]]
+              [I18n.t("rubylode_stats.table.open_opened"), row["opened_url"]], [I18n.t("rubylode_stats.table.open_closed"), row["closed_url"]]
             )
           end
         )
@@ -93,10 +93,10 @@ module RubylodeStats
       def tooltip
         [
           tooltip_line("period_text", period_label, "nominal"),
-          count_line("opened", I18n.t(:label_stats_series_opened)),
-          count_line("closed", I18n.t(:label_stats_series_closed)),
-          count_line("backlog", I18n.t(:label_stats_series_backlog)),
-          *SERIES.map { |series| tooltip_line("#{series}_change_text", change_title(I18n.t("label_stats_series_#{series}"), period), "nominal") }
+          count_line("opened", I18n.t("rubylode_stats.series.opened")),
+          count_line("closed", I18n.t("rubylode_stats.series.closed")),
+          count_line("backlog", I18n.t("rubylode_stats.series.backlog")),
+          *SERIES.map { |series| tooltip_line("#{series}_change_text", change_title(I18n.t("rubylode_stats.series.#{series}"), period), "nominal") }
         ]
       end
 
@@ -105,11 +105,11 @@ module RubylodeStats
       end
 
       def period_label
-        I18n.t("label_stats_period_#{period}")
+        I18n.t("rubylode_stats.periods.#{period}")
       end
 
       def series_labels
-        SERIES.map { |series| I18n.t("label_stats_series_#{series}") }
+        SERIES.map { |series| I18n.t("rubylode_stats.series.#{series}") }
       end
 
       def series_label_expression

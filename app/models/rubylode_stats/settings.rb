@@ -19,21 +19,21 @@ module RubylodeStats
   # The plugin's settings (Administration, Plugins, Configure), read with their defaults and checked before they are saved.
   # Redmine keeps them as one hash under Setting.plugin_redmine_rubylode_stats; anything missing or unusable falls back to the
   # default, so an upgrade with no stored keys works.
-  class PluginSettings
+  class Settings
     PLUGIN_ID = :redmine_rubylode_stats
-    PRESET_CHOICES = %w[follow_theme editorial material colour_blind_safe data_visualisation custom].freeze
-    MAXIMUM_CUSTOM_COLOURS = 10
-    HEX_COLOUR = /\A#(\h{3}|\h{6})\z/
+    PRESET_CHOICES = %w[follow_theme editorial material color_blind_safe data_visualization custom].freeze
+    MAXIMUM_CUSTOM_COLORS = 10
+    HEX_COLOR = /\A#(\h{3}|\h{6})\z/
 
     DEFAULTS = {
       "palette_preset" => "follow_theme",
-      "custom_colours" => "",
-      "custom_open_colour" => "",
-      "custom_closed_colour" => "",
-      "custom_neutral_colour" => ""
+      "custom_colors" => "",
+      "custom_open_color" => "",
+      "custom_closed_color" => "",
+      "custom_neutral_color" => ""
     }.freeze
 
-    ROLE_KEYS = { "open" => "custom_open_colour", "closed" => "custom_closed_colour", "neutral" => "custom_neutral_colour" }.freeze
+    ROLE_KEYS = { "open" => "custom_open_color", "closed" => "custom_closed_color", "neutral" => "custom_neutral_color" }.freeze
 
     # An unsaved hash can be passed in (the settings form on a failed save, tests); by default the saved one is read.
     def initialize(values = nil)
@@ -45,10 +45,10 @@ module RubylodeStats
     end
 
     def errors
-      return [I18n.t(:rubylode_stats_error_palette_preset, value: raw_preset)] unless PRESET_CHOICES.include?(raw_preset)
+      return [I18n.t("rubylode_stats.errors.palette_preset", value: raw_preset)] unless PRESET_CHOICES.include?(raw_preset)
       return [] unless raw_preset == "custom"
 
-      custom_colour_errors + role_colour_errors
+      custom_color_errors + role_color_errors
     end
 
     def valid? = errors.empty?
@@ -70,10 +70,10 @@ module RubylodeStats
 
     def custom_palette
       Palette.custom(
-        colours: listed_colours.filter_map { |colour| normalised(colour) }.first(MAXIMUM_CUSTOM_COLOURS),
-        open: normalised(@values["custom_open_colour"]),
-        closed: normalised(@values["custom_closed_colour"]),
-        neutral: normalised(@values["custom_neutral_colour"])
+        colors: listed_colors.filter_map { |color| normalized(color) }.first(MAXIMUM_CUSTOM_COLORS),
+        open: normalized(@values["custom_open_color"]),
+        closed: normalized(@values["custom_closed_color"]),
+        neutral: normalized(@values["custom_neutral_color"])
       )
     end
 
@@ -81,34 +81,34 @@ module RubylodeStats
       @values.fetch("palette_preset", DEFAULTS["palette_preset"]).to_s
     end
 
-    def listed_colours
-      @values["custom_colours"].to_s.split(",").map(&:strip).reject(&:empty?)
+    def listed_colors
+      @values["custom_colors"].to_s.split(",").map(&:strip).reject(&:empty?)
     end
 
-    def custom_colour_errors
-      colours = listed_colours
-      return [I18n.t(:rubylode_stats_error_custom_colours_missing)] if colours.empty?
+    def custom_color_errors
+      colors = listed_colors
+      return [I18n.t("rubylode_stats.errors.custom_colors_missing")] if colors.empty?
 
       messages = []
-      messages << I18n.t(:rubylode_stats_error_custom_colours_too_many, count: MAXIMUM_CUSTOM_COLOURS) if colours.size > MAXIMUM_CUSTOM_COLOURS
-      invalid = colours.reject { |colour| colour.match?(HEX_COLOUR) }
-      messages << I18n.t(:rubylode_stats_error_custom_colours_invalid, values: invalid.join(", ")) if invalid.any?
+      messages << I18n.t("rubylode_stats.errors.custom_colors_too_many", count: MAXIMUM_CUSTOM_COLORS) if colors.size > MAXIMUM_CUSTOM_COLORS
+      invalid = colors.reject { |color| color.match?(HEX_COLOR) }
+      messages << I18n.t("rubylode_stats.errors.custom_colors_invalid", count: invalid.size, values: invalid.join(", ")) if invalid.any?
       messages
     end
 
-    def role_colour_errors
+    def role_color_errors
       ROLE_KEYS.filter_map do |role, key|
         value = @values[key].to_s.strip
-        next if value.empty? || value.match?(HEX_COLOUR)
+        next if value.empty? || value.match?(HEX_COLOR)
 
-        I18n.t(:rubylode_stats_error_role_colour, role: role, value: value)
+        I18n.t("rubylode_stats.errors.role_color", role: role, value: value)
       end
     end
 
     # "#abc" becomes "#AABBCC"; nil for an empty or unusable value.
-    def normalised(value)
+    def normalized(value)
       text = value.to_s.strip
-      return unless text.match?(HEX_COLOUR)
+      return unless text.match?(HEX_COLOR)
 
       digits = text.delete("#")
       digits = digits.chars.map { |digit| digit * 2 }.join if digits.size == 3

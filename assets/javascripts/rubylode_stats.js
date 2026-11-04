@@ -20,7 +20,7 @@
 /*
  * Draws every .stats-chart on the page with vega-embed. The specification travels in the element's data-specification
  * attribute. The text, grid and font come from the theme's CSS variables, each with a fallback; the fallback light or dark set
- * follows the system colour scheme. The chart colours come from rubylode_stats_palette.js (the plugin's palette, or the theme's
+ * follows the system color scheme. The chart colors come from rubylode_stats_palette.js (the plugin's palette, or the theme's
  * --theme-chart-* properties), read again on every draw. The charts are drawn again when that changes and when the window is resized, so they
  * always fill their card. The button of the filter bar shows and hides the filter panel.
  *
@@ -64,7 +64,7 @@
       legend: { labelColor: text, titleColor: text, labelFont: font, titleFont: font },
       text: { color: text, font: font },
       view: { stroke: "transparent" }
-    }, palette ? window.RubylodeStatsPalette.colourConfiguration(palette) : {});
+    }, palette ? window.RubylodeStatsPalette.colorConfiguration(palette) : {});
   }
 
   function pageLanguage() {

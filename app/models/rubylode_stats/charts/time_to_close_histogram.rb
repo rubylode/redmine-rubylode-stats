@@ -31,15 +31,15 @@ module RubylodeStats
           "mark" => { "type" => "bar", "tooltip" => true },
           "encoding" => {
             "x" => { "field" => "bin", "type" => "ordinal", "sort" => TimeToCloseRows::BINS.map(&:first),
-                     "title" => I18n.t(:label_stats_days_to_close), "axis" => { "labelAngle" => 0 } },
+                     "title" => I18n.t("rubylode_stats.days_to_close"), "axis" => { "labelAngle" => 0 } },
             "y" => count_axis("tickets"),
             "opacity" => emphasis_opacity(with_legend: false),
             "tooltip" => [
-              tooltip_line("bin", I18n.t(:label_stats_days_to_close), "ordinal"),
-              count_line("tickets", I18n.t(:label_stats_tickets)),
-              share_line("share", I18n.t(:label_stats_share_of_closed)),
-              share_line("cumulative_share", I18n.t(:label_stats_share_within)),
-              count_line("total", I18n.t(:label_stats_all_closed))
+              tooltip_line("bin", I18n.t("rubylode_stats.days_to_close"), "ordinal"),
+              count_line("tickets", I18n.t("rubylode_stats.tickets")),
+              share_line("share", I18n.t("rubylode_stats.share_of_closed")),
+              share_line("cumulative_share", I18n.t("rubylode_stats.share_within")),
+              count_line("total", I18n.t("rubylode_stats.all_closed"))
             ]
           }
         }
@@ -47,7 +47,7 @@ module RubylodeStats
 
       def data_table
         DataTable.new(
-          headers: [I18n.t(:label_stats_days_to_close), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_closed), I18n.t(:label_stats_share_within)],
+          headers: [I18n.t("rubylode_stats.days_to_close"), I18n.t("rubylode_stats.tickets"), I18n.t("rubylode_stats.share_of_closed"), I18n.t("rubylode_stats.share_within")],
           rows: rows.map { |row| DataTable.row([row["bin"], count_text(row["tickets"]), share_text(row["share"]), share_text(row["cumulative_share"])]) }
         )
       end

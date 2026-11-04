@@ -33,7 +33,7 @@ class ProgressPerVersionRowsTest < ActiveSupport::TestCase
     assert_equal [
       { "version_id" => 1, "name" => "0.1", "due_date" => "2006-07-01", "overdue" => false, "done" => 1, "remaining" => 0, "total" => 1, "percent" => 100 },
       { "version_id" => 2, "name" => "1.0", "due_date" => 20.days.from_now.to_date.iso8601, "overdue" => false, "done" => 1, "remaining" => 1, "total" => 2, "percent" => 50 },
-      { "version_id" => nil, "name" => I18n.t(:label_stats_no_version), "due_date" => nil, "overdue" => false, "done" => 1, "remaining" => 3, "total" => 4, "percent" => 25 }
+      { "version_id" => nil, "name" => I18n.t("rubylode_stats.no_version"), "due_date" => nil, "overdue" => false, "done" => 1, "remaining" => 3, "total" => 4, "percent" => 25 }
     ], rows_for(Project.find(1))
   end
 
@@ -65,7 +65,7 @@ class ProgressPerVersionRowsTest < ActiveSupport::TestCase
   def test_a_version_without_a_due_date_comes_after_dated_ones_and_before_no_version
     Issue.where(id: 3).update_all(fixed_version_id: 3)
 
-    assert_equal ["0.1", "1.0", "2.0", I18n.t(:label_stats_no_version)], rows_for(Project.find(1)).map { |row| row["name"] }
+    assert_equal ["0.1", "1.0", "2.0", I18n.t("rubylode_stats.no_version")], rows_for(Project.find(1)).map { |row| row["name"] }
   end
 
   def test_without_a_project_shared_versions_of_other_projects_appear_by_their_own_name

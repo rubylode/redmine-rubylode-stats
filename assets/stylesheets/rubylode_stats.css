@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/* Colours and the font come from the theme's own variables (Redmine's open-color set); the fallbacks serve a theme without them. */
+/* Colors and the font come from the theme's own variables (Redmine's open-color set); the fallbacks serve a theme without them. */
 
 .stats-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.75em; }
 .stats-filters-toggle { display: inline-flex; align-items: center; gap: 0.5em; }
@@ -64,7 +64,7 @@
 /*
  * Tooltip of the charts. It sits at the end of the page's body, so it is styled by custom properties on the root. A theme can
  * set --stats-tooltip-background, --stats-tooltip-color, --stats-tooltip-key-color and --stats-tooltip-border; without them
- * the tooltip takes the theme's own colours, and a light or dark default by the system colour scheme.
+ * the tooltip takes the theme's own colors, and a light or dark default by the system color scheme.
  */
 :root {
   --stats-tooltip-default-background: #ffffff;

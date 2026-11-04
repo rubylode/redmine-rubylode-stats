@@ -29,19 +29,19 @@ module RubylodeStats
           "description" => description,
           "data" => { "values" => rows_with_links },
           "width" => 220, "height" => 220,
-          "layer" => [donut, centre_text(percent_closed_text, 34, "bold", 0), centre_text(I18n.t(:label_stats_state_closed).downcase, 13, "normal", 26)]
+          "layer" => [donut, centre_text(percent_closed_text, 34, "bold", 0), centre_text(I18n.t("rubylode_stats.states.closed").downcase, 13, "normal", 26)]
         }
       end
 
       def card_note
-        I18n.t(:label_stats_open_versus_closed_note)
+        I18n.t("rubylode_stats.charts.open_versus_closed.note")
       end
 
       def data_table
         DataTable.new(
-          headers: [I18n.t(:field_status), I18n.t(:label_stats_tickets), I18n.t(:label_stats_share_of_total), I18n.t(:label_stats_table_tickets)],
+          headers: [I18n.t(:field_status), I18n.t("rubylode_stats.tickets"), I18n.t("rubylode_stats.share_of_total"), I18n.t("rubylode_stats.table.tickets")],
           rows: rows_with_links.map do |row|
-            DataTable.row([row["state_label"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t(:label_stats_table_open_tickets), row["url"]])
+            DataTable.row([row["state_label"], count_text(row["tickets"]), share_text(row["share"])], [I18n.t("rubylode_stats.table.open_tickets"), row["url"]])
           end
         )
       end
@@ -63,9 +63,9 @@ module RubylodeStats
       def tooltip
         [
           tooltip_line("state_label", I18n.t(:field_status), "nominal"),
-          count_line("tickets", I18n.t(:label_stats_tickets)),
+          count_line("tickets", I18n.t("rubylode_stats.tickets")),
           share_line,
-          count_line("total", I18n.t(:label_stats_all_tickets))
+          count_line("total", I18n.t("rubylode_stats.all_tickets"))
         ]
       end
 
@@ -94,7 +94,7 @@ module RubylodeStats
       def percent_closed_text
         closed_row = rows.find { |row| row["state"] == "closed" }
         percent = percent_of_all(closed_row["tickets"])
-        percent ? "#{percent}%" : DASH
+        percent ? "#{percent}%" : not_available
       end
 
       def percent_of_all(tickets)
@@ -111,14 +111,14 @@ module RubylodeStats
 
       def rows_with_links
         @rows_with_links ||= rows.each_with_index.map do |row, position|
-          state_label = I18n.t("label_stats_state_#{row["state"]}")
+          state_label = I18n.t("rubylode_stats.states.#{row["state"]}")
           percent = percent_of_all(row["tickets"])
           row.merge(
             "position" => position,
             "total" => total_tickets,
             "share" => share_of(row["tickets"], total_tickets),
             "state_label" => state_label,
-            "legend_label" => I18n.t(:label_stats_legend_with_count, state: state_label, tickets: row["tickets"], percent: percent || DASH),
+            "legend_label" => I18n.t("rubylode_stats.legend_with_count", state: state_label, tickets: row["tickets"], percent: percent || not_available),
             "url" => issue_list_link.call("status_id" => { operator: STATE_FILTERS.fetch(row["state"]), values: [] })
           )
         end

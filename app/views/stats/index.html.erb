@@ -28,16 +28,16 @@
   <%= hidden_field_tag "shape", @shape, id: nil %>
   <div class="stats-bar">
     <button type="button" class="stats-filters-toggle" aria-expanded="false" aria-controls="stats-filters-panel">
-      <%= l(:label_stats_filters_and_options) %>
+      <%= l("rubylode_stats.filters_and_options") %>
       <% if stats_active_filter_count.positive? %>
-        <span class="stats-filter-count" title="<%= l(:label_stats_filters_active, count: stats_active_filter_count) %>"><%= stats_active_filter_count %></span>
+        <span class="stats-filter-count" title="<%= l("rubylode_stats.filters_active", count: stats_active_filter_count) %>"><%= stats_active_filter_count %></span>
       <% end %>
     </button>
     <span class="stats-presets" role="group"><%= safe_join(stats_preset_links, " ") %></span>
     <span class="stats-selects">
-      <label for="period"><%= l(:label_stats_period) %></label>
+      <label for="period"><%= l("rubylode_stats.period") %></label>
       <%= select_tag "period", stats_period_options %>
-      <label for="slice_by"><%= l(:label_stats_slice_by) %></label>
+      <label for="slice_by"><%= l("rubylode_stats.slice_by") %></label>
       <%= select_tag "slice_by", stats_slice_options %>
     </span>
     <%= submit_tag l(:button_apply), name: nil, class: "stats-apply" %>
@@ -54,7 +54,7 @@
   <div class="stats-tiles">
     <% stats_tile_cards.each do |tile| %>
       <div class="stats-tile" data-tile="<%= tile[:key] %>"<%= tile[:direction] ? " data-direction=#{tile[:direction]}".html_safe : "" %>>
-        <div class="stats-tile-label"><%= l("label_stats_tile_#{tile[:key]}") %></div>
+        <div class="stats-tile-label"><%= l("rubylode_stats.tiles.#{tile[:key]}") %></div>
         <div class="stats-tile-value">
           <% if tile[:arrow] %><span class="stats-tile-arrow" aria-hidden="true"><%= tile[:arrow] %></span><% end %>
           <%= tile[:value] %>
@@ -68,7 +68,7 @@
 
 <% if @query.valid? %>
   <% if @charts.empty? %>
-    <p class="nodata"><%= l(:label_stats_tab_empty) %></p>
+    <p class="nodata"><%= l("rubylode_stats.tabs.empty") %></p>
   <% end %>
   <div class="stats-grid" data-palette="<%= @palette.to_json %>">
     <% @charts.each do |chart| %>

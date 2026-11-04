@@ -21,9 +21,9 @@
 <% table = chart.data_table %>
 <% if table %>
   <details id="stats-data-<%= chart.chart_name %>" class="stats-data">
-    <summary><%= l(:label_stats_view_data) %></summary>
+    <summary><%= l("rubylode_stats.view_data") %></summary>
     <table class="list stats-data-table">
-      <caption class="stats-visually-hidden"><%= l(:label_stats_data_caption, chart: chart.card_title) %></caption>
+      <caption class="stats-visually-hidden"><%= l("rubylode_stats.data_caption", chart: chart.card_title) %></caption>
       <thead>
         <tr><% table.headers.each do |header| %><th scope="col"><%= header %></th><% end %></tr>
       </thead>

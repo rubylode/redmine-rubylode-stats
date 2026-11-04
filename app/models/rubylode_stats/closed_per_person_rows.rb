@@ -77,7 +77,7 @@ module RubylodeStats
     end
 
     def row(period_start, person_id, names, closed)
-      person = person_id ? names.fetch(person_id, "##{person_id}") : I18n.t(:label_stats_none)
+      person = person_id ? names.fetch(person_id, "##{person_id}") : I18n.t("rubylode_stats.none")
       { "period" => period_start.iso8601, "person_id" => person_id, "person" => person, "closed" => closed }
     end
 

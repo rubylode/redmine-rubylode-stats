@@ -16,15 +16,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module RubylodeStats
-  # The colours of the charts, as the page hands them to the script: a light and a dark set, each with ten categorical
-  # colours and the roles open, closed and neutral. The script draws with these unless the theme defines its own
-  # (see "Follow the theme" in the README). Every colour keeps 3:1 contrast against a white page (light set) or a #1E1E1E
+  # The colors of the charts, as the page hands them to the script: a light and a dark set, each with ten categorical
+  # colors and the roles open, closed and neutral. The script draws with these unless the theme defines its own
+  # (see "Follow the theme" in the README). Every color keeps 3:1 contrast against a white page (light set) or a #1E1E1E
   # page (dark set); test/unit/palette_test.rb checks it.
   class Palette
     CUSTOM_NEUTRAL = "#8A8A8A".freeze
 
     PRESETS = {
-      # An original muted set in the manner of editorial newsroom graphics: restrained hues, one idea per colour, a grey for
+      # An original muted set in the manner of editorial newsroom graphics: restrained hues, one idea per color, a gray for
       # context. The light set keeps 3:1 against white, the dark set 3:1 against #1E1E1E. It is not any publisher's palette.
       "editorial" => {
         "light" => {
@@ -48,9 +48,9 @@ module RubylodeStats
           "open" => "#64B5F6", "closed" => "#81C784", "neutral" => "#90A4AE"
         }
       },
-      # Okabe and Ito's set, safe for the common kinds of colour blindness. Black becomes grey, and on a light page orange,
+      # Okabe and Ito's set, safe for the common kinds of color blindness. Black becomes gray, and on a light page orange,
       # sky blue and yellow are darkened until they keep 3:1 against white.
-      "colour_blind_safe" => {
+      "color_blind_safe" => {
         "light" => {
           "categorical" => %w[#0072B2 #D55E00 #009E73 #CB75A5 #C28600 #1D99E0 #9C920C #919191],
           "open" => "#0072B2", "closed" => "#009E73", "neutral" => "#919191"
@@ -60,8 +60,8 @@ module RubylodeStats
           "open" => "#56B4E9", "closed" => "#009E73", "neutral" => "#999999"
         }
       },
-      # Saturated categorical colours in the style of the wpdatatables palettes (Dutch Field, River Nights, Retro Metro).
-      "data_visualisation" => {
+      # Saturated categorical colors in the style of the wpdatatables palettes (Dutch Field, River Nights, Retro Metro).
+      "data_visualization" => {
         "light" => {
           "categorical" => %w[#1A53FF #CC8200 #00A58B #E60049 #9B19F5 #0098DC #899623 #DC0AB4 #7C1158 #729F39],
           "open" => "#1A53FF", "closed" => "#00A58B", "neutral" => "#8A8A8A"
@@ -75,7 +75,7 @@ module RubylodeStats
 
     FALLBACK_PRESET = "editorial".freeze
 
-    # variants: { "light" => set, "dark" => set }; follow_theme: whether the script should look for the theme's own colours first.
+    # variants: { "light" => set, "dark" => set }; follow_theme: whether the script should look for the theme's own colors first.
     def initialize(variants:, follow_theme:)
       @variants = variants
       @follow_theme = follow_theme
@@ -85,14 +85,14 @@ module RubylodeStats
       new(variants: PRESETS.fetch(name), follow_theme: follow_theme)
     end
 
-    # A palette from a list of hex colours (already normalised) and optional role colours; both variants are the same.
-    def self.custom(colours:, open: nil, closed: nil, neutral: nil)
-      return preset(FALLBACK_PRESET) if colours.empty?
+    # A palette from a list of hex colors (already normalized) and optional role colors; both variants are the same.
+    def self.custom(colors:, open: nil, closed: nil, neutral: nil)
+      return preset(FALLBACK_PRESET) if colors.empty?
 
       set = {
-        "categorical" => colours,
-        "open" => open || colours.first,
-        "closed" => closed || colours[1] || colours.first,
+        "categorical" => colors,
+        "open" => open || colors.first,
+        "closed" => closed || colors[1] || colors.first,
         "neutral" => neutral || CUSTOM_NEUTRAL
       }
       new(variants: { "light" => set, "dark" => set }, follow_theme: false)
