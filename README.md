@@ -2,7 +2,12 @@
 
 <p><img src="docs/thumbnail.png" alt="Rubylode Stats plugin" width="160"></p>
 
-[![tests](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml/badge.svg)](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml)
+[![tests](https://img.shields.io/github/actions/workflow/status/rubylode/redmine-rubylode-stats/tests.yml?branch=main&label=tests)](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/tests.yml)
+[![security](https://img.shields.io/github/actions/workflow/status/rubylode/redmine-rubylode-stats/security.yml?branch=main&label=security)](https://github.com/rubylode/redmine-rubylode-stats/actions/workflows/security.yml)
+[![version](https://img.shields.io/github/v/tag/rubylode/redmine-rubylode-stats?sort=semver&label=version)](https://github.com/rubylode/redmine-rubylode-stats/tags)
+[![license](https://img.shields.io/github/license/rubylode/redmine-rubylode-stats)](https://github.com/rubylode/redmine-rubylode-stats/blob/main/LICENSE)
+![Redmine](https://img.shields.io/badge/Redmine-5.1%20%7C%206.0%20%7C%206.1%20%7C%207.0-b22222)
+![Ruby](https://img.shields.io/badge/Ruby-3.2%20%7C%203.3%20%7C%203.4%20%7C%204.0-cc342d)
 
 A Stats page for every [Redmine](https://www.redmine.org) project, and one across projects, with charts over the tickets.
 
