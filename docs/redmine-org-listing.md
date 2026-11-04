@@ -11,20 +11,20 @@ The text to paste at www.redmine.org, Plugins, New plugin. Redmine's "Check for 
 | License | GNU General Public License, version 2 or (at your option) any later version |
 | Author | Rubylode |
 
-## Notes for the first version
+## Notes for this version
 
-Version 1.4.1. Charts over a project's tickets: by category, open and closed, over time, who closed what. Needs Redmine 5.1 or newer. Install and settings are described in the README at https://github.com/rubylode/redmine-rubylode-stats.
+Version 2.0.0. Charts over a project's tickets: by category, open and closed, over time, who closed what. Needs Redmine 5.1 or newer. Upgrading from 1.x needs the plugin migration (see the changelog). Install and settings are described in the README at https://github.com/rubylode/redmine-rubylode-stats.
 
 ## File to upload
 
-`redmine_rubylode_stats-1.4.1.zip`, the file the GitHub release workflow publishes when a `v1.4.1` tag is pushed. Upload the same file that is attached to the GitHub release.
+`redmine_rubylode_stats-2.0.0.zip`, the file the GitHub release workflow publishes when a `v2.0.0` tag is pushed. Upload the same file that is attached to the GitHub release.
 
 ## Checking the result
 
-The name, author and version in the listing must match what the plugin registers (`Rubylode Stats`, `Rubylode`, `1.4.1`). When they do, Administration, Plugins, Check for updates shows:
+The name, author and version in the listing must match what the plugin registers (`Rubylode Stats`, `Rubylode`, `2.0.0`). When they do, Administration, Plugins, Check for updates shows:
 
 - a green tick: the installed version is the latest one listed on redmine.org;
 - an amber warning: redmine.org lists a newer version than the installed one;
-- a grey question mark: the plugin is not found, so the name or the listing needs a look.
+- a gray question mark: the plugin is not found, so the name or the listing needs a look.
 
-The answer comes only from the redmine.org directory. Nothing in the plugin can change it, and it stays grey until the listing exists.
+The answer comes only from the redmine.org directory. Nothing in the plugin can change it, and it stays gray until the listing exists.

@@ -114,7 +114,7 @@ select { font: inherit; color: var(--oc-gray-9); background: var(--oc-white); bo
 </head><body>
 <p class="sheet-title">Rubylode Stats: page layout</p><p class="sheet-intro">Three layouts for the Overview tab, each in the Redmine 7 default theme and in Obsidian dark. Sample rows, invented names, real vendored Vega-Lite.</p>
 <section class="variant"><p class="variant-tag">Variant A · Card grid</p><p class="variant-note">One compact filter bar, the active date range marked, then two-column cards that each name the question they answer.</p><div class="pair" data-variant="A"></div></section>
-<section class="variant"><p class="variant-tag">Variant B · Numbers first</p><p class="variant-note">Card grid plus four summary tiles on top; the backlog tile carries an arrow and words, so colour is not the only signal.</p><div class="pair" data-variant="B"></div></section>
+<section class="variant"><p class="variant-tag">Variant B · Numbers first</p><p class="variant-note">Card grid plus four summary tiles on top; the backlog tile carries an arrow and words, so color is not the only signal.</p><div class="pair" data-variant="B"></div></section>
 <section class="variant"><p class="variant-tag">Variant C · Filter rail</p><p class="variant-note">Filters, date range and selects live in a narrow left rail; tabs become a segmented control over tiles and the grid.</p><div class="pair" data-variant="C"></div></section>
 <script>
 /* sample rows: invented names, Demo Garden numbers */
@@ -131,7 +131,7 @@ var VERSIONS = [
   { name: "Winter preparation", due: "Jan 31", done: 2, remaining: 6 },
   { name: "No version", due: null, done: 5, remaining: 0 }
 ];
-/* the eight chart colours from assets/javascripts/rubylode_stats.js */
+/* the eight chart colors from assets/javascripts/rubylode_stats.js */
 var PALETTES = {
   light: ["#2f6fb0","#e69138","#6aa84f","#cc0000","#674ea7","#bf9000","#45818e","#a64d79"],
   dark: ["#6fa8dc","#f6b26b","#93c47d","#e06666","#b4a7d6","#ffd966","#76a5af","#c27ba0"]
@@ -175,10 +175,10 @@ function throughput(t, hidden) {
     rows.push({ week: week, series: "Opened", value: OPENED[i] }, { week: week, series: "Closed", value: CLOSED[i] }, { week: week, series: "Backlog", value: backlog });
   });
   rows = rows.filter(function (r) { return hidden.indexOf(r.series) < 0; });
-  var colours = SERIES_COLOURS(t);
-  var colour = { field: "series", type: "nominal", legend: null, scale: { domain: ["Opened","Closed","Backlog"], range: [colours.Opened, colours.Closed, colours.Backlog] } };
+  var colors = SERIES_COLOURS(t);
+  var color = { field: "series", type: "nominal", legend: null, scale: { domain: ["Opened","Closed","Backlog"], range: [colors.Opened, colors.Closed, colors.Backlog] } };
   return Object.assign({ data: { values: rows }, height: 190,
-    encoding: { x: { field: "week", type: "ordinal", sort: null, title: null, axis: { labelAngle: 0 } }, color: colour },
+    encoding: { x: { field: "week", type: "ordinal", sort: null, title: null, axis: { labelAngle: 0 } }, color: color },
     layer: [
       { transform: [{ filter: "datum.series != 'Backlog'" }], mark: { type: "bar", cornerRadiusEnd: 2 },
         encoding: { xOffset: { field: "series" }, y: { field: "value", type: "quantitative", title: "Tickets" } } },
@@ -221,18 +221,18 @@ var KINDS = {
   status:     { legend: null, build: function (t) { return horizontalBars(t, STATUSES, t.palette[0]); } },
   category:   { legend: null, build: function (t) { return horizontalBars(t, CATEGORIES, t.palette[0]); } },
   histogram:  { legend: null, build: function (t) { return columns(t, BINS, t.palette[6]); } },
-  throughput: { legend: ["Opened","Closed","Backlog"], colours: function (t) { var c = SERIES_COLOURS(t); return [c.Opened, c.Closed, c.Backlog]; }, build: throughput },
-  donut:      { legend: ["Closed","Open"], counts: [53, 22], colours: function (t) { return [t.palette[2], t.palette[0]]; }, build: donut },
-  versions:   { legend: ["Done","Remaining"], colours: function (t) { return [t.palette[2], t.neutral]; }, build: versionsChart }
+  throughput: { legend: ["Opened","Closed","Backlog"], colors: function (t) { var c = SERIES_COLOURS(t); return [c.Opened, c.Closed, c.Backlog]; }, build: throughput },
+  donut:      { legend: ["Closed","Open"], counts: [53, 22], colors: function (t) { return [t.palette[2], t.palette[0]]; }, build: donut },
+  versions:   { legend: ["Done","Remaining"], colors: function (t) { return [t.palette[2], t.neutral]; }, build: versionsChart }
 };
 
 function legendHtml(kindName, t, stacked) {
   var kind = KINDS[kindName];
   if (!kind.legend) return "";
-  var colours = kind.colours(t);
+  var colors = kind.colors(t);
   return '<div class="legend' + (stacked ? " stacked" : "") + '" data-for="' + kindName + '">' + kind.legend.map(function (name, i) {
     var extra = kind.counts ? " " + kind.counts[i] + " (" + Math.round(100 * kind.counts[i] / 75) + "%)" : "";
-    return '<button type="button" aria-pressed="true" data-series="' + name + '"><span class="swatch" style="background:' + colours[i] + '"></span>' + name + extra + "</button>";
+    return '<button type="button" aria-pressed="true" data-series="' + name + '"><span class="swatch" style="background:' + colors[i] + '"></span>' + name + extra + "</button>";
   }).join("") + "</div>";
 }
 

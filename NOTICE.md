@@ -1,13 +1,13 @@
 # Third-party notices
 
-The plugin itself is GPL v2 or later (see `LICENSE`). It ships the files below, which keep their own licences.
+The plugin itself is GPL v2 or later (see `LICENSE`). It ships the files below, which keep their own licenses.
 
 ## Vega, Vega-Lite and Vega-Embed
 
 `assets/javascripts/vega.min.js` (5.30.0), `vega-lite.min.js` (5.21.0) and `vega-embed.min.js` (6.26.0) are the
 minified releases of [Vega](https://github.com/vega/vega), [Vega-Lite](https://github.com/vega/vega-lite) and
 [Vega-Embed](https://github.com/vega/vega-embed). All three are BSD 3-Clause. The minified files also contain the
-libraries those projects depend on, each under its own permissive licence; the sources are in the projects above.
+libraries those projects depend on, each under its own permissive license; the sources are in the projects above.
 
     Copyright (c) 2015, University of Washington Interactive Data Lab
     All rights reserved.
@@ -39,7 +39,7 @@ libraries those projects depend on, each under its own permissive licence; the s
 
 ## Open Color
 
-The fallback colours in `assets/stylesheets/rubylode_stats.css` and `assets/javascripts/rubylode_stats.js` (for a theme
+The fallback colors in `assets/stylesheets/rubylode_stats.css` and `assets/javascripts/rubylode_stats.js` (for a theme
 that does not define the `--oc-*` variables) are values from [Open Color](https://github.com/yeun/open-color), MIT
 licensed.
 
