@@ -138,7 +138,7 @@ class StatsLayoutTest < Redmine::IntegrationTest
     assert_select "#stats-chart-time_to_close_histogram"
   end
 
-  def test_open_versus_closed_is_a_donut_with_the_percentage_in_the_centre_and_counts_in_the_legend
+  def test_open_versus_closed_is_a_donut_with_the_percentage_in_the_center_and_counts_in_the_legend
     get "#{stats_path}?set_filter=1&f[]=status_id&op[status_id]=c"
 
     specification = chart_specification("open_versus_closed")

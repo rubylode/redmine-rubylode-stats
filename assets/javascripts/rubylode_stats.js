@@ -24,7 +24,7 @@
  * --theme-chart-* properties), read again on every draw. The charts are drawn again when that changes and when the window is resized, so they
  * always fill their card. The button of the filter bar shows and hides the filter panel.
  *
- * The charts answer the pointer: a tooltip with the figures of the mark, the mark under the pointer emphasised (the
+ * The charts answer the pointer: a tooltip with the figures of the mark, the mark under the pointer emphasized (the
  * specification carries that), a click on a bar, point or slice opens the ticket list its "href" holds (a ctrl or cmd click
  * in a new tab). Numbers and month names follow the page's language (the lang attribute of the page). The tooltip is styled by
  * custom properties (see the stylesheet), so it follows the theme.

@@ -25,7 +25,7 @@ module RubylodeStats
 
     PRESETS = {
       # An original muted set in the manner of editorial newsroom graphics: restrained hues, one idea per color, a gray for
-      # context. The light set keeps 3:1 against white, the dark set 3:1 against #1E1E1E. It is not any publisher's palette.
+      # context. The light set keeps 3:1 against white, the dark set 3:1 against #1E1E1E.
       "editorial" => {
         "light" => {
           "categorical" => %w[#2F6C9F #D4662A #3F8F6B #B5493F #7A5C9A #B88C27 #4F9AA0 #8C6D5A #6B7F94 #8E959B],

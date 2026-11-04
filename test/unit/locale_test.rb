@@ -59,4 +59,14 @@ class LocaleTest < ActiveSupport::TestCase
       assert_no_match(/"[^"\n]*[\u2013\u2014][^"\n]*"/, source, path)
     end
   end
+
+  def test_the_median_tile_counts_one_closed_ticket_in_the_singular
+    assert_equal "1 closed ticket", I18n.t("rubylode_stats.tiles.median_days_detail", count: 1)
+    assert_equal "2 closed tickets", I18n.t("rubylode_stats.tiles.median_days_detail", count: 2)
+  end
+
+  def test_the_color_error_agrees_with_the_number_of_bad_values
+    assert_equal "Custom colors: red is not a hex color such as #abc or #aabbcc.", I18n.t("rubylode_stats.errors.custom_colors_invalid", count: 1, values: "red")
+    assert_includes I18n.t("rubylode_stats.errors.custom_colors_invalid", count: 2, values: "red, blue"), "are not hex colors"
+  end
 end

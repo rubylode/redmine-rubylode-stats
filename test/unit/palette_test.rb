@@ -189,7 +189,7 @@ class PaletteTest < ActiveSupport::TestCase
     assert_equal %w[open_status:1 role:closed open_status:2 role:neutral], scale["range"]
   end
 
-  def test_the_palette_serialises_for_the_page
+  def test_the_palette_serializes_for_the_page
 
     data = JSON.parse(build_palette({}).to_json)
 

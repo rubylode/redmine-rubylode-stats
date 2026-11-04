@@ -17,7 +17,7 @@
 
 module RubylodeStats
   module Charts
-    # Open versus closed as a donut with the percentage closed in its centre; the legend carries the counts and a click on an
+    # Open versus closed as a donut with the percentage closed in its center; the legend carries the counts and a click on an
     # entry hides that half. Both halves are always counted, whatever the status filter says (see OpenVersusClosedRows). A slice
     # links to the issue list narrowed to open or closed tickets; its tooltip names the count, the share and the total.
     class OpenVersusClosed < Base
@@ -29,7 +29,7 @@ module RubylodeStats
           "description" => description,
           "data" => { "values" => rows_with_links },
           "width" => 220, "height" => 220,
-          "layer" => [donut, centre_text(percent_closed_text, 34, "bold", 0), centre_text(I18n.t("rubylode_stats.states.closed").downcase, 13, "normal", 26)]
+          "layer" => [donut, center_text(percent_closed_text, 34, "bold", 0), center_text(I18n.t("rubylode_stats.states.closed").downcase, 13, "normal", 26)]
         }
       end
 
@@ -83,7 +83,7 @@ module RubylodeStats
         }
       end
 
-      def centre_text(text, size, weight, offset)
+      def center_text(text, size, weight, offset)
         {
           "data" => { "values" => [{}] },
           "mark" => { "type" => "text", "align" => "center", "baseline" => "middle", "fontSize" => size, "fontWeight" => weight, "dy" => offset },

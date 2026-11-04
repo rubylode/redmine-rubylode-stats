@@ -118,7 +118,7 @@ module RubylodeStats
       end
 
       # The mark under the pointer. With no fields the selection is the mark itself; with fields, every mark that shares
-      # their values (all the bars of one period, say) is emphasised together.
+      # their values (all the bars of one period, say) is emphasized together.
       def hover_params(fields = nil)
         select = { "type" => "point", "on" => "pointerover", "clear" => "pointerout" }
         select["fields"] = fields if fields
@@ -206,7 +206,7 @@ module RubylodeStats
       end
 
       # The issue list of an open-tickets query would hide the closed tickets of a bar, so the default "open" status filter
-      # gives way to every status; any status filter the user chose stays, as the chart honours it too.
+      # gives way to every status; any status filter the user chose stays, as the chart honors it too.
       def date_range_filter(field, first_day, last_day)
         filter = { field => { operator: "><", values: [first_day.iso8601, last_day.iso8601] } }
         filter["status_id"] = { operator: "*", values: [] } if query.filters.dig("status_id", :operator) == "o"
