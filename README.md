@@ -58,7 +58,7 @@ already has. Point at a bar for the exact figures, click it for the matching tic
 
 ## Installation
 
-Redmine 5.0 or newer, on any database Redmine supports. The plugin adds no table. The folder must be named
+Redmine 5.1 or newer, on any database Redmine supports. The plugin adds no table. The folder must be named
 `redmine_rubylode_stats`, the same as the plugin id.
 
 1. Put the plugin in your Redmine's `plugins` folder:
@@ -294,4 +294,4 @@ Copyright (C) 2026  Nick Gorbikoff. Each Ruby file carries the same short notice
 colours are [Open Color](https://github.com/yeun/open-color) values (MIT). Their notices are in `NOTICE.md`.
 
 No warranty, as the GPL says. The plugin only reads tickets: it adds no table and changes no ticket. I tested it in CI with the Rubylode plugins' own test suites on
-Redmine 7.0, 6.1, 6.0, 5.1 and 5.0, so try it on a copy of your tracker first.
+Redmine 7.0, 6.1, 6.0 and 5.1, so try it on a copy of your tracker first.

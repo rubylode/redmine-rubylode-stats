@@ -23,8 +23,8 @@ Redmine::Plugin.register :redmine_rubylode_stats do
   author_url "https://github.com/rubylode"
   url "https://github.com/rubylode/redmine-rubylode-stats"
   description "Charts over a project's tickets: by category, open and closed, over time, who closed what"
-  version "1.4.0"
-  requires_redmine version_or_higher: "5.0.0"
+  version "1.4.1"
+  requires_redmine version_or_higher: "5.1.0"
   settings default: RubylodeStats::PluginSettings::DEFAULTS, partial: "settings/rubylode_stats_settings"
 
   project_module :rubylode_stats do
