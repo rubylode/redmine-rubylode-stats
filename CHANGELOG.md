@@ -2,6 +2,14 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.0] - 2026-11-05
+
+No change to what the plugin does. This release carries the documentation and the build.
+
+### Changed
+
+- The workflows use the current versions of the GitHub actions, and Dependabot sends one grouped update a month instead of one pull request per action.
+
 ## [2.0.0] - 2026-11-04
 
 The plugin follows the Rubylode plugin standard: US spelling in the settings, one settings reader, one locale root.
@@ -131,6 +139,7 @@ First release. Needs Redmine 7.0 or newer.
 - A demo data script for the throwaway Redmine, and a screenshot of each tab.
 
 [Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...main
+[2.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...v2.0.0
 [1.3.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.1...v1.2.0
