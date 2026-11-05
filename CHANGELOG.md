@@ -2,7 +2,7 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-11-04
 
 The plugin follows the Rubylode plugin standard: US spelling in the settings, one settings reader, one locale root.
 The Stats page and its addresses do not change.
@@ -131,6 +131,7 @@ First release. Needs Redmine 7.0 or newer.
 - A demo data script for the throwaway Redmine, and a screenshot of each tab.
 
 [Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...main
+[2.0.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...v2.0.0
 [1.3.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.1.1...v1.2.0
 [1.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.0.0...v1.1.0
