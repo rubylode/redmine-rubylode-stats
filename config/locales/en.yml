@@ -1,7 +1,7 @@
 en:
   label_stats: Stats
   permission_view_rubylode_stats: View stats
-  project_module_rubylode_stats: Stats
+  project_module_rubylode_stats: Rubylode Stats
   rubylode_stats:
     none: None
     no_version: No version

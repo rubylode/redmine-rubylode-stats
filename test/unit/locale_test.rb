@@ -31,6 +31,11 @@ class LocaleTest < ActiveSupport::TestCase
     assert_equal %w[label_stats permission_view_rubylode_stats project_module_rubylode_stats rubylode_stats], LOCALE.keys.sort
   end
 
+  def test_the_project_module_carries_the_rubylode_name_and_the_menu_stays_short
+    assert_equal "Rubylode Stats", LOCALE.fetch("project_module_rubylode_stats")
+    assert_equal "Stats", LOCALE.fetch("label_stats")
+  end
+
   def test_every_setting_has_a_label_and_a_hint
     RubylodeStats::Settings::DEFAULTS.each_key do |key|
       assert LOCALE.dig("rubylode_stats", "settings", key, "label").present?, "#{key} has no label"
