@@ -2,6 +2,12 @@
 
 All notable changes to this plugin. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.2] - 2026-11-19
+
+### Changed
+
+- The release zip holds only what Redmine needs: the tests, the docs and the development scripts are left out.
+
 ## [2.1.1] - 2026-11-19
 
 ### Changed
@@ -145,6 +151,7 @@ First release. Needs Redmine 7.0 or newer.
 - A demo data script for the throwaway Redmine, and a screenshot of each tab.
 
 [Unreleased]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...main
+[2.1.2]: https://github.com/rubylode/redmine-rubylode-stats/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/rubylode/redmine-rubylode-stats/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rubylode/redmine-rubylode-stats/compare/v1.4.1...v2.0.0
